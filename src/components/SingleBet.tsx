@@ -4,8 +4,9 @@ import { games } from '@/src/lib';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, type PredictBet, defaultResult } from '@/src/lib/types.ts';
 import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
-import { Bank, Bet, Medal, Pig } from '@betfinio/ui/dist/icons';
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from 'betfinio_app/dialog';
+import { Medal, Pig } from '@betfinio/ui';
+import { Bank, Bet } from '@betfinio/ui/dist/icons';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from 'betfinio_app/dialog';
 import cx from 'clsx';
 import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, SquareArrowOutUpRight, X } from 'lucide-react';
@@ -48,7 +49,8 @@ const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 					</div>
 				</motion.div>
 			</DialogTrigger>
-			<DialogContent className={'games w-fit'}>
+			<DialogContent className={'predict w-fit'} aria-describedby={undefined}>
+				<DialogTitle className={'hidden'} />
 				<BetModal {...bet} />
 			</DialogContent>
 		</Dialog>
@@ -108,15 +110,35 @@ const BetModal: FC<PredictBet> = (bet) => {
 	const renderStatus = () => {
 		switch (bet.status) {
 			case 1n:
-				return <span className={'text-4xl uppercase font-semibold text-yellow-500'}>{t('pending')}</span>;
+				return (
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-yellow-500'}>
+						{t('pending')}
+					</span>
+				);
 			case 2n:
-				return <span className={'text-4xl uppercase font-semibold text-green-500'}>{t('win')}</span>;
+				return (
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-green-500'}>
+						{t('win')}
+					</span>
+				);
 			case 3n:
-				return <span className={'text-4xl uppercase font-semibold text-red-500'}>{t('lost')}</span>;
+				return (
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-red-500'}>
+						{t('lost')}
+					</span>
+				);
 			case 4n:
-				return <span className={'text-4xl uppercase font-semibold text-sky-500'}>{t('draw')}</span>;
+				return (
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-sky-500'}>
+						{t('draw')}
+					</span>
+				);
 			case 5n:
-				return <span className={'text-4xl uppercase font-semibold text-yellow-400'}>{t('refund')}</span>;
+				return (
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-yellow-400'}>
+						{t('refund')}
+					</span>
+				);
 		}
 	};
 	const { data: round = Math.round(Date.now() / 1000 / game.interval) } = useCurrentRound(game.interval);
@@ -127,7 +149,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 	const endPrice = isCurrent ? valueToNumber(latest.answer, 8) : valueToNumber(end.answer, 8);
 	const endTime = DateTime.fromMillis(Number(end.timestamp) * 1000).toFormat('HH:mm:ss');
 	return (
-		<motion.div
+		<div
 			onClick={(e) => e.stopPropagation()}
 			className={
 				'rounded-lg relative border border-gray-800  text-white w-full aspect-video max-w-[98vw] md:max-w-[600px] mx-auto bg-primaryLighter py-6 px-8 BET_MODAL'
@@ -150,16 +172,14 @@ const BetModal: FC<PredictBet> = (bet) => {
 			<div className={'flex flex-col justify-center items-center gap-2 mt-7'}>
 				<div className={'text-center'}>
 					<h2 className={'text-gray-500 text-sm'}>{isCurrent ? t('startCurrentPrice') : t('startFinalPrice')}</h2>
-					<div className={cx('text-xl font-semibold', (isStartLoading || isEndLoading) && 'animate-pulse blur-sm')}>
+					<div className={cx('text-xl font-semibold flex flex-row gap-1 items-center', (isStartLoading || isEndLoading) && 'animate-pulse blur-sm')}>
 						<span>{startPrice}$</span>
-						<span className={'text-base font-medium'}>
-							{' '}
+						<div className={'text-base font-medium flex flex-row gap-1'}>
 							{t('at')}
-							{startTime}
-						</span>
+							<span>{startTime}</span>
+						</div>
 						<span className={cx(diff > 0 ? 'text-green-500' : 'text-red-500')}> / {endPrice}$</span>
 						<span className={cx('text-base font-medium')}>
-							{' '}
 							{t('at')} {endTime}
 						</span>
 					</div>
@@ -178,12 +198,21 @@ const BetModal: FC<PredictBet> = (bet) => {
 
 				<div className={'text-gray-600 pt-2 text-sm'}>
 					{t('text', {
-						amount: <span className={'text-white font-semibold'}> {valueToNumber(bet.amount)} BET</span>,
+						amount: (
+							<span key={'amount'} className={'text-white font-semibold'}>
+								{valueToNumber(bet.amount)} BET
+							</span>
+						),
 						time: (
-							<span className={'text-yellow-400'}>{DateTime.fromMillis((Number(bet.round) + game.duration) * game.interval * 1000).toFormat('HH:mm')}</span>
+							<span key={'time'} className={'text-yellow-400'}>
+								{DateTime.fromMillis((Number(bet.round) + game.duration) * game.interval * 1000).toFormat('HH:mm')}
+							</span>
 						),
 						side: (
-							<span className={cx('font-semibold p-1 px-2 text-base rounded-lg', bet.side ? 'bg-green-900 text-green-500' : 'bg-red-900 text-red-500')}>
+							<span
+								key={'side'}
+								className={cx('font-semibold p-1 px-2 text-base rounded-lg', bet.side ? 'bg-green-900 text-green-500' : 'bg-red-900 text-red-500')}
+							>
 								{bet.side ? 'LONG' : 'SHORT'}
 							</span>
 						),
@@ -236,6 +265,6 @@ const BetModal: FC<PredictBet> = (bet) => {
 					<Bank className={'w-6 h-6 text-yellow-400'} />
 				</div>
 			</div>
-		</motion.div>
+		</div>
 	);
 };

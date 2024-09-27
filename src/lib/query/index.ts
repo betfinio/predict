@@ -44,11 +44,11 @@ export const useLatestPrice = (pair: string) => {
 	});
 };
 
-export const usePrice = (game: Address, time: number) => {
+export const usePrice = (feed: Address, time: number) => {
 	const config = useConfig();
 	return useQuery<Result>({
-		queryKey: ['predict', 'price', game, time],
-		queryFn: async () => fetchPrice({ config }, { address: game, time }),
+		queryKey: ['predict', 'price', feed, time],
+		queryFn: async () => fetchPrice({ config }, { address: feed, time }),
 	});
 };
 
@@ -132,10 +132,8 @@ export const usePool = (game: Address, round: number) => {
 };
 export const useRounds = (game: Game, onlyPlayers?: boolean) => {
 	const config = useConfig();
-
 	const client = useQueryClient();
 	const { address = ZeroAddress } = useAccount({ config });
-	const { client: supabase } = useSupabase();
 	useWatchContractEvent({
 		abi: GameContract.abi,
 		address: game.address,
@@ -145,10 +143,9 @@ export const useRounds = (game: Game, onlyPlayers?: boolean) => {
 			await client.invalidateQueries({ queryKey: ['predict', 'rounds', game, onlyPlayers] });
 		},
 	});
-
 	return useQuery<Round[]>({
 		queryKey: ['predict', 'rounds', game, onlyPlayers],
-		queryFn: () => fetchRounds({ config, supabase }, { game, player: address, onlyPlayers }),
+		queryFn: () => fetchRounds({ config }, { game, player: address, onlyPlayers }),
 	});
 };
 

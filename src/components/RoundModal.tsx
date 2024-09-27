@@ -77,7 +77,7 @@ const RoundModal: FC<{
 
 	if (roundData === null || roundData.pool.long + roundData.pool.short === 0n) return null;
 	return (
-		<DialogContent className={'games text-white'} aria-describedby={undefined}>
+		<DialogContent className={'predict text-white'} aria-describedby={undefined}>
 			<DialogTitle className={'hidden'} />
 			<motion.div
 				onClick={(e) => e.stopPropagation()}

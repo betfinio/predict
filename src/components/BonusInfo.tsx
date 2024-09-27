@@ -102,7 +102,7 @@ const BonusInfo: FC<{ game: Game }> = ({ game }) => {
 			<h1 className={'flex gap-1 text-xl font-semibold pl-2'}>
 				{t('bonus.title')}
 				<div className={'text-blue-500'}>
-					<BetValue value={myBonus} iconClassName={'text-blue-500'} precision={2} withIcon={true} />
+					<BetValue value={myBonus} iconClassName={'!text-blue-500'} precision={2} withIcon={true} />
 				</div>
 			</h1>
 			<div className={'bg-primaryLight rounded-[10px] px-2 md:px-[30px] py-5 flex flex-col  justify-between '}>

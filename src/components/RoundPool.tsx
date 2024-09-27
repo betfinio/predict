@@ -56,7 +56,7 @@ const RoundPoolInfo: FC<{ game: Game }> = ({ game }) => {
 				</div>
 			</div>
 			<div className={'flex flex-row items-center justify-center gap-1 text-gray-400 text-xs'}>
-				{t('bonusPool')} <BetValue className={'text-blue-500'} iconClassName={'text-blue-500'} value={(pool.short + pool.long) / 25n} withIcon />
+				{t('bonusPool')} <BetValue className={'text-blue-500'} iconClassName={'!text-blue-500'} value={(pool.short + pool.long) / 25n} withIcon />
 			</div>
 		</div>
 	);

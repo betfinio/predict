@@ -3,6 +3,7 @@ import type { Game, Round, RoundStatus } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
 import { useNavigate } from '@tanstack/react-router';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { BetValue } from 'betfinio_app/BetValue';
 import { DataTable } from 'betfinio_app/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'betfinio_app/tabs';
 import cx from 'clsx';
@@ -154,7 +155,12 @@ const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns 
 
 const MyRounds: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => {
 	const { data: rounds = [], isLoading } = useRounds(game, true);
-	return <RoundsTableContent game={game} columns={columns} rounds={rounds} isLoading={isLoading} />;
+	const resultColumn = columnHelper.display({
+		header: 'My win',
+		id: 'player win',
+		cell: (cell) => <PlayerWin round={cell.row.original.round} />,
+	});
+	return <RoundsTableContent game={game} columns={[...columns.slice(0, 3), resultColumn, columns[4]]} rounds={rounds} isLoading={isLoading} />;
 };
 
 const progressStyle: CircularProgressbarStyles = {
@@ -176,10 +182,14 @@ const progressStyle: CircularProgressbarStyles = {
 	},
 };
 
+const PlayerWin: FC<{ round: number }> = ({ round }) => {
+	return <BetValue value={0n} />;
+};
+
 const RoundsTableContent: FC<{ game: Game; columns: unknown[]; rounds: Round[]; isLoading: boolean }> = ({ game, columns, rounds, isLoading }) => {
 	const navigate = useNavigate();
-	const handleClick = (row: Round) => {
-		navigate({ to: '/predict/$pair', params: { pair: game.name }, search: { round: row.round } });
+	const handleClick = async (row: Round) => {
+		await navigate({ to: '/predict/$pair', params: { pair: game.name }, search: { round: row.round } });
 	};
 
 	return (
