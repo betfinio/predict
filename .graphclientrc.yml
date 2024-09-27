@@ -1,0 +1,17 @@
+sources:
+  - name: predict
+    handler:
+      graphql:
+        endpoint: ${PUBLIC_PREDICT_GRAPH_URL}
+  - name: blocks
+    handler:
+      graphql:
+        endpoint: ${PUBLIC_BLOCKS_GRAPH_URL}
+
+codegen:
+  scalars:
+    BigInt: bigint
+    Bytes: string
+
+documents:
+  - ./src/schema.graphql

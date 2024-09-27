@@ -1,0 +1,13 @@
+query Rounds($address: Bytes) {
+    rounds(where: {address: $address}, orderBy: round, orderDirection: desc) {
+        round
+        startPrice
+    }
+}
+
+
+query BlockByTimestamp($timestamp: BigInt) {
+    blocks(where: {timestamp_lte: $timestamp}, orderBy: timestamp, orderDirection: desc, first: 1) {
+        number
+    }
+}

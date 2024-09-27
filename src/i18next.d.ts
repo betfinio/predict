@@ -2,10 +2,10 @@ import type { resources } from './i18n';
 
 declare module 'i18next' {
 	interface CustomTypeOptions {
-		defaultNS: 'template';
+		defaultNS: 'predict';
 		resources: (typeof resources)['en'];
 	}
 }
 
-export type ILanguageKeys = (typeof resources)['en']['template'];
+export type ILanguageKeys = (typeof resources)['en']['predict'];
 export type ILanguageErrorKeys = keyof (typeof resources)['en']['shared']['errors'];
