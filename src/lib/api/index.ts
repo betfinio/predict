@@ -1,7 +1,7 @@
 import logger from '@/src/config/logger';
 import { BETS_MEMORY_ADDRESS, PARTNER_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import { games } from '@/src/lib';
-import { fetchBlockByTimestamp, getRounds } from '@/src/lib/gql';
+import { fetchPrice, getRounds } from '@/src/lib/gql';
 import {
 	BetInterfaceContract,
 	BetsMemoryContract,
@@ -38,7 +38,7 @@ export async function fetchRound(options: Options, params: { game: Game; round: 
 	const feed = game.dataFeed;
 	const ended = (round.round + game.duration) * game.interval;
 	const pool = await fetchPool(options, { game: game.address, round: round.round });
-	const endPrice = await fetchPrice(options, { address: feed, time: ended });
+	const endPrice = await fetchPrice(feed, ended);
 	const data = await multicall(options.config, {
 		multicallAddress: defaultMulticall,
 		contracts: [
@@ -107,22 +107,6 @@ export async function fetchPool(options: Options, params: { game: Address; round
 		short: betsData[1].result as bigint,
 		longCount: 0,
 		shortCount: 0,
-	};
-}
-
-export async function fetchPrice(options: Options, params: { address: Address; time: number }): Promise<Result> {
-	if (!options.config) throw Error('Config is required!');
-	const block = await fetchBlockByTimestamp(params.time);
-	const data = (await readContract(options.config, {
-		abi: DataFeedContract.abi,
-		address: params.address,
-		functionName: 'latestRoundData',
-		blockNumber: block,
-	})) as [bigint, bigint, bigint, bigint, bigint];
-	return {
-		roundId: data[0],
-		answer: data[1],
-		timestamp: data[2],
 	};
 }
 
@@ -219,14 +203,14 @@ export const fetchLatestPrice = async (options: Options, params: { pair: string 
 	const pair = params.pair;
 	const address = games[pair].dataFeed;
 	logger.info('fetching latest price', pair, address);
-	return await fetchPrice(options, { address, time: Math.floor(Date.now() / 1000) });
+	return await fetchPrice(address, Math.floor(Date.now() / 1000));
 };
 export const fetchYesterdayPrice = async (options: Options, params: { pair: string }): Promise<Result> => {
 	if (!games) throw Error('Games are required!');
 	const pair = params.pair;
 	const address = games[pair].dataFeed;
 	logger.info('fetching latest price', pair, address);
-	return await fetchPrice(options, { address, time: Math.floor(Date.now() / 1000) - 60 * 60 * 24 });
+	return await fetchPrice(address, Math.floor(Date.now() / 1000) - 60 * 60 * 24);
 };
 
 export const fetchRoundBets = async (options: Options, params: { game: Address; round: number }) => {

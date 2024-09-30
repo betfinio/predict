@@ -1,80 +1,63 @@
 import type { PredictBet } from '@/src/lib/types.ts';
-import { ZeroAddress } from '@betfinio/abi';
-import { BarElement, CategoryScale, Chart as ChartJS, type ChartOptions, Legend, LinearScale, Title, Tooltip } from 'chart.js';
-import { type FC, useMemo } from 'react';
-import { Bar } from 'react-chartjs-2'; //todo rewrite to nivo rocks
-import { useAccount } from 'wagmi';
+import { truncateEthAddress } from '@betfinio/abi';
+import { type BarDatum, ResponsiveBar } from '@nivo/bar';
+import type { BarTooltipProps } from '@nivo/bar/dist/types/types';
+import { BetValue } from 'betfinio_app/BetValue';
+import type { FC } from 'react';
+import * as React from 'react';
+import type { Address } from 'viem';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+interface BonusItem extends BarDatum {
+	bet: Address;
+	bonus: number;
+	bonusColor: string;
+	index: number;
+}
+const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number }[]; oneWay?: boolean; minBars?: number; height?: number }> = ({ bonuses }) => {
+	const data: BonusItem[] = bonuses
+		.map((bonus) => ({
+			bet: bonus.bet.address,
+			bonus: bonus.bet.side ? bonus.bonus : -bonus.bonus,
+			bonusColor: bonus.bet.side ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
+			index: bonus.index,
+		}))
+		.sort((a, b) => a.index - b.index);
 
-const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number }[]; oneWay?: boolean; minBars?: number; height?: number }> = ({
-	bonuses,
-	oneWay = false,
-	minBars = 20,
-	height = 50,
-}) => {
-	const { address = ZeroAddress } = useAccount();
-	const colors: string[] = [];
-	const values: number[] = [];
-	for (const { bet, bonus } of bonuses) {
-		if (oneWay) {
-			values.push(bonus);
-		} else {
-			values.push(bet.side ? bonus : -bonus);
-		}
-		colors.push(bet.player === address ? '#FFC800' : bet.side ? '#27AE60' : '#EB5757');
-	}
-
-	const options = useMemo<ChartOptions<'bar'>>(
-		() => ({
-			plugins: {
-				title: {
-					display: false,
-					text: 'Chart.js Bar Chart - Stacked',
-				},
-				legend: {
-					display: false,
-				},
-				tooltip: {
-					displayColors: false,
-					callbacks: {
-						label: (context) => `${Math.abs(context.parsed.y)} BET`,
-						title(): string | string[] | undefined {
-							return '';
-						},
-					},
-				},
-			},
-			interaction: {
-				mode: 'nearest',
-			},
-			responsive: true,
-			scales: {
-				x: {
-					display: false,
-				},
-				y: {
-					display: false,
-					min: oneWay ? 0 : -Math.max(...values),
-					max: Math.max(...values),
-				},
-			},
-		}),
-		[oneWay, values],
+	const [min, max] = data.reduce(
+		([min, max], bar) => {
+			return [Math.min(min, bar.bonus), Math.max(max, bar.bonus)];
+		},
+		[0, -0],
 	);
+	return (
+		<div className={'h-full w-full'}>
+			<ResponsiveBar
+				tooltip={CustomTooltip}
+				enableGridX={false}
+				enableGridY={false}
+				data={data as readonly BonusItem[]}
+				minValue={min}
+				maxValue={max}
+				keys={['bonus']}
+				indexBy={'bet'}
+				colors={(bar) => bar.data.bonusColor}
+				colorBy={'indexValue'}
+				enableLabel={false}
+				borderRadius={4}
+			/>
+		</div>
+	);
+};
 
-	const data = {
-		labels: Array.from(Array(Math.max(values.length, minBars)), (_, i) => i),
-		datasets: [
-			{
-				label: 'Dataset 1',
-				data: values,
-				backgroundColor: colors,
-				borderRadius: 2,
-			},
-		],
-	};
-	return <Bar height={height} options={options} data={data} />;
+const CustomTooltip: FC<BarTooltipProps<BonusItem>> = ({ data }) => {
+	return (
+		<div className={'border border-gray-800 rounded-lg bg-primary p-2 flex flex-col'}>
+			<div>{truncateEthAddress(data.bet)}</div>
+			<div className={'flex flex-row items-center gap-1'}>
+				Bonus: <BetValue value={data.bonus} withIcon />
+			</div>
+		</div>
+	);
 };
 
 export default BonusChart;

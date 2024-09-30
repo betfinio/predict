@@ -8,13 +8,13 @@ import {
 	fetchPlayerBets,
 	fetchPlayerRounds,
 	fetchPool,
-	fetchPrice,
 	fetchRound,
 	fetchRoundBets,
 	fetchRounds,
 	fetchYesterdayPrice,
 	placeBet,
 } from '@/src/lib/api';
+import { fetchPrice } from '@/src/lib/gql';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '@/src/lib/types.ts';
 import { BetsMemoryContract, GameContract, ZeroAddress } from '@betfinio/abi';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -45,10 +45,9 @@ export const useLatestPrice = (pair: string) => {
 };
 
 export const usePrice = (feed: Address, time: number) => {
-	const config = useConfig();
 	return useQuery<Result>({
 		queryKey: ['predict', 'price', feed, time],
-		queryFn: async () => fetchPrice({ config }, { address: feed, time }),
+		queryFn: async () => fetchPrice(feed, time),
 	});
 };
 
@@ -107,7 +106,6 @@ export const useLastBets = (count: number) => {
 export const useRoundBets = (game: Address, round: number) => {
 	const config = useConfig();
 	return useQuery<PredictBet[]>({
-		initialData: [],
 		queryKey: ['predict', 'bets', 'round', game, round],
 		queryFn: () => fetchRoundBets({ config }, { game, round }),
 	});

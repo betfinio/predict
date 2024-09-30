@@ -12,7 +12,7 @@ import { useAccount } from 'wagmi';
 const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 	const { data: round } = useCurrentRound(game.interval);
 	const { address = ZeroAddress } = useAccount();
-	const { data: bets, isFetching: isBetsFetched } = useRoundBets(game.address, round);
+	const { data: bets = [], isFetching: isBetsFetched } = useRoundBets(game.address, round);
 
 	const expected = useMemo(() => {
 		const userPool = bets.reduce(

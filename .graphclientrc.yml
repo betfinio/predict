@@ -7,6 +7,10 @@ sources:
     handler:
       graphql:
         endpoint: ${PUBLIC_BLOCKS_GRAPH_URL}
+  - name: chainlink
+    handler:
+      graphql:
+        endpoint: ${PUBLIC_CHAINLINK_GRAPH_URL}
 
 codegen:
   scalars:
