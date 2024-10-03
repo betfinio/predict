@@ -47,7 +47,7 @@ export interface RoundWithStartPrice {
 	};
 }
 
-export interface Round {
+export interface Round extends RoundWithStartPrice {
 	round: number;
 	price: {
 		start: bigint;

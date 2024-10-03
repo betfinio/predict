@@ -1,4 +1,4 @@
-import { GetPriceDocument, type GetPriceQuery, RoundsDocument, type RoundsQuery, execute } from '@/.graphclient';
+import { GetPriceDocument, type GetPriceQuery, PlayerBetsDocument, type PlayerBetsQuery, RoundsDocument, type RoundsQuery, execute } from '@/.graphclient';
 import logger from '@/src/config/logger.ts';
 import { type Result, type RoundWithStartPrice, defaultResult } from '@/src/lib/types.ts';
 import type { ExecutionResult } from 'graphql/execution';
@@ -12,6 +12,18 @@ export const getRounds = async (address: Address): Promise<RoundWithStartPrice[]
 	if (data) {
 		logger.success('fetching round starts by game address', data.rounds?.length);
 		return mapDataToRounds(data);
+	}
+	return [];
+};
+export const getPlayerRounds = async (game: Address, player: Address): Promise<number[]> => {
+	logger.start('fetching round starts by game address and player', game);
+	const { data }: ExecutionResult<PlayerBetsQuery> = await execute(PlayerBetsDocument, {
+		player,
+		game: game,
+	});
+	if (data) {
+		logger.success('fetching round starts by game address and player', data.predictBets?.length);
+		return [...new Set(data.predictBets.map((bet) => Number(bet.round)))];
 	}
 	return [];
 };

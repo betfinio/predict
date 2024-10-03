@@ -1,35 +1,28 @@
 import logger from '@/src/config/logger';
 import { BETS_MEMORY_ADDRESS, PARTNER_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import { games } from '@/src/lib';
-import { fetchPrice, getRounds } from '@/src/lib/gql';
-import {
-	BetInterfaceContract,
-	BetsMemoryContract,
-	DataFeedContract,
-	GameContract,
-	PartnerContract,
-	PredictBetContract,
-	ZeroAddress,
-	defaultMulticall,
-} from '@betfinio/abi';
-import { type WriteContractReturnType, getBlock, multicall, readContract, writeContract } from '@wagmi/core';
+import { fetchPrice, getPlayerRounds, getRounds } from '@/src/lib/gql';
+import { BetInterfaceContract, BetsMemoryContract, DataFeedContract, GameContract, PartnerContract, PredictBetContract, defaultMulticall } from '@betfinio/abi';
+import { type WriteContractReturnType, multicall, readContract, writeContract } from '@wagmi/core';
 import type { Options } from 'betfinio_app/lib/types';
 import { getBlockByTimestamp } from 'betfinio_app/lib/utils';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
-import { getContractEvents } from 'viem/actions';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round, RoundPool, RoundWithStartPrice } from '../types';
 
-export const fetchRounds = async (options: Options, params: { game: Game; player: Address; onlyPlayers?: boolean }): Promise<Round[]> => {
+export const fetchRounds = async (options: Options, params: { game: Game; player: Address }): Promise<Round[]> => {
 	const { config } = options;
-	const { game, player, onlyPlayers } = params;
+	const { game, player } = params;
 	const { address: gameAddress } = game;
 
 	if (!config) return [];
 	const rounds: RoundWithStartPrice[] = await getRounds(gameAddress);
 
-	return (await Promise.all(rounds.map((round) => fetchRound(options, { game, round, player })))).filter(
-		(round) => !onlyPlayers || round.currentPlayerBets > 0,
-	);
+	return await Promise.all(rounds.map((round) => fetchRound(options, { game, round, player })));
+};
+
+export const fetchPlayerRounds = async (game: Game, player: Address, options: Options): Promise<Round[]> => {
+	const rounds: number[] = await getPlayerRounds(game.address, player);
+	return await Promise.all(rounds.map((round) => fetchRound(options, { game, round: { round: round, price: { start: 0n } }, player })));
 };
 
 export async function fetchRound(options: Options, params: { game: Game; round: RoundWithStartPrice; player: Address }): Promise<Round> {
@@ -39,6 +32,7 @@ export async function fetchRound(options: Options, params: { game: Game; round: 
 	const ended = (round.round + game.duration) * game.interval;
 	const pool = await fetchPool(options, { game: game.address, round: round.round });
 	const endPrice = await fetchPrice(feed, ended);
+	const startPrice = await fetchPrice(feed, round.round * game.interval);
 	const data = await multicall(options.config, {
 		multicallAddress: defaultMulticall,
 		contracts: [
@@ -70,7 +64,7 @@ export async function fetchRound(options: Options, params: { game: Game; round: 
 	});
 	const bets = data[0].result as [number, string[]];
 	const calculated = data[1].result as boolean;
-	const start = (data[2].result as bigint[])[1] || round.price.start;
+	const start = (data[2].result as bigint[])[1] || startPrice.answer || round.price.start;
 	const end = (data[3].result as bigint[])[1] || endPrice.answer;
 	return {
 		round: round.round,
@@ -108,33 +102,6 @@ export async function fetchPool(options: Options, params: { game: Address; round
 		longCount: 0,
 		shortCount: 0,
 	};
-}
-
-export async function fetchPlayerRounds(options: Options, params: { game: Address; player: Address }): Promise<number[]> {
-	const { game, player } = params;
-	logger.info('fetching player rounds', game, player);
-	if (player === ZeroAddress) return [];
-	if (!options.config) throw Error('Config is required!');
-	const { config } = options;
-	const logs = await getContractEvents(config.getClient(), {
-		...BetsMemoryContract,
-		fromBlock: 0n,
-		toBlock: 'latest',
-		eventName: 'NewBet',
-		args: {
-			player: player,
-			game: PREDICT_ADDRESS,
-		},
-	});
-	const g = Object.values(games).find((g) => g.address === game) as Game;
-	const rounds = await Promise.all(
-		logs.map(async (log) => {
-			const block = log.blockNumber;
-			const time = await getBlock(config, { blockNumber: block });
-			return Math.floor(Number(time.timestamp) / g.interval);
-		}),
-	);
-	return [...new Set(rounds)].reverse().slice(0, 10);
 }
 
 export async function fetchLastBets(options: Options, params: { count: number }): Promise<PredictBet[]> {

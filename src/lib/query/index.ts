@@ -79,7 +79,6 @@ export const useBetsVolume = () => {
 
 export const usePlayerBets = (address: Address, game: Address, round: number) => {
 	const config = useConfig();
-
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', address, game, round],
 		queryFn: () => fetchPlayerBets({ config }, { address, game, round }),
@@ -128,7 +127,7 @@ export const usePool = (game: Address, round: number) => {
 		queryFn: () => fetchPool({ config }, { game, round }),
 	});
 };
-export const useRounds = (game: Game, onlyPlayers?: boolean) => {
+export const useRounds = (game: Game) => {
 	const config = useConfig();
 	const client = useQueryClient();
 	const { address = ZeroAddress } = useAccount({ config });
@@ -138,12 +137,19 @@ export const useRounds = (game: Game, onlyPlayers?: boolean) => {
 		config: config,
 		eventName: 'RoundCreated',
 		onLogs: async () => {
-			await client.invalidateQueries({ queryKey: ['predict', 'rounds', game, onlyPlayers] });
+			await client.invalidateQueries({ queryKey: ['predict', 'rounds', game] });
 		},
 	});
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game, onlyPlayers],
-		queryFn: () => fetchRounds({ config }, { game, player: address, onlyPlayers }),
+		queryKey: ['predict', 'rounds', game],
+		queryFn: () => fetchRounds({ config }, { game, player: address }),
+	});
+};
+export const usePlayerRounds = (game: Game, address: Address) => {
+	const config = useConfig();
+	return useQuery<Round[]>({
+		queryKey: ['predict', 'rounds', game, address],
+		queryFn: () => fetchPlayerRounds(game, address, { config }),
 	});
 };
 
@@ -156,16 +162,6 @@ export const useRoundInfo = (game: Game, round: number) => {
 		queryFn: () => fetchRound({ config }, { game, round: { round, price: { start: 0n } }, player: address }),
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-	});
-};
-
-export const usePlayerRounds = (game: Address) => {
-	const config = useConfig();
-	const { client: supabase } = useSupabase();
-	const { address = ZeroAddress } = useAccount({ config });
-	return useQuery<number[]>({
-		queryKey: ['predict', 'playerRounds', game, address],
-		queryFn: () => fetchPlayerRounds({ config, supabase }, { game, player: address }),
 	});
 };
 

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const BonusAndChart: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict');
 	return (
-		<div className={''}>
+		<div className={'min-h-[350px]'}>
 			<Tabs defaultValue={'bonus'}>
 				<TabsList>
 					<TabsTrigger value={'bonus'}>{t('tabs.bonusChart')}</TabsTrigger>

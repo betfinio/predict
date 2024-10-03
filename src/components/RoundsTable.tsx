@@ -1,6 +1,6 @@
-import { useCurrentRound, useRounds } from '@/src/lib/query';
+import { useCurrentRound, usePlayerRounds, useRounds } from '@/src/lib/query';
 import type { Game, Round, RoundStatus } from '@/src/lib/types';
-import { valueToNumber } from '@betfinio/abi';
+import { ZeroAddress, valueToNumber } from '@betfinio/abi';
 import { useNavigate } from '@tanstack/react-router';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { BetValue } from 'betfinio_app/BetValue';
@@ -14,6 +14,7 @@ import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 
 const columnHelper = createColumnHelper<Round>();
 const RoundsTable: FC<{ game: Game }> = ({ game }) => {
@@ -154,7 +155,8 @@ const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns 
 };
 
 const MyRounds: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => {
-	const { data: rounds = [], isLoading } = useRounds(game, true);
+	const { address = ZeroAddress } = useAccount();
+	const { data: rounds = [], isLoading } = usePlayerRounds(game, address);
 	const resultColumn = columnHelper.display({
 		header: 'My win',
 		id: 'player win',
