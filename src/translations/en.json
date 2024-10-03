@@ -4,6 +4,7 @@
 	"howToPlay": "How to Play",
 	"bonus": {
 		"title": "Your potential bonus:",
+		"explain": "The bonus represents <b>4%</b> of all bets. <b>{bonus}</b> BET will be split among winners according to <b>order</b> and <b>size</b> of bets.",
 		"info": "The sooner and more you bet the bigger bonus you get."
 	},
 	"pairSwitcher": {

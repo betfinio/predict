@@ -1,9 +1,12 @@
 import BonusChart from '@/src/components/BonusChart.tsx';
+import i18n from '@/src/i18n.ts';
 import { useCurrentRound, usePool, useRoundBets } from '@/src/lib/query';
 import type { Game } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'betfinio_app/tooltip';
+import { CircleHelp } from 'lucide-react';
 import type { FC } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const BonusInfo: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict');
@@ -35,24 +38,31 @@ const BonusInfo: FC<{ game: Game }> = ({ game }) => {
 
 	return (
 		<div className={'h-full'}>
-			{/*<h1 className={'flex gap-1 text-xl font-semibold pl-2'}>*/}
-			{/*	{t('bonus.title')}*/}
-			{/*	<div className={'text-blue-500'}>*/}
-			{/*		<BetValue value={0n} iconClassName={'!text-blue-500'} precision={2} withIcon={true} />*/}
-			{/*	</div>*/}
-			{/*</h1>*/}
-			<div className={'bg-primaryLight rounded-md p-2 lg:p-4 flex flex-col  justify-between gap-2 lg:gap-4 '}>
+			<div className={'bg-primaryLight rounded-md p-2 lg:p-4 flex flex-col relative  justify-between gap-2 lg:gap-4 '}>
 				<div className={'relative h-[200px] w-full'}>
 					<BonusChart bonuses={bonuses} />
 				</div>
-				<div className={'text-xs text-[#959DAD] italic'}>
-					<div className={'text-center'}>
-						The bonus represents <span className={'text-yellow-400'}>4%</span> of all bets{' '}
-						<span className={'text-yellow-400'}>{valueToNumber(pool.long + pool.short).toLocaleString()}</span> that are split among winners according to
-						<span className={'text-yellow-400'}>order</span> and <span className={'text-yellow-400'}>size</span> of bets.
-					</div>
-					<p className={'text-center font-semibold'}>{t('bonus.info')}</p>
-				</div>
+				<TooltipProvider delayDuration={0}>
+					<Tooltip>
+						<TooltipTrigger className={'absolute bottom-3 right-3'}>
+							<CircleHelp className={'w-5 h-5'} />
+						</TooltipTrigger>
+						<TooltipContent>
+							<div className={'text-xs text-gray-500 italic'}>
+								<div className={'text-center'}>
+									<Trans
+										t={t}
+										i18nKey={'bonus.explain'}
+										values={{ bonus: (valueToNumber(pool.short + pool.long) / 25).toLocaleString() }}
+										i18n={i18n}
+										components={{ b: <b className={'text-yellow-400 font-medium'} /> }}
+									/>
+								</div>
+								<p className={'text-center font-semibold'}>{t('bonus.info')}</p>
+							</div>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 			</div>
 		</div>
 	);
