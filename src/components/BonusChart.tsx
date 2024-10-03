@@ -42,9 +42,18 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 	);
 
 	if (result.length < 40) {
-		result.push(
-			...arrayFrom(40 - result.length).map((num, i) => ({
+		const toAdd = 40 - result.length;
+		result.unshift(
+			...arrayFrom(Math.floor(toAdd / 2)).map((num, i) => ({
 				bet: `0x123${num}` as Address,
+				bonus: 0,
+				bonusColor: 'hsl(var(--success))',
+				index: i + result.length,
+			})),
+		);
+		result.push(
+			...arrayFrom(Math.floor(toAdd / 2)).map((num, i) => ({
+				bet: `0x123${num + 100}` as Address,
 				bonus: 0,
 				bonusColor: 'hsl(var(--success))',
 				index: i + result.length,
@@ -59,8 +68,8 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 				enableGridX={false}
 				enableGridY={false}
 				data={result as readonly BonusItem[]}
-				minValue={min}
-				maxValue={max}
+				minValue={-Math.max(Math.abs(min), max)}
+				maxValue={Math.max(Math.abs(min), max)}
 				keys={['bonus']}
 				axisLeft={null}
 				axisBottom={null}

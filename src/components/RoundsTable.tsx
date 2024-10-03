@@ -1,10 +1,11 @@
+import RoundModal from '@/src/components/RoundModal.tsx';
 import { useCurrentRound, usePlayerRounds, useRounds } from '@/src/lib/query';
 import type { Game, Round, RoundStatus } from '@/src/lib/types';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
-import { useNavigate } from '@tanstack/react-router';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { BetValue } from 'betfinio_app/BetValue';
 import { DataTable } from 'betfinio_app/DataTable';
+import { Dialog } from 'betfinio_app/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'betfinio_app/tabs';
 import cx from 'clsx';
 import { motion } from 'framer-motion';
@@ -189,9 +190,15 @@ const PlayerWin: FC<{ round: number }> = ({ round }) => {
 };
 
 const RoundsTableContent: FC<{ game: Game; columns: unknown[]; rounds: Round[]; isLoading: boolean }> = ({ game, columns, rounds, isLoading }) => {
-	const navigate = useNavigate();
+	const [selectedRound, setSelectedRound] = useState<number | null>(null);
 	const handleClick = async (row: Round) => {
-		await navigate({ to: '/predict/$pair', params: { pair: game.name }, search: { round: row.round } });
+		setSelectedRound(row.round);
+	};
+
+	const handleOpenChange = (open: boolean) => {
+		if (!open) {
+			setSelectedRound(null);
+		}
 	};
 
 	return (
@@ -204,6 +211,9 @@ const RoundsTableContent: FC<{ game: Game; columns: unknown[]; rounds: Round[]; 
 				loaderClassName="h-[185px]"
 				noResultsClassName="h-[185px]"
 			/>
+			<Dialog open={selectedRound !== null} onOpenChange={handleOpenChange}>
+				{selectedRound !== null && <RoundModal round={selectedRound} game={game} />}
+			</Dialog>
 		</motion.div>
 	);
 };

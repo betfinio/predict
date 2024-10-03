@@ -1,24 +1,27 @@
+import BonusChart from '@/src/components/BonusChart.tsx';
 import { ETHSCAN } from '@/src/global.ts';
-import type { PredictBet } from '@/src/lib/types.ts';
+import { usePool, useRoundBets } from '@/src/lib/query';
+import type { Game, PredictBet } from '@/src/lib/types.ts';
 import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
 import { Predict } from '@betfinio/ui/dist/icons';
-import { type Row, createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { BetValue } from 'betfinio_app/BetValue';
+import { DataTable } from 'betfinio_app/DataTable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'betfinio_app/tabs';
 import cx from 'clsx';
 import { ExternalLink } from 'lucide-react';
-import { type FC, useState } from 'react';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-// todo rewrite tables
-
 const columnHelper = createColumnHelper<PredictBet>();
 
-const BetsTable: FC<{ isFetching: boolean; bets: PredictBet[]; isFinished: boolean }> = ({ isFetching, isFinished, bets }) => {
+const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 	const { t } = useTranslation('predict');
-	const [filter, setFilter] = useState<'all' | 'my'>('all');
 	const { address } = useAccount();
-	const columns = [
+	const { data: bets = [], isFetching } = useRoundBets(game.address, round);
+	const { data: pool } = usePool(game.address, round);
+	const columns: ColumnDef<PredictBet, never>[] = [
 		columnHelper.accessor('address', {
 			header: '',
 			cell: (props) => (
@@ -43,7 +46,6 @@ const BetsTable: FC<{ isFetching: boolean; bets: PredictBet[]; isFinished: boole
 		}),
 		columnHelper.accessor('side', {
 			header: t('table.side'),
-
 			cell: (props) => (
 				<span className={cx('font-semibold text-xs md:text-base', props.getValue() ? 'text-green-500' : 'text-red-500')}>
 					{props.getValue() ? t('table.long') : t('table.short')}
@@ -75,7 +77,7 @@ const BetsTable: FC<{ isFetching: boolean; bets: PredictBet[]; isFinished: boole
 				className: 'hidden md:table-cell',
 			},
 			header: t('table.bonus'),
-			cell: (props) => <span className={cx('font-medium text-yellow-400')}>{valueToNumber(props.getValue())} BET</span>,
+			cell: (props) => <BetValue value={props.getValue()} withIcon className={'text-blue-500'} iconClassName={'!text-blue-500'} />,
 		}),
 		columnHelper.display({
 			id: 'total',
@@ -85,7 +87,7 @@ const BetsTable: FC<{ isFetching: boolean; bets: PredictBet[]; isFinished: boole
 					{props.row.original.status === 5n ? (
 						t('table.statuses.5')
 					) : (
-						<BetValue value={(valueToNumber(props.row.getValue<bigint>('bonus')) + valueToNumber(props.row.getValue<bigint>('result'))).round(3)} />
+						<BetValue value={(valueToNumber(props.row.getValue('bonus')) + valueToNumber(props.row.getValue('result'))).round(3)} withIcon />
 					)}
 				</span>
 			),
@@ -102,112 +104,49 @@ const BetsTable: FC<{ isFetching: boolean; bets: PredictBet[]; isFinished: boole
 						'text-sky-500': props.getValue() === 5n,
 					})}
 				>
-					{t(`table.statuses.${props.getValue().toString() as '0' | '1' | '2' | '3' | '4'}`)}
+					{t(`table.statuses.${props.row.original.status.toString() as '0' | '1' | '2' | '3' | '4'}`)}
 				</span>
 			),
 		}),
 	];
 
-	const filterBets = (bet: Row<PredictBet>) => {
-		if (filter === 'all') return true;
-		return bet.getValue('player') === address;
-	};
-
-	const table = useReactTable<PredictBet>({
-		columns: columns,
-		data: bets,
-		getCoreRowModel: getCoreRowModel(),
+	const stakes = bets.reduce(
+		(st, bet, index) => {
+			return {
+				long: st.long + bet.amount * BigInt(bets.length - index) * (bet.side ? 1n : 0n),
+				short: st.short + bet.amount * BigInt(bets.length - index) * (bet.side ? 0n : 1n),
+			};
+		},
+		{ long: 0n, short: 0n },
+	);
+	const bonuses = bets.map((bet, index) => {
+		const bonusPool = (((pool?.short || 0n) + (pool?.long || 0n)) / 100n) * 5n;
+		const weight = bet.amount * BigInt(bets.length - index);
+		return {
+			bet,
+			index,
+			bonus: valueToNumber((bonusPool * weight) / (bet.side ? stakes.long : stakes.short)),
+		};
 	});
 
-	if (!isFetching && bets.length === 0) {
-		return <div />;
-	}
-
-	const renderTableSkeleton = () => {
-		return [...Array(5)].map((_, i) => (
-			<tr key={i} className={cx('h-[50px] p-0 ', i % 2 ? 'bg-primaryLight' : 'bg-primaryLighter')}>
-				{[...Array(columns.length)].map((_, i) => (
-					<td key={i} className={cx('text-left px-2')} />
-				))}
-			</tr>
-		));
-	};
-	const renderTableBody = () => {
-		if (isFetching) return renderTableSkeleton();
-		return table
-			.getRowModel()
-			.rows.filter(filterBets)
-			.map((row) => (
-				<tr key={row.id} className={cx('h-[50px] rounded-xl p-0 ', row.index % 2 ? 'bg-primaryLight' : 'bg-primaryLighter')}>
-					{row.getVisibleCells().map((cell) => (
-						<td
-							key={cell.id}
-							className={cx(
-								'text-left px-2',
-								cell.column.columnDef.meta?.className,
-								isFinished && cell.column.id === 'status' && 'hidden',
-								!isFinished && ['bonus', 'result', 'total'].includes(cell.column.id) && 'hidden',
-							)}
-						>
-							{flexRender(cell.column.columnDef.cell, cell.getContext())}
-						</td>
-					))}
-				</tr>
-			));
-	};
-
+	const myBets = bets.filter((e) => e.player === address);
 	return (
-		<>
-			<div className={'flex flex-row justify-start items-center gap-4'}>
-				<button
-					type={'button'}
-					onClick={() => setFilter('all')}
-					className={cx('px-4 py-2 rounded-lg w-[120px]', filter === 'all' ? 'bg-yellow-400 text-black' : 'bg-primaryLighter')}
-				>
-					{t('table.filter.all')}
-				</button>
-				<button
-					type={'button'}
-					onClick={() => setFilter('my')}
-					className={cx('px-4 py-2 rounded-lg w-[120px]', filter === 'my' ? 'bg-yellow-400 text-black' : 'bg-primaryLighter')}
-				>
-					{t('table.filter.my')}
-				</button>
-			</div>
-			<div className={'max-h-[400px] overflow-y-scroll mt-2'}>
-				<table className={'w-full text-sm border-separate border-spacing-y-[2px]'}>
-					<thead>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<tr key={headerGroup.id} className={'text-gray-400 text-left'}>
-								{headerGroup.headers.map((header) => (
-									<th
-										key={header.id}
-										className={cx(
-											'h-[40px] pl-2',
-											header.column.columnDef.meta?.className,
-											isFinished && header.id === 'status' && 'hidden',
-											!isFinished && ['bonus', 'result', 'total'].includes(header.id) && 'hidden',
-										)}
-									>
-										{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-									</th>
-								))}
-							</tr>
-						))}
-					</thead>
-					<tbody>{renderTableBody()}</tbody>
-					<tfoot>
-						{table.getFooterGroups().map((footerGroup) => (
-							<tr key={footerGroup.id}>
-								{footerGroup.headers.map((header) => (
-									<th key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.footer, header.getContext())}</th>
-								))}
-							</tr>
-						))}
-					</tfoot>
-				</table>
-			</div>
-		</>
+		<Tabs defaultValue={'all'} className={'min-h-[353px]'}>
+			<TabsList>
+				<TabsTrigger value={'all'}>{t('roundModal.tabs.all')}</TabsTrigger>
+				<TabsTrigger value={'my'}>{t('roundModal.tabs.my')}</TabsTrigger>
+				<TabsTrigger value={'bonus'}>{t('roundModal.tabs.bonus')}</TabsTrigger>
+			</TabsList>
+			<TabsContent value={'all'}>
+				<DataTable columns={columns} data={bets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
+			</TabsContent>
+			<TabsContent value={'my'}>
+				<DataTable columns={columns} data={myBets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
+			</TabsContent>
+			<TabsContent value={'bonus'} className={'h-[310px] w-full border rounded-md p-4'}>
+				<BonusChart bonuses={bonuses} />
+			</TabsContent>
+		</Tabs>
 	);
 };
 

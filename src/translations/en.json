@@ -152,7 +152,12 @@
 		"volume": "Total round volume",
 		"staking": "Staking contribution",
 		"users": "{players} users",
-		"bets": "{bets} bets"
+		"bets": "{bets} bets",
+		"tabs": {
+			"all": "All bets",
+			"my": "My bets",
+			"bonus": "Bonuses"
+		}
 	},
 	"roundPool": {
 		"bonusPool": "Bonus pool is"
