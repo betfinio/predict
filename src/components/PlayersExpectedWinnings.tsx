@@ -74,7 +74,7 @@ const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 			longBonus: predictedWinLong.filter((bet) => bet.player.toLowerCase() === address.toLowerCase()).reduce((s, b) => s + b.bonus, 0),
 			shortBonus: predictedWinShort.filter((bet) => bet.player.toLowerCase() === address.toLowerCase()).reduce((s, b) => s + b.bonus, 0),
 		};
-	}, [bets]);
+	}, [bets, address]);
 	return (
 		<div className={'grid grid-cols-2 gap-4 w-full'}>
 			<TooltipProvider delayDuration={0}>

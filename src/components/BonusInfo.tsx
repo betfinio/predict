@@ -2,7 +2,6 @@ import BonusChart from '@/src/components/BonusChart.tsx';
 import { useCurrentRound, usePool, useRoundBets } from '@/src/lib/query';
 import type { Game } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
-import { BetValue } from 'betfinio_app/BetValue';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,14 +35,14 @@ const BonusInfo: FC<{ game: Game }> = ({ game }) => {
 
 	return (
 		<div className={'h-full'}>
-			<h1 className={'flex gap-1 text-xl font-semibold pl-2'}>
-				{t('bonus.title')}
-				<div className={'text-blue-500'}>
-					<BetValue value={0n} iconClassName={'!text-blue-500'} precision={2} withIcon={true} />
-				</div>
-			</h1>
+			{/*<h1 className={'flex gap-1 text-xl font-semibold pl-2'}>*/}
+			{/*	{t('bonus.title')}*/}
+			{/*	<div className={'text-blue-500'}>*/}
+			{/*		<BetValue value={0n} iconClassName={'!text-blue-500'} precision={2} withIcon={true} />*/}
+			{/*	</div>*/}
+			{/*</h1>*/}
 			<div className={'bg-primaryLight rounded-md p-2 lg:p-4 flex flex-col  justify-between gap-2 lg:gap-4 '}>
-				<div className={'relative h-[200px] lg:w-[80%] mx-auto'}>
+				<div className={'relative h-[200px] w-full'}>
 					<BonusChart bonuses={bonuses} />
 				</div>
 				<div className={'text-xs text-[#959DAD] italic'}>
