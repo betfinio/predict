@@ -1,5 +1,5 @@
-import { valueToNumber } from '@betfinio/abi';
-import { Dialog, DialogContent, DialogTrigger } from 'betfinio_app/dialog';
+import { BetValue } from 'betfinio_app/BetValue';
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from 'betfinio_app/drawer';
 import cx from 'clsx';
 import { motion } from 'framer-motion';
 import { ChartBarIcon } from 'lucide-react';
@@ -11,28 +11,29 @@ const CoinInfo: FC<{ bets: number; volume: bigint; staking: bigint; diff: number
 
 	return (
 		<div className={'lg:hidden'}>
-			<Dialog>
-				<DialogTrigger asChild>
+			<Drawer>
+				<DrawerTrigger asChild>
 					<motion.div className={'flex flex-col items-center justify-center cursor-pointer text-yellow-400 hover:text-yellow-400 lg:text-white duration-300'}>
 						<ChartBarIcon className={'text-yellow-400 w-6'} />
 						<span className={'hidden sm:inline text-xs'}>{t('stats')}</span>
 					</motion.div>
-				</DialogTrigger>
-				<DialogContent>
-					<SwitchModal bets={bets} volume={volume} staking={staking} diff={diff} />
-				</DialogContent>
-			</Dialog>
+				</DrawerTrigger>
+				<DrawerContent aria-describedby={undefined} className={'focus:ring-0'}>
+					<DrawerTitle className={'hidden'} />
+					<StatModal bets={bets} volume={volume} staking={staking} diff={diff} />
+				</DrawerContent>
+			</Drawer>
 		</div>
 	);
 };
 
 export default CoinInfo;
 
-const SwitchModal: FC<{ bets: number; volume: bigint; staking: bigint; diff: number }> = ({ bets, volume, staking, diff }) => {
+const StatModal: FC<{ bets: number; volume: bigint; staking: bigint; diff: number }> = ({ bets, volume, staking, diff }) => {
 	const { t } = useTranslation('predict');
 
 	return (
-		<motion.div className={'rounded-lg border border-gray-800 bg-primary p-5 w-[300px] flex flex-col gap-5'}>
+		<div className={'p-4 w-full lg:w-[300px] flex flex-col gap-4 text-white'}>
 			<div className={'flex justify-between'}>
 				<span className={'text-sm'}>{t('tile.24change')}</span>
 				<span
@@ -54,12 +55,16 @@ const SwitchModal: FC<{ bets: number; volume: bigint; staking: bigint; diff: num
 
 			<div className={'flex justify-between'}>
 				<span className={'text-sm'}>{t('tile.volume')}</span>
-				<span className={'font-semibold'}>{valueToNumber(volume)} BET</span>
+				<span className={'font-semibold'}>
+					<BetValue value={volume} withIcon />
+				</span>
 			</div>
 			<div className={'flex justify-between'}>
 				<span className={'text-sm'}>{t('tile.staking')}</span>
-				<span className={'font-semibold'}>{valueToNumber(staking)} BET</span>
+				<span className={'font-semibold'}>
+					<BetValue value={staking} withIcon />
+				</span>
 			</div>
-		</motion.div>
+		</div>
 	);
 };

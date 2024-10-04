@@ -28,7 +28,7 @@ const PairSwitcher: FC<Game> = (game) => {
 					</div>
 				</motion.div>
 			</DialogTrigger>
-			<DialogContent className={'w-fit predict'}>
+			<DialogContent className={'w-fit predict'} aria-describedby={undefined}>
 				<SwitchModal selected={game} />
 			</DialogContent>
 		</Dialog>
@@ -40,7 +40,7 @@ export default PairSwitcher;
 const SwitchModal: FC<{ selected: Game }> = ({ selected }) => {
 	const pairs = Object.keys(games).map((key) => games[key]);
 	return (
-		<motion.div layoutId={'switcher'} className={'rounded-lg border border-gray-800 bg-primary p-2 min-w-[300px] mx-auto text-white'}>
+		<motion.div layoutId={'switcher'} className={'bg-primary p-2 min-w-[300px] text-white'}>
 			{pairs.map((pair, index) => (
 				<DialogClose key={index} className={cx('w-full ', pair.name === selected.name && 'border border-gray-800 bg-primaryLighter rounded-lg')}>
 					<Link to={`/predict/${pair.name}`} key={index} className={cx('w-full flex flex-row items-center gap-2 p-4 py-2')}>

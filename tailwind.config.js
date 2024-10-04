@@ -13,7 +13,9 @@ module.exports = {
 			},
 		},
 		extend: {
-			colors: {},
+			colors: {
+				card: 'hsl(var(--card))',
+			},
 		},
 	},
 	plugins: [require('tailwindcss-animate')],
