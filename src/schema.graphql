@@ -1,0 +1,29 @@
+query Rounds($address: Bytes) {
+    rounds(where: {address: $address}, orderBy: round, orderDirection: desc) {
+        round
+        startPrice
+    }
+}
+
+
+query BlockByTimestamp($timestamp: BigInt) {
+    blocks(where: {timestamp_lte: $timestamp}, orderBy: timestamp, orderDirection: desc, first: 1) {
+        number
+    }
+}
+
+query GetPrice($timestamp: BigInt, $feed: Bytes) {
+    answers(where: {blockTimestamp_lte: $timestamp, feed: $feed}, orderBy: blockTimestamp, orderDirection: desc, first: 1) {
+        current
+        roundId
+        blockTimestamp
+    }
+}
+
+query PlayerBets($player: Bytes, $game: Bytes) {
+    predictBets(where: {player: $player, predictGame: $game,}, orderDirection: desc, orderBy: blockTimestamp, first: 500) {
+        round
+        blockTimestamp
+        bet
+    }
+}

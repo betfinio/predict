@@ -1,4 +1,4 @@
-# Template for betfin.io applications
+# predict for betfin.io applications
 
 ## Setup
 

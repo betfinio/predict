@@ -12,11 +12,23 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as PredictIndexImport } from './routes/predict/index'
+import { Route as PredictPairImport } from './routes/predict/$pair'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PredictIndexRoute = PredictIndexImport.update({
+  path: '/predict/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PredictPairRoute = PredictPairImport.update({
+  path: '/predict/$pair',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -31,6 +43,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/predict/$pair': {
+      id: '/predict/$pair'
+      path: '/predict/$pair'
+      fullPath: '/predict/$pair'
+      preLoaderRoute: typeof PredictPairImport
+      parentRoute: typeof rootRoute
+    }
+    '/predict/': {
+      id: '/predict/'
+      path: '/predict'
+      fullPath: '/predict'
+      preLoaderRoute: typeof PredictIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -38,32 +64,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/predict/$pair': typeof PredictPairRoute
+  '/predict': typeof PredictIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/predict/$pair': typeof PredictPairRoute
+  '/predict': typeof PredictIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/predict/$pair': typeof PredictPairRoute
+  '/predict/': typeof PredictIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/predict/$pair' | '/predict'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/predict/$pair' | '/predict'
+  id: '__root__' | '/' | '/predict/$pair' | '/predict/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PredictPairRoute: typeof PredictPairRoute
+  PredictIndexRoute: typeof PredictIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PredictPairRoute: PredictPairRoute,
+  PredictIndexRoute: PredictIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -78,11 +114,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/predict/$pair",
+        "/predict/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/predict/$pair": {
+      "filePath": "predict/$pair.tsx"
+    },
+    "/predict/": {
+      "filePath": "predict/index.tsx"
     }
   }
 }

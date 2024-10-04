@@ -8,19 +8,19 @@ import czJSON from './translations/cz.json';
 import enJSON from './translations/en.json';
 import ruJSON from './translations/ru.json';
 
-export const defaultNS = 'template';
+export const defaultNS = 'predict';
 
 export const resources = {
 	en: {
-		template: enJSON,
+		predict: enJSON,
 		shared: sharedLang.en,
 	},
 	cz: {
-		template: czJSON,
+		predict: czJSON,
 		shared: sharedLang.cz,
 	},
 	ru: {
-		template: ruJSON,
+		predict: ruJSON,
 		shared: sharedLang.ru,
 	},
 } as const;
