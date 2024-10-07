@@ -16,7 +16,7 @@ export default defineConfig({
 		assetPrefix: 'http://localhost:4004',
 	},
 	html: {
-		title: 'BetFin predict',
+		title: 'Betfin Predict',
 		favicon: './src/assets/favicon.svg',
 	},
 	output: {
