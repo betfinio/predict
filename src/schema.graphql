@@ -27,3 +27,11 @@ query PlayerBets($player: Bytes, $game: Bytes) {
         bet
     }
 }
+
+query PlayerBetsByRound($player: Bytes, $game: Bytes, $round: BigInt) {
+    predictBets(where: {player: $player, predictGame: $game, round: $round}, orderDirection: desc, orderBy: blockTimestamp, first: 500) {
+        round
+        blockTimestamp
+        bet
+    }
+}

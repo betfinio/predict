@@ -1,6 +1,16 @@
-import { GetPriceDocument, type GetPriceQuery, PlayerBetsDocument, type PlayerBetsQuery, RoundsDocument, type RoundsQuery, execute } from '@/.graphclient';
+import {
+	GetPriceDocument,
+	type GetPriceQuery,
+	PlayerBetsByRoundDocument,
+	type PlayerBetsByRoundQuery,
+	PlayerBetsDocument,
+	type PlayerBetsQuery,
+	RoundsDocument,
+	type RoundsQuery,
+	execute,
+} from '@/.graphclient';
 import logger from '@/src/config/logger.ts';
-import { type Result, type RoundWithStartPrice, defaultResult } from '@/src/lib/types.ts';
+import { type PredictBet, type Result, type RoundWithStartPrice, defaultResult } from '@/src/lib/types.ts';
 import type { ExecutionResult } from 'graphql/execution';
 import type { Address } from 'viem';
 
@@ -24,6 +34,23 @@ export const getPlayerRounds = async (game: Address, player: Address): Promise<n
 	if (data) {
 		logger.success('fetching round starts by game address and player', data.predictBets?.length);
 		return [...new Set(data.predictBets.map((bet) => Number(bet.round)))];
+	}
+	return [];
+};
+
+export const getPlayerBetsByRound = async (game: Address, player: Address, round: number): Promise<PredictBet[]> => {
+	logger.start('fetching player bets by round', round);
+	const { data }: ExecutionResult<PlayerBetsByRoundQuery> = await execute(PlayerBetsByRoundDocument, {
+		player,
+		game: game,
+		round: round,
+	});
+	if (data) {
+		logger.success('fetching player bets by round', data.predictBets?.length);
+		const bets = data.predictBets;
+		console.log(bets);
+
+		return [] as PredictBet[];
 	}
 	return [];
 };

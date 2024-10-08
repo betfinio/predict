@@ -1,5 +1,5 @@
 import RoundModal from '@/src/components/RoundModal.tsx';
-import { useCurrentRound, usePlayerRounds, useRounds } from '@/src/lib/query';
+import { useCurrentRound, usePlayerBets, usePlayerRounds, useRounds } from '@/src/lib/query';
 import type { Game, Round, RoundStatus } from '@/src/lib/types';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -9,7 +9,7 @@ import { Dialog } from 'betfinio_app/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'betfinio_app/tabs';
 import cx from 'clsx';
 import { motion } from 'framer-motion';
-import { ArrowDownIcon, ArrowUpIcon, Search } from 'lucide-react';
+import { ArrowDownIcon, ArrowUpIcon, LoaderIcon, Search } from 'lucide-react';
 import millify from 'millify';
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
@@ -161,7 +161,7 @@ const MyRounds: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => 
 	const resultColumn = columnHelper.display({
 		header: 'My win',
 		id: 'player win',
-		cell: (cell) => <PlayerWin round={cell.row.original.round} />,
+		cell: (cell) => <PlayerWin round={cell.row.original.round} game={game} />,
 	});
 	return <RoundsTableContent game={game} columns={[...columns.slice(0, 3), resultColumn, columns[4]]} rounds={rounds} isLoading={isLoading} />;
 };
@@ -185,8 +185,12 @@ const progressStyle: CircularProgressbarStyles = {
 	},
 };
 
-const PlayerWin: FC<{ round: number }> = ({ round }) => {
-	return <BetValue value={0n} />;
+const PlayerWin: FC<{ round: number; game: Game }> = ({ round, game }) => {
+	const { address = ZeroAddress } = useAccount();
+	const { data: bets = [], isLoading } = usePlayerBets(address, game.address, round);
+	const win = bets.reduce((acc, bet) => acc + BigInt(bet.result), 0n);
+	if (isLoading) return <LoaderIcon className={'animate-spin w-4 h-4'} />;
+	return <BetValue value={win} withIcon />;
 };
 
 const RoundsTableContent: FC<{ game: Game; columns: unknown[]; rounds: Round[]; isLoading: boolean }> = ({ game, columns, rounds, isLoading }) => {
