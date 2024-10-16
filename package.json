@@ -26,6 +26,7 @@
 		"@tanstack/react-table": "^8.20.5",
 		"class-variance-authority": "^0.7.0",
 		"consola": "^3.2.3",
+		"dotenv-cli": "^7.4.2",
 		"framer-motion": "^11.11.0",
 		"graphql": "^16.9.0",
 		"i18next": "^23.15.1",
