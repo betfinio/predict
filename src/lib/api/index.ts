@@ -2,10 +2,10 @@ import logger from '@/src/config/logger';
 import { BETS_MEMORY_ADDRESS, PARTNER_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import { games } from '@/src/lib';
 import { fetchPrice, getPlayerRounds, getRounds } from '@/src/lib/gql';
+import { getBlockByTimestamp } from '@/src/lib/gql';
 import { BetInterfaceContract, BetsMemoryContract, DataFeedContract, GameContract, PartnerContract, PredictBetContract, defaultMulticall } from '@betfinio/abi';
 import { type WriteContractReturnType, multicall, readContract, writeContract } from '@wagmi/core';
 import type { Options } from 'betfinio_app/lib/types';
-import { getBlockByTimestamp } from 'betfinio_app/lib/utils';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round, RoundPool, RoundWithStartPrice } from '../types';
 
@@ -266,8 +266,8 @@ export const calculateRound = async ({ round, game }: CalculateRoundParams, opti
 	const { config } = options;
 	const start = round * game.interval;
 	const end = (round + game.duration) * game.interval;
-	const startBlock = await getBlockByTimestamp(start, options.supabase);
-	const endBlock = await getBlockByTimestamp(end, options.supabase);
+	const startBlock = await getBlockByTimestamp(start);
+	const endBlock = await getBlockByTimestamp(end);
 	const priceStart = (await readContract(config, {
 		abi: DataFeedContract.abi,
 		address: game.dataFeed,

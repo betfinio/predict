@@ -1,4 +1,6 @@
 import {
+	BlockByTimestampDocument,
+	type BlockByTimestampQuery,
 	GetPriceDocument,
 	type GetPriceQuery,
 	PlayerBetsByRoundDocument,
@@ -77,4 +79,14 @@ const mapDataToRounds = (data: RoundsQuery): RoundWithStartPrice[] => {
 			},
 		};
 	});
+};
+
+export const getBlockByTimestamp = async (timestamp: number): Promise<bigint> => {
+	logger.start('Fetching block by timestamp');
+	const data: ExecutionResult<BlockByTimestampQuery> = await execute(BlockByTimestampDocument, { timestamp });
+	logger.success('Fetching block by timestamp', data.data?.blocks);
+	if (!data.data || data.data.blocks.length === 0) {
+		return 0n;
+	}
+	return BigInt(data.data.blocks[0].number as bigint);
 };
