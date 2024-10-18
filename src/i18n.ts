@@ -15,7 +15,7 @@ export const resources = {
 		predict: enJSON,
 		shared: sharedLang.en,
 	},
-	cz: {
+	cs: {
 		predict: czJSON,
 		shared: sharedLang.cz,
 	},
@@ -32,7 +32,11 @@ instance
 	.use(ICU)
 	.init({
 		resources: resources,
-		lng: 'en', // default language
+		detection: {
+			order: ['localStorage', 'navigator'],
+			convertDetectedLanguage: (lng) => lng.split('-')[0],
+		},
+		supportedLngs: ['en', 'ru', 'cs'],
 		fallbackLng: 'en',
 		defaultNS,
 		interpolation: { escapeValue: false },
