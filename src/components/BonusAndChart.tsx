@@ -9,10 +9,10 @@ const BonusAndChart: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict');
 	return (
 		<div className={'min-h-[300px]'}>
-			<Tabs defaultValue={'bonus'}>
+			<Tabs defaultValue={'chart'}>
 				<TabsList>
-					<TabsTrigger value={'bonus'}>{t('tabs.bonusChart')}</TabsTrigger>
 					<TabsTrigger value={'chart'}>{t('tabs.priceGraph')}</TabsTrigger>
+					<TabsTrigger value={'bonus'}>{t('tabs.bonusChart')}</TabsTrigger>
 				</TabsList>
 				<TabsContent value={'bonus'}>
 					<BonusInfo game={game} />
