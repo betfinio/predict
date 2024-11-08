@@ -287,3 +287,7 @@ export const calculateRound = async ({ round, game }: CalculateRoundParams, opti
 		args: [round, priceStart[0], priceEnd[0]],
 	});
 };
+
+export const animateNewBet = (side: 'long' | 'short', strength: number, queryClient: QueryClient, game: Game) => {
+	queryClient.setQueryData(['predict', game.address, 'bets', 'newBet'], { side, strength });
+};
