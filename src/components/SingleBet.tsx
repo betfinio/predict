@@ -3,10 +3,11 @@ import { ETHSCAN } from '@/src/global.ts';
 import { games } from '@/src/lib';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, type PredictBet, defaultResult } from '@/src/lib/types.ts';
-import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { ZeroAddress, truncateEthAddress, valueToNumber } from '@betfinio/abi';
 import { Medal, Pig } from '@betfinio/ui';
 import { Bank, Bet } from '@betfinio/ui/dist/icons';
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from 'betfinio_app/dialog';
+import { useCustomUsername, useUsername } from 'betfinio_app/lib/query/username';
 import cx from 'clsx';
 import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, SquareArrowOutUpRight, X } from 'lucide-react';
@@ -16,9 +17,21 @@ import { type FC, useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 
 const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 	const amount = valueToNumber(bet.amount);
+
+	const { data: username } = useUsername(bet.player);
+	const { address = ZeroAddress } = useAccount();
+	const { data: customUsername } = useCustomUsername(address, bet.player);
+
+	const formatPlayer = (player: string) => {
+		if (player.length > 12) {
+			return `${player.slice(0, 12)}...`;
+		}
+		return player;
+	};
 
 	return (
 		<Dialog>
@@ -36,7 +49,7 @@ const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 						{bet.side ? <ArrowUpIcon className={'w-4'} /> : <ArrowDownIcon className={'w-4'} />}
 					</div>
 					<div className={cx('flex flex-col w-2/5 text-white', bet.loading && '!text-primary bg-primary rounded-lg')}>
-						<span className={'text-sm'}>{truncateEthAddress(bet.player)}</span>
+						<span className={'text-sm'}>{formatPlayer(customUsername || username || truncateEthAddress(bet.player))}</span>
 						<span className={cx('text-xs text-gray-500', bet.loading && 'text-primary bg-primary rounded-lg')}>#{Number(bet.round).toString().slice(2)}</span>
 					</div>
 					<div
