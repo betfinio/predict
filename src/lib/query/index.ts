@@ -88,18 +88,24 @@ export const usePlayerBets = (address: Address, game: Address, round: number) =>
 export const useLastBets = (count: number) => {
 	const config = useConfig();
 
-	const queryClient = useQueryClient();
-	useWatchContractEvent({
-		...BetsMemoryContract,
-		config: config,
-		eventName: 'NewBet',
-		onLogs: () => queryClient.invalidateQueries({ queryKey: ['predict', 'bets'] }),
-		poll: false,
-	});
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', 'last', count],
 		queryFn: () => fetchLastBets({ config }, { count }),
 	});
+};
+
+export const useObserveBet = (game: Game) => {
+	const queryClient = useQueryClient();
+	const resetObservedBet = () => {
+		queryClient.setQueryData(['predict', game.address, 'bets', 'newBet'], { side: null, strength: 0 });
+	};
+
+	const query = useQuery<{ side: 'long' | 'short' | null; strength: number }>({
+		queryKey: ['predict', game.address, 'bets', 'newBet'],
+		initialData: { side: null, strength: 0 },
+	});
+
+	return { query, resetObservedBet };
 };
 
 export const useRoundBets = (game: Address, round: number) => {
@@ -112,16 +118,7 @@ export const useRoundBets = (game: Address, round: number) => {
 
 export const usePool = (game: Address, round: number) => {
 	const config = useConfig();
-	const client = useQueryClient();
-	useWatchContractEvent({
-		abi: BetsMemoryContract.abi,
-		address: game,
-		config: config,
-		eventName: 'NewBet',
-		onLogs: async () => {
-			await client.invalidateQueries({ queryKey: ['predict', 'pool', game] });
-		},
-	});
+
 	return useQuery({
 		queryKey: ['predict', 'pool', game, round],
 		queryFn: () => fetchPool({ config }, { game, round }),
@@ -129,19 +126,9 @@ export const usePool = (game: Address, round: number) => {
 };
 export const useRounds = (game: Game) => {
 	const config = useConfig();
-	const client = useQueryClient();
 	const { address = ZeroAddress } = useAccount({ config });
-	useWatchContractEvent({
-		abi: GameContract.abi,
-		address: game.address,
-		config: config,
-		eventName: 'RoundCreated',
-		onLogs: async () => {
-			await client.invalidateQueries({ queryKey: ['predict', 'rounds', game] });
-		},
-	});
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game],
+		queryKey: ['predict', 'rounds', game, address],
 		queryFn: () => fetchRounds({ config }, { game, player: address }),
 	});
 };
@@ -185,7 +172,6 @@ export const usePlaceBet = () => {
 			});
 			await waitForTransactionReceipt(config.getClient(), { hash: data });
 			update({ variant: 'default', description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 5000 });
-			await client.invalidateQueries({ queryKey: ['predict', 'bets'] });
 		},
 		onSettled: () => logger.info('placeBet settled'),
 	});
