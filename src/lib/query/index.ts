@@ -128,7 +128,7 @@ export const useRounds = (game: Game) => {
 	const config = useConfig();
 	const { address = ZeroAddress } = useAccount({ config });
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game],
+		queryKey: ['predict', 'rounds', game, address],
 		queryFn: () => fetchRounds({ config }, { game, player: address }),
 	});
 };
