@@ -18,10 +18,17 @@ const LastBets: FC<{ game: Game }> = ({ game }) => {
 			) : (
 				<>
 					<h2 className={'font-medium uppercase '}>{t('latestBets')}</h2>
-					<AnimatePresence initial={false}>
+					<AnimatePresence>
 						<div className={cx('w-full grid grid-cols-1 grid-rows-4 gap-1', { 'animate-pulse blur-sm': isLoading })}>
 							{bets.map((e, i) => (
-								<motion.div key={i} initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} transition={{ duration: 0.5 }}>
+								<motion.div
+									key={e.address}
+									layout
+									initial={{ scale: 0 }}
+									animate={{ scale: 1 }}
+									transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+									exit={{ opacity: 0, y: 10 }}
+								>
 									<SingleBet {...e} loading={false} />
 								</motion.div>
 							))}

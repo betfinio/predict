@@ -16,15 +16,14 @@ import {
 } from '@/src/lib/api';
 import { fetchPrice } from '@/src/lib/gql';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '@/src/lib/types.ts';
-import { BetsMemoryContract, GameContract, ZeroAddress } from '@betfinio/abi';
+import { ZeroAddress } from '@betfinio/abi';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { WriteContractReturnType } from '@wagmi/core';
 import { getTransactionLink } from 'betfinio_app/helpers';
-import { useSupabase } from 'betfinio_app/supabase';
 import { toast } from 'betfinio_app/use-toast';
 import type { Address, WriteContractErrorType } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
-import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 
 export const useCurrentRound = (interval: number) => {
 	return useQuery<number>({
@@ -37,10 +36,9 @@ export const useCurrentRound = (interval: number) => {
 };
 
 export const useLatestPrice = (pair: string) => {
-	const config = useConfig();
 	return useQuery<Result>({
 		queryKey: ['predict', 'price', 'latest', pair],
-		queryFn: () => fetchLatestPrice({ config }, { pair }),
+		queryFn: () => fetchLatestPrice({ pair }),
 	});
 };
 
@@ -52,10 +50,9 @@ export const usePrice = (feed: Address, time: number) => {
 };
 
 export const useYesterdayPrice = (pair: string) => {
-	const config = useConfig();
 	return useQuery<Result>({
 		queryKey: ['predict', 'price', 'yesterday', pair],
-		queryFn: () => fetchYesterdayPrice({ config }, { pair }),
+		queryFn: () => fetchYesterdayPrice({ pair }),
 	});
 };
 
@@ -63,17 +60,16 @@ export const useBetsCount = () => {
 	const config = useConfig();
 	return useQuery<number>({
 		queryKey: ['predict', 'bets', 'count'],
-		queryFn: () => fetchBetsCount({ config }),
+		queryFn: () => fetchBetsCount(config),
 	});
 };
 
 export const useBetsVolume = () => {
 	const config = useConfig();
-	const { client: supabase } = useSupabase();
 
 	return useQuery<bigint>({
 		queryKey: ['predict', 'bets', 'volume'],
-		queryFn: () => fetchBetsVolume({ config, supabase }),
+		queryFn: () => fetchBetsVolume(config),
 	});
 };
 
@@ -81,96 +77,82 @@ export const usePlayerBets = (address: Address, game: Address, round: number) =>
 	const config = useConfig();
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', address, game, round],
-		queryFn: () => fetchPlayerBets({ config }, { address, game, round }),
+		queryFn: () => fetchPlayerBets(config, { address, game, round }),
 	});
 };
 
 export const useLastBets = (count: number) => {
 	const config = useConfig();
 
-	const queryClient = useQueryClient();
-	useWatchContractEvent({
-		...BetsMemoryContract,
-		config: config,
-		eventName: 'NewBet',
-		onLogs: () => queryClient.invalidateQueries({ queryKey: ['predict', 'bets'] }),
-		poll: false,
-	});
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', 'last', count],
-		queryFn: () => fetchLastBets({ config }, { count }),
+		queryFn: () => fetchLastBets(config, { count }),
 	});
+};
+
+export const useObserveBet = (game: Game) => {
+	const queryClient = useQueryClient();
+	const resetObservedBet = () => {
+		queryClient.setQueryData(['predict', game.address, 'bets', 'newBet'], { side: null, strength: 0 });
+	};
+
+	const query = useQuery<{ side: 'long' | 'short' | null; strength: number }>({
+		queryKey: ['predict', game.address, 'bets', 'newBet'],
+		initialData: { side: null, strength: 0 },
+	});
+
+	return { query, resetObservedBet };
 };
 
 export const useRoundBets = (game: Address, round: number) => {
 	const config = useConfig();
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', 'round', game, round],
-		queryFn: () => fetchRoundBets({ config }, { game, round }),
+		queryFn: () => fetchRoundBets(config, { game, round }),
 	});
 };
 
 export const usePool = (game: Address, round: number) => {
 	const config = useConfig();
-	const client = useQueryClient();
-	useWatchContractEvent({
-		abi: BetsMemoryContract.abi,
-		address: game,
-		config: config,
-		eventName: 'NewBet',
-		onLogs: async () => {
-			await client.invalidateQueries({ queryKey: ['predict', 'pool', game] });
-		},
-	});
+
 	return useQuery({
 		queryKey: ['predict', 'pool', game, round],
-		queryFn: () => fetchPool({ config }, { game, round }),
+		queryFn: () => fetchPool(config, { game, round }),
 	});
 };
 export const useRounds = (game: Game) => {
 	const config = useConfig();
-	const client = useQueryClient();
-	const { address = ZeroAddress } = useAccount({ config });
-	useWatchContractEvent({
-		abi: GameContract.abi,
-		address: game.address,
-		config: config,
-		eventName: 'RoundCreated',
-		onLogs: async () => {
-			await client.invalidateQueries({ queryKey: ['predict', 'rounds', game] });
-		},
-	});
+	const { address = ZeroAddress } = useAccount();
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game],
-		queryFn: () => fetchRounds({ config }, { game, player: address }),
+		queryKey: ['predict', 'rounds', game.address, address],
+		queryFn: () => fetchRounds(config, { game, player: address }),
 	});
 };
 export const usePlayerRounds = (game: Game, address: Address) => {
 	const config = useConfig();
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game, address],
-		queryFn: () => fetchPlayerRounds(game, address, { config }),
+		queryKey: ['predict', 'rounds', game.address, address],
+		queryFn: () => fetchPlayerRounds(game, address, config),
 	});
 };
 
 export const useRoundInfo = (game: Game, round: number) => {
 	const config = useConfig();
 
-	const { address = ZeroAddress } = useAccount({ config });
+	const { address = ZeroAddress } = useAccount();
 	return useQuery({
 		queryKey: ['predict', 'round', round],
-		queryFn: () => fetchRound({ config }, { game, round: { round, price: { start: 0n } }, player: address }),
+		queryFn: () => fetchRound(config, { game, round: { round, price: { start: 0n } }, player: address }),
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	});
 };
 
 export const usePlaceBet = () => {
-	const client = useQueryClient();
 	const config = useConfig();
 	return useMutation<WriteContractReturnType, WriteContractErrorType, PlaceBetParams>({
 		mutationKey: ['predict', 'bets', 'place'],
-		mutationFn: (params) => placeBet(params, { config }),
+		mutationFn: (params) => placeBet(params, config),
 		onError: (e) => {
 			console.log(e);
 		},
@@ -185,7 +167,6 @@ export const usePlaceBet = () => {
 			});
 			await waitForTransactionReceipt(config.getClient(), { hash: data });
 			update({ variant: 'default', description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 5000 });
-			await client.invalidateQueries({ queryKey: ['predict', 'bets'] });
 		},
 		onSettled: () => logger.info('placeBet settled'),
 	});
@@ -194,10 +175,9 @@ export const usePlaceBet = () => {
 export const useCalculate = () => {
 	const client = useQueryClient();
 	const config = useConfig();
-	const { client: supabase } = useSupabase();
 	return useMutation<WriteContractReturnType, WriteContractErrorType, CalculateRoundParams>({
 		mutationKey: ['predict', 'bets', 'calculate'],
-		mutationFn: (params) => calculateRound(params, { config, supabase }),
+		mutationFn: (params) => calculateRound(params, config),
 		onError: (e) => {
 			console.log(e);
 		},
