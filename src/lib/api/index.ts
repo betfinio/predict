@@ -3,37 +3,35 @@ import { BETS_MEMORY_ADDRESS, PARTNER_ADDRESS, PREDICT_ADDRESS } from '@/src/glo
 import { games } from '@/src/lib';
 import { fetchPrice, getPlayerRounds, getRounds } from '@/src/lib/gql';
 import { BetInterfaceContract, BetsMemoryContract, DataFeedContract, GameContract, PartnerContract, PredictBetContract, defaultMulticall } from '@betfinio/abi';
-import { type WriteContractReturnType, multicall, readContract, writeContract } from '@wagmi/core';
+import type { QueryClient } from '@tanstack/react-query';
+import { type Config, type WriteContractReturnType, multicall, readContract, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_app/lib/gql';
-import type { Options } from 'betfinio_app/lib/types';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round, RoundPool, RoundWithStartPrice } from '../types';
 
-export const fetchRounds = async (options: Options, params: { game: Game; player: Address }): Promise<Round[]> => {
-	const { config } = options;
+export const fetchRounds = async (config: Config, params: { game: Game; player: Address }): Promise<Round[]> => {
 	const { game, player } = params;
 	const { address: gameAddress } = game;
 
 	if (!config) return [];
 	const rounds: RoundWithStartPrice[] = await getRounds(gameAddress);
 
-	return await Promise.all(rounds.map((round) => fetchRound(options, { game, round, player })));
+	return await Promise.all(rounds.map((round) => fetchRound(config, { game, round, player })));
 };
 
-export const fetchPlayerRounds = async (game: Game, player: Address, options: Options): Promise<Round[]> => {
+export const fetchPlayerRounds = async (game: Game, player: Address, config: Config): Promise<Round[]> => {
 	const rounds: number[] = await getPlayerRounds(game.address, player);
-	return await Promise.all(rounds.map((round) => fetchRound(options, { game, round: { round: round, price: { start: 0n } }, player })));
+	return await Promise.all(rounds.map((round) => fetchRound(config, { game, round: { round: round, price: { start: 0n } }, player })));
 };
 
-export async function fetchRound(options: Options, params: { game: Game; round: RoundWithStartPrice; player: Address }): Promise<Round> {
-	if (!options.config) throw Error('Config is required!');
+export async function fetchRound(config: Config, params: { game: Game; round: RoundWithStartPrice; player: Address }): Promise<Round> {
 	const { game, round, player } = params;
 	const feed = game.dataFeed;
 	const ended = (round.round + game.duration) * game.interval;
-	const pool = await fetchPool(options, { game: game.address, round: round.round });
+	const pool = await fetchPool(config, { game: game.address, round: round.round });
 	const endPrice = await fetchPrice(feed, ended);
 	const startPrice = await fetchPrice(feed, round.round * game.interval);
-	const data = await multicall(options.config, {
+	const data = await multicall(config, {
 		multicallAddress: defaultMulticall,
 		contracts: [
 			{
@@ -75,11 +73,9 @@ export async function fetchRound(options: Options, params: { game: Game; round: 
 	} as Round;
 }
 
-export async function fetchPool(options: Options, params: { game: Address; round: number }): Promise<RoundPool> {
-	if (!options.config) throw Error('Config is required!');
-
+export async function fetchPool(config: Config, params: { game: Address; round: number }): Promise<RoundPool> {
 	const { game, round } = params;
-	const betsData = await multicall(options.config, {
+	const betsData = await multicall(config, {
 		multicallAddress: defaultMulticall,
 		contracts: [
 			{
@@ -104,10 +100,8 @@ export async function fetchPool(options: Options, params: { game: Address; round
 	};
 }
 
-export async function fetchLastBets(options: Options, params: { count: number }): Promise<PredictBet[]> {
+export async function fetchLastBets(config: Config, params: { count: number }): Promise<PredictBet[]> {
 	logger.info('fetching last bets');
-	if (!options.config) throw Error('Config is required!');
-	const { config } = options;
 	const count = params.count;
 	try {
 		const bets = (await readContract(config, {
@@ -116,30 +110,27 @@ export async function fetchLastBets(options: Options, params: { count: number })
 			functionName: 'getBets',
 			args: [BigInt(count), 0n, PREDICT_ADDRESS],
 		})) as Address[];
-		return await Promise.all(bets.map((bet) => fetchPredictBet(options, { address: bet })));
+		return await Promise.all(bets.map((bet) => fetchPredictBet(config, { address: bet })));
 	} catch (e) {
 		console.log(e);
 		return [];
 	}
 }
 
-export const fetchPlayerBets = async (options: Options, params: { address: Address; game: Address; round: number }): Promise<PredictBet[]> => {
-	if (!options.config) throw Error('Config is required!');
+export const fetchPlayerBets = async (config: Config, params: { address: Address; game: Address; round: number }): Promise<PredictBet[]> => {
 	const { address, game, round } = params;
-	const { config } = options;
 	const data = (await readContract(config, {
 		abi: GameContract.abi,
 		address: game,
 		functionName: 'getPlayerBets',
 		args: [address, round],
 	})) as [number, Address[]];
-	return Promise.all(data[1].map((bet) => fetchPredictBet(options, { address: bet })));
+	return Promise.all(data[1].map((bet) => fetchPredictBet(config, { address: bet })));
 };
 
-export const fetchBetsVolume = async (options: Options): Promise<bigint> => {
-	if (!options.config) throw Error('Config is required!');
+export const fetchBetsVolume = async (config: Config): Promise<bigint> => {
 	logger.info('fetching bets volume', PREDICT_ADDRESS);
-	return (await readContract(options.config, {
+	return (await readContract(config, {
 		...BetsMemoryContract,
 		address: BETS_MEMORY_ADDRESS,
 		functionName: 'gamesVolume',
@@ -147,13 +138,12 @@ export const fetchBetsVolume = async (options: Options): Promise<bigint> => {
 	})) as bigint;
 };
 
-export const fetchBetsCount = async (options: Options): Promise<number> => {
-	if (!options.config) throw Error('Config is required!');
+export const fetchBetsCount = async (config: Config): Promise<number> => {
 	try {
 		const address = PREDICT_ADDRESS;
 		logger.info('fetching bets count', address);
 		return Number(
-			await readContract(options.config, {
+			await readContract(config, {
 				...BetsMemoryContract,
 				address: BETS_MEMORY_ADDRESS,
 				functionName: 'getGamesBetsCount',
@@ -166,13 +156,13 @@ export const fetchBetsCount = async (options: Options): Promise<number> => {
 	}
 };
 
-export const fetchLatestPrice = async (options: Options, params: { pair: string }): Promise<Result> => {
+export const fetchLatestPrice = async (params: { pair: string }): Promise<Result> => {
 	const pair = params.pair;
 	const address = games[pair].dataFeed;
 	logger.info('fetching latest price', pair, address);
 	return await fetchPrice(address, Math.floor(Date.now() / 1000));
 };
-export const fetchYesterdayPrice = async (options: Options, params: { pair: string }): Promise<Result> => {
+export const fetchYesterdayPrice = async (params: { pair: string }): Promise<Result> => {
 	if (!games) throw Error('Games are required!');
 	const pair = params.pair;
 	const address = games[pair].dataFeed;
@@ -180,12 +170,9 @@ export const fetchYesterdayPrice = async (options: Options, params: { pair: stri
 	return await fetchPrice(address, Math.floor(Date.now() / 1000) - 60 * 60 * 24);
 };
 
-export const fetchRoundBets = async (options: Options, params: { game: Address; round: number }) => {
+export const fetchRoundBets = async (config: Config, params: { game: Address; round: number }) => {
 	logger.info('fetching round bets');
-
-	if (!options.config) throw Error('Config is required!');
 	const { game, round } = params;
-	const { config } = options;
 	const data = (await readContract(config, {
 		abi: GameContract.abi,
 		address: game,
@@ -193,13 +180,12 @@ export const fetchRoundBets = async (options: Options, params: { game: Address; 
 		args: [round],
 	})) as [number, Address[]];
 
-	return Promise.all(data[1].map((bet) => fetchPredictBet(options, { address: bet })));
+	return Promise.all(data[1].map((bet) => fetchPredictBet(config, { address: bet })));
 };
 
-export async function fetchPredictBet(options: Options, params: { address: Address }): Promise<PredictBet> {
-	if (!options.config) throw Error('Config is required!');
+export async function fetchPredictBet(config: Config, params: { address: Address }): Promise<PredictBet> {
 	const { address } = params;
-	const output = await multicall(options.config, {
+	const output = await multicall(config, {
 		multicallAddress: defaultMulticall,
 		contracts: [
 			{
@@ -250,20 +236,16 @@ export async function fetchPredictBet(options: Options, params: { address: Addre
 	} as PredictBet;
 }
 
-export const placeBet = async ({ amount, side, game }: PlaceBetParams, options: Options): Promise<WriteContractReturnType> => {
-	if (!options.config) throw new Error('Config are required!');
+export const placeBet = async ({ amount, side, game }: PlaceBetParams, config: Config): Promise<WriteContractReturnType> => {
 	const data = encodeAbiParameters(parseAbiParameters('uint256 _amount, bool _side, address _game'), [amount, side, game]);
-	return await writeContract(options.config, {
+	return await writeContract(config, {
 		abi: PartnerContract.abi,
 		address: PARTNER_ADDRESS,
 		functionName: 'placeBet',
 		args: [PREDICT_ADDRESS, amount, data],
 	});
 };
-export const calculateRound = async ({ round, game }: CalculateRoundParams, options: Options): Promise<WriteContractReturnType> => {
-	if (!options.config) throw new Error('Config are required!');
-	if (!options.supabase) throw new Error('Supabase is required!');
-	const { config } = options;
+export const calculateRound = async ({ round, game }: CalculateRoundParams, config: Config): Promise<WriteContractReturnType> => {
 	const start = round * game.interval;
 	const end = (round + game.duration) * game.interval;
 	const startBlock = await getBlockByTimestamp(start);
@@ -286,4 +268,8 @@ export const calculateRound = async ({ round, game }: CalculateRoundParams, opti
 		functionName: 'calculateBets',
 		args: [round, priceStart[0], priceEnd[0]],
 	});
+};
+
+export const animateNewBet = (side: 'long' | 'short', strength: number, queryClient: QueryClient, game: Game) => {
+	queryClient.setQueryData(['predict', game.address, 'bets', 'newBet'], { side, strength });
 };

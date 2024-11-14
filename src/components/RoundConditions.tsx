@@ -1,4 +1,5 @@
 import 'react-circular-progressbar/dist/styles.css';
+import { EffectsLayer } from '@/src/components/EffectsLayer.tsx';
 import i18n from '@/src/i18n.ts';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, defaultResult } from '@/src/lib/types';
@@ -21,7 +22,9 @@ const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 			<h2 className={'font-medium uppercase'}>
 				{t('title')} #{round.toString().slice(2)}
 			</h2>
-			<div className={cx('w-full border border-gray-800 rounded-[10px] bg-primaryLight p-2 py-5', isFetching && 'animate-pulse blur-sm')}>
+			<div className={cx('w-full border border-gray-800 rounded-[10px] bg-primaryLight p-2 py-5 relative', isFetching && 'animate-pulse blur-sm')}>
+				<EffectsLayer game={game} />
+
 				<div className={'flex flex-col items-center relative justify-center gap-4 w-[285px] aspect-square mx-auto'}>
 					<Clock game={game} />
 					<div className={'text-center flex flex-col gap-1'}>

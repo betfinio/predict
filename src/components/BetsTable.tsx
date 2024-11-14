@@ -36,7 +36,10 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 				<a
 					href={`${ETHSCAN}/address/${props.getValue()}`}
 					target={'_blank'}
-					className={'text-blue-600 flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap'}
+					className={cx(
+						'text-blue-600 flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
+						props.getValue() === address && '!text-yellow-400',
+					)}
 					rel="noreferrer"
 				>
 					{truncateEthAddress(props.getValue())}
