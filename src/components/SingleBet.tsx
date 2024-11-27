@@ -250,19 +250,20 @@ const BetModal: FC<PredictBet> = (bet) => {
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
 							<Medal />
 							<span>
-								{t('winnings')} <span className={'text font-semibold text-base'}>{valueToNumber(bet.result)} BET</span>
+								{t('winnings')}
+								<BetValue value={bet.result} withIcon />
 							</span>
 						</div>
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
 							<Pig />
 							<span>
-								{t('bonus')} <span className={'font-semibold text-base'}>{valueToNumber(bet.bonus)} BET</span>
+								{t('bonus')} <BetValue value={bet.bonus} withIcon />
 							</span>
 						</div>
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
-							<span>
-								{t('total')}{' '}
-								<span className={'font-semibold rounded-lg bg-green-900 text-success p-1 px-2 text-base'}>{valueToNumber(bet.bonus + bet.result)} BET</span>
+							{t('total')}
+							<span className={'font-semibold rounded-lg bg-green-900  text-success-foreground p-1 px-2 text-base'}>
+								<BetValue value={bet.bonus + bet.result} withIcon />
 							</span>
 						</div>
 					</div>

@@ -49,7 +49,7 @@ const RoundModal: FC<{
 
 	return (
 		<DialogContent className={'predict text-foreground'} aria-describedby={undefined}>
-			<div className={'p-2 md:p-3 lg:p-4 relative lg:min-w-[800px] max-h-[90vh] overflow-y-auto lg:min-h-[650px] flex flex-col justify-between'}>
+			<div className={'p-2 md:p-3 lg:p-4 relative w-[98vw] lg:max-w-[800px] max-h-[90vh] overflow-y-auto lg:min-h-[650px] flex flex-col justify-between'}>
 				<DialogTitle className={'hidden'} />
 				<DialogClose asChild>
 					<X className={'absolute top-5 right-5 w-6 h-6  border-2 border-white rounded-full cursor-pointer  duration-300'} />
