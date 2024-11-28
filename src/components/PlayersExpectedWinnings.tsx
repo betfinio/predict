@@ -1,9 +1,9 @@
 import { useCurrentRound, useRoundBets } from '@/src/lib/query';
 import type { Game } from '@/src/lib/types.ts';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
-import { Bet } from '@betfinio/ui/dist/icons';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'betfinio_app/tooltip';
-import cx from 'clsx';
+import { Bet } from '@betfinio/components/icons';
+import { cn } from '@betfinio/components/lib';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import millify from 'millify';
 import { type FC, useMemo } from 'react';
@@ -80,15 +80,15 @@ const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 			<TooltipProvider delayDuration={0}>
 				<Tooltip>
 					<TooltipTrigger>
-						<div className={'bg-primary rounded-lg p-2 flex flex-col justify-center items-center '}>
-							<div className={'w-full flex flex-row justify-center gap-1 text-green-500 font-semibold'}>
+						<div className={'bg-background rounded-lg p-2 flex flex-col justify-center items-center '}>
+							<div className={'w-full flex flex-row justify-center gap-1 text-success font-semibold'}>
 								<ArrowUpIcon className={'h-3 w-3'} />
-								<div className={cx('flex flex-row gap-1 items-center', { 'animate-pulse blur-sm': isBetsFetched })}>
+								<div className={cn('flex flex-row gap-1 items-center', { 'animate-pulse blur-sm': isBetsFetched })}>
 									{millify(expected.long, { precision: 2 })}
 									<Bet className={'w-3 h-3'} color={'green'} />
 								</div>
 							</div>
-							<div className={'w-full flex flex-row items-center  gap-1 justify-center text-blue-500 opacity-70 text-xs'}>
+							<div className={'w-full flex flex-row items-center  gap-1 justify-center text-bonus opacity-70 text-xs'}>
 								+ {expected.longBonus.toFixed(2)} <Bet className={'w-[10px] h-[10px]'} />
 							</div>
 						</div>
@@ -96,16 +96,16 @@ const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 					<TooltipContent>{`${(expected.longBonus + expected.long).toFixed(2)} BET`}</TooltipContent>
 				</Tooltip>
 				<Tooltip>
-					<div className={'bg-primary rounded-lg p-2 flex flex-col justify-center items-center '}>
+					<div className={'bg-background rounded-lg p-2 flex flex-col justify-center items-center '}>
 						<TooltipTrigger>
-							<div className={'w-full flex flex-row justify-center gap-1 text-red-500 font-semibold'}>
+							<div className={'w-full flex flex-row justify-center gap-1 text-destructive font-semibold'}>
 								<ArrowDownIcon className={'h-3 w-3'} />
-								<div className={cx('flex flex-row gap-1 items-center', { 'animate-pulse blur-sm': isBetsFetched })}>
+								<div className={cn('flex flex-row gap-1 items-center', { 'animate-pulse blur-sm': isBetsFetched })}>
 									{millify(expected.short, { precision: 2 })}
 									<Bet className={'w-3 h-3'} color={'red'} />
 								</div>
 							</div>
-							<div className={'w-full flex flex-row items-center  gap-1 justify-center text-blue-500 opacity-70 text-xs'}>
+							<div className={'w-full flex flex-row items-center  gap-1 justify-center text-bonus opacity-70 text-xs'}>
 								+ {expected.shortBonus.toFixed(2)} <Bet className={'w-[10px] h-[10px]'} />
 							</div>
 						</TooltipTrigger>

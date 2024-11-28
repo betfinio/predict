@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-	background: #0f121d;
-}
-
 .BET_MODAL {
 	background-image: url("./assets/bet_modal_bg.svg");
 	background-repeat: no-repeat;

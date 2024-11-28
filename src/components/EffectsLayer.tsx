@@ -75,7 +75,7 @@ export const EffectsLayer: FC<{ game: Game }> = ({ game }) => {
 						style={{ left: particle.x, top: particle.y }}
 					>
 						<div style={{ color: particle.color }}>
-							<TrendingDown width={24} height={24} className="text-red-400 w-5 h-5" />
+							<TrendingDown width={24} height={24} className="text-destructive w-5 h-5" />
 						</div>
 					</motion.div>
 				))}

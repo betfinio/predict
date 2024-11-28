@@ -3,12 +3,11 @@ import { ETHSCAN } from '@/src/global.ts';
 import { usePool, useRoundBets } from '@/src/lib/query';
 import type { Game, PredictBet } from '@/src/lib/types.ts';
 import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { cn } from '@betfinio/components/lib';
+import { BetValue, DataTable } from '@betfinio/components/shared';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { Predict } from '@betfinio/ui/dist/icons';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { BetValue } from 'betfinio_app/BetValue';
-import { DataTable } from 'betfinio_app/DataTable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'betfinio_app/tabs';
-import cx from 'clsx';
 import { ExternalLink } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +24,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 		columnHelper.accessor('address', {
 			header: '',
 			cell: (props) => (
-				<a href={`${ETHSCAN}/address/${props.getValue()}#internaltx`} target={'_blank'} className={'text-blue-700'} rel="noreferrer">
+				<a href={`${ETHSCAN}/address/${props.getValue()}#internaltx`} target={'_blank'} className={'text-bonus'} rel="noreferrer">
 					{<Predict className={'w-4 h-4 md:w-6 md:h-6'} />}
 				</a>
 			),
@@ -36,9 +35,9 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 				<a
 					href={`${ETHSCAN}/address/${props.getValue()}`}
 					target={'_blank'}
-					className={cx(
-						'text-blue-600 flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
-						props.getValue() === address && '!text-yellow-400',
+					className={cn(
+						'text-bonus flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
+						props.getValue() === address && '!text-secondary-foreground',
 					)}
 					rel="noreferrer"
 				>
@@ -50,7 +49,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 		columnHelper.accessor('side', {
 			header: t('table.side'),
 			cell: (props) => (
-				<span className={cx('font-semibold text-xs md:text-base', props.getValue() ? 'text-green-500' : 'text-red-500')}>
+				<span className={cn('font-semibold text-xs md:text-base', props.getValue() ? 'text-success' : 'text-destructive')}>
 					{props.getValue() ? t('table.long') : t('table.short')}
 				</span>
 			),
@@ -68,7 +67,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 			cell: (props) => {
 				const res = valueToNumber(props.getValue());
 				return (
-					<span className={cx('font-medium', res === 0 ? 'text-gray-500' : 'text-green-500')}>
+					<span className={cn('font-medium', res === 0 ? 'text-muted-foreground' : 'text-success')}>
 						<BetValue precision={2} withIcon={true} value={res} />
 					</span>
 				);
@@ -80,7 +79,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 				className: 'hidden md:table-cell',
 			},
 			header: t('table.bonus'),
-			cell: (props) => <BetValue value={props.getValue()} withIcon className={'text-blue-500'} iconClassName={'!text-blue-500'} />,
+			cell: (props) => <BetValue value={props.getValue()} withIcon className={'text-bonus'} iconClassName={'text-bonus'} />,
 		}),
 		columnHelper.display({
 			id: 'total',
@@ -99,12 +98,12 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 			header: t('table.status'),
 			cell: (props) => (
 				<span
-					className={cx({
-						'text-gray-500': props.getValue() === 0n,
-						'text-yellow-500': props.getValue() === 1n,
-						'text-green-500': props.getValue() === 2n,
-						'text-red-500': props.getValue() === 3n,
-						'text-sky-500': props.getValue() === 5n,
+					className={cn({
+						'text-muted-foreground': props.getValue() === 0n,
+						'text-secondary-foreground': props.getValue() === 1n,
+						'text-success': props.getValue() === 2n,
+						'text-destructive': props.getValue() === 3n,
+						'text-bonus': props.getValue() === 5n,
 					})}
 				>
 					{t(`table.statuses.${props.row.original.status.toString() as '0' | '1' | '2' | '3' | '4'}`)}

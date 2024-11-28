@@ -17,10 +17,10 @@ import {
 import { fetchPrice } from '@/src/lib/gql';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '@/src/lib/types.ts';
 import { ZeroAddress } from '@betfinio/abi';
+import { toast } from '@betfinio/components/hooks';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { WriteContractReturnType } from '@wagmi/core';
 import { getTransactionLink } from 'betfinio_app/helpers';
-import { toast } from 'betfinio_app/use-toast';
 import type { Address, WriteContractErrorType } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
 import { useAccount, useConfig } from 'wagmi';
@@ -159,14 +159,14 @@ export const usePlaceBet = () => {
 		onMutate: () => logger.info('placeBet'),
 		onSuccess: async (data) => {
 			logger.info(data);
-			const { update } = toast({
+			const { update, id } = toast({
 				title: 'Placing a bet',
 				description: 'Transaction is pending',
 				variant: 'loading',
 				duration: 10000,
 			});
 			await waitForTransactionReceipt(config.getClient(), { hash: data });
-			update({ variant: 'default', description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 5000 });
+			update({ variant: 'default', id, description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 5000 });
 		},
 		onSettled: () => logger.info('placeBet settled'),
 	});
@@ -182,14 +182,14 @@ export const useCalculate = () => {
 			console.log(e);
 		},
 		onSuccess: async (data) => {
-			const { update } = toast({
+			const { update, id } = toast({
 				title: 'Calculating a round',
 				description: 'Transaction is pending',
 				variant: 'loading',
 				duration: 10000,
 			});
 			await waitForTransactionReceipt(config.getClient(), { hash: data });
-			update({ variant: 'default', description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 3000 });
+			update({ variant: 'default', id, description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 3000 });
 			await client.invalidateQueries({ queryKey: ['predict'] });
 		},
 	});

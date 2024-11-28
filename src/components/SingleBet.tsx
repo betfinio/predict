@@ -4,15 +4,15 @@ import { games } from '@/src/lib';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, type PredictBet, defaultResult } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { cn } from '@betfinio/components/lib';
+import { BetValue } from '@betfinio/components/shared';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
 import { Medal, Pig } from '@betfinio/ui';
-import { Bank, Bet } from '@betfinio/ui/dist/icons';
-import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from 'betfinio_app/dialog';
+import { Bank } from '@betfinio/ui/dist/icons';
 import { useCustomUsername, useUsername } from 'betfinio_app/lib/query/username';
-import cx from 'clsx';
 import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, SquareArrowOutUpRight, X } from 'lucide-react';
 import { DateTime } from 'luxon';
-import millify from 'millify';
 import { type FC, useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
@@ -39,26 +39,21 @@ const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 				<motion.div
 					whileHover={{ scale: 1.02 }}
 					whileTap={{ scale: 0.98 }}
-					className={cx(
-						'border border-gray-800 rounded-lg bg-primaryLight cursor-pointer px-[10px] p-4 flex flex-row items-center py-4 gap-4 relative justify-start',
-						bet.side ? 'text-green-600' : 'text-red-500',
-						bet.loading && 'animate-pulse text-gray-800 blur-sm',
+					className={cn(
+						'border border-border rounded-lg bg-background-light cursor-pointer px-[10px] p-4 flex flex-row items-center py-4 gap-4 relative justify-start',
+						bet.side ? 'text-success' : 'text-destructive',
+						bet.loading && 'animate-pulse text-muted-foreground blur-sm',
 					)}
 				>
-					<div className={'border border-gray-800 bg-primary aspect-square w-[32px] rounded-full flex justify-center items-center'}>
+					<div className={'border border-border bg-background aspect-square w-[32px] rounded-full flex justify-center items-center'}>
 						{bet.side ? <ArrowUpIcon className={'w-4'} /> : <ArrowDownIcon className={'w-4'} />}
 					</div>
-					<div className={cx('flex flex-col w-2/5 text-white', bet.loading && '!text-primary bg-primary rounded-lg')}>
+					<div className={cn('flex flex-col w-2/5 text-foreground', bet.loading && '!text-background bg-background rounded-lg')}>
 						<span className={'text-sm'}>{formatPlayer(customUsername || username || truncateEthAddress(bet.player))}</span>
-						<span className={cx('text-xs text-gray-500', bet.loading && 'text-primary bg-primary rounded-lg')}>#{Number(bet.round).toString().slice(2)}</span>
+						<span className={cn('text-xs text-muted-foreground', bet.loading && 'rounded-lg')}>#{Number(bet.round).toString().slice(2)}</span>
 					</div>
-					<div
-						className={cx(
-							'whitespace-nowrap flex flex-grow  flex-row gap-[6px] items-center justify-end text-sm',
-							bet.loading && 'text-primary bg-primary rounded-lg',
-						)}
-					>
-						{millify(amount, { precision: 2 })} <Bet className={'w-4 h-4'} color={bet.side ? 'green' : 'red'} />
+					<div className={cn('whitespace-nowrap flex flex-grow  flex-row gap-[6px] items-center justify-end text-sm', bet.loading && 'rounded-lg')}>
+						<BetValue value={amount} withIcon iconClassName={cn('w-4 h-4', bet.side ? 'text-success' : 'text-destructive')} />
 					</div>
 				</motion.div>
 			</DialogTrigger>
@@ -108,7 +103,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: '#FFC800',
+			stroke: 'hsl(var(--primary))',
 			strokeWidth: '6px',
 		},
 		trail: {
@@ -116,7 +111,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 			strokeWidth: '1px',
 		},
 		text: {
-			fill: 'white',
+			fill: 'hsl(var(--foreground))',
 			fontSize: '30px',
 		},
 	};
@@ -124,31 +119,31 @@ const BetModal: FC<PredictBet> = (bet) => {
 		switch (bet.status) {
 			case 1n:
 				return (
-					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-yellow-500'}>
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-secondary-foreground '}>
 						{t('pending')}
 					</span>
 				);
 			case 2n:
 				return (
-					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-green-500'}>
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-success'}>
 						{t('win')}
 					</span>
 				);
 			case 3n:
 				return (
-					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-red-500'}>
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-destructive'}>
 						{t('lost')}
 					</span>
 				);
 			case 4n:
 				return (
-					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-sky-500'}>
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-bonus'}>
 						{t('draw')}
 					</span>
 				);
 			case 5n:
 				return (
-					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-yellow-400'}>
+					<span key={Number(bet.status)} className={'text-4xl uppercase font-semibold text-secondary-foreground'}>
 						{t('refund')}
 					</span>
 				);
@@ -165,7 +160,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 		<div
 			onClick={(e) => e.stopPropagation()}
 			className={
-				'rounded-lg relative border border-gray-800  text-white w-full aspect-video max-w-[98vw] md:max-w-[600px] mx-auto bg-primaryLighter py-6 px-8 BET_MODAL'
+				'rounded-lg relative border border-border  text-foreground w-full aspect-video max-w-[98vw] md:max-w-[600px] mx-auto bg-background-lighter py-6 px-8 BET_MODAL'
 			}
 		>
 			<div className={'flex items-center justify-between'}>
@@ -174,7 +169,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 					<span className={'font-semibold text-sm'}>{game.name}</span>
 					<a href={`${ETHSCAN}/address/${bet.address}#internaltx`} target={'_blank'} className={'text-sm underline flex gap-2 items-center'} rel="noreferrer">
 						{truncateEthAddress(bet.address)}
-						<SquareArrowOutUpRight className={'w-4 h-4 text-yellow-400'} />
+						<SquareArrowOutUpRight className={'w-4 h-4 text-secondary-foreground'} />
 					</a>
 				</div>
 				<DialogClose asChild>
@@ -184,24 +179,24 @@ const BetModal: FC<PredictBet> = (bet) => {
 
 			<div className={'flex flex-col justify-center items-center gap-2 mt-7'}>
 				<div className={'text-center'}>
-					<h2 className={'text-gray-500 text-sm'}>{isCurrent ? t('startCurrentPrice') : t('startFinalPrice')}</h2>
-					<div className={cx('text-xl font-semibold flex flex-row gap-1 items-center', (isStartLoading || isEndLoading) && 'animate-pulse blur-sm')}>
+					<h2 className={'text-muted-foreground text-sm'}>{isCurrent ? t('startCurrentPrice') : t('startFinalPrice')}</h2>
+					<div className={cn('text-xl font-semibold flex flex-row gap-1 items-center', (isStartLoading || isEndLoading) && 'animate-pulse blur-sm')}>
 						<span>{startPrice}$</span>
 						<div className={'text-base font-medium flex flex-row gap-1'}>
 							{t('at')}
 							<span>{startTime}</span>
 						</div>
-						<span className={cx(diff > 0 ? 'text-green-500' : 'text-red-500')}> / {endPrice}$</span>
-						<span className={cx('text-base font-medium')}>
+						<span className={cn(diff > 0 ? 'text-success' : 'text-destructive')}> / {endPrice}$</span>
+						<span className={cn('text-base font-medium')}>
 							{t('at')} {endTime}
 						</span>
 					</div>
 				</div>
 
 				<div className={'text-center'}>
-					<h2 className={'text-gray-500 text-sm'}>
+					<h2 className={'text-muted-foreground text-sm'}>
 						{t('betUser')}{' '}
-						<span className={cx('text-white', !bet.player && 'animate-pulse rounded-lg bg-black px-4 py-2 text-black w-[200px]')}>
+						<span className={cn('text-foreground', !bet.player && 'animate-pulse rounded-lg bg-black px-4 py-2 text-primary-foreground w-[200px]')}>
 							<a href={`${ETHSCAN}/address/${bet.player}`} target={'_blank'} className={'underline'} rel="noreferrer">
 								{truncateEthAddress(bet.player)}
 							</a>
@@ -209,30 +204,30 @@ const BetModal: FC<PredictBet> = (bet) => {
 					</h2>
 				</div>
 
-				<div className={'text-gray-600 pt-2 text-sm'}>
+				<div className={'text-muted-foreground pt-2 text-sm'}>
 					{t('text', {
 						amount: (
-							<span key={'amount'} className={'text-white font-semibold'}>
+							<span key={'amount'} className={'text-foreground font-semibold'}>
 								{valueToNumber(bet.amount)} BET
 							</span>
 						),
 						time: (
-							<span key={'time'} className={'text-yellow-400'}>
+							<span key={'time'} className={'text-secondary-foreground'}>
 								{DateTime.fromMillis((Number(bet.round) + game.duration) * game.interval * 1000).toFormat('HH:mm')}
 							</span>
 						),
 						side: (
 							<span
 								key={'side'}
-								className={cx('font-semibold p-1 px-2 text-base rounded-lg', bet.side ? 'bg-green-900 text-green-500' : 'bg-red-900 text-red-500')}
+								className={cn('font-semibold p-1 px-2 text-base rounded-lg', bet.side ? 'bg-green-900 text-success' : 'bg-red-900 text-destructive')}
 							>
 								{bet.side ? 'LONG' : 'SHORT'}
 							</span>
 						),
 					})}
 				</div>
-				<div className={cx(bet.status === 1n ? 'h-[132px]' : 'h-[0]')}>
-					<div className={cx(timer.mins < 0 && 'hidden')}>
+				<div className={cn(bet.status === 1n ? 'h-[132px]' : 'h-[0]')}>
+					<div className={cn(timer.mins < 0 && 'hidden')}>
 						<div className={'flex items-center gap-2 px-6 w-full justify-center py-4'}>
 							<CircularProgressbar
 								styles={progressStyle}
@@ -246,28 +241,29 @@ const BetModal: FC<PredictBet> = (bet) => {
 					</div>
 				</div>
 
-				<div className={cx((isCurrent || bet.status === 1n) && 'hidden', 'flex flex-col items-center my-2 gap-2 mt-5')}>
-					<span className={'text-gray-500'}>{t('status')}</span>
+				<div className={cn((isCurrent || bet.status === 1n) && 'hidden', 'flex flex-col items-center my-2 gap-2 mt-5')}>
+					<span className={'text-muted-foreground'}>{t('status')}</span>
 					{renderStatus()}
 				</div>
 				<div className={'mt-12'}>
-					<div className={cx('flex flex-row w-full justify-between gap-8', !(!isCurrent && (bet.status === 2n || bet.status === 3n)) && '!hidden')}>
+					<div className={cn('flex flex-row w-full justify-between gap-8', !(!isCurrent && (bet.status === 2n || bet.status === 3n)) && '!hidden')}>
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
 							<Medal />
 							<span>
-								{t('winnings')} <span className={'text font-semibold text-base'}>{valueToNumber(bet.result)} BET</span>
+								{t('winnings')}
+								<BetValue value={bet.result} withIcon />
 							</span>
 						</div>
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
 							<Pig />
 							<span>
-								{t('bonus')} <span className={'font-semibold text-base'}>{valueToNumber(bet.bonus)} BET</span>
+								{t('bonus')} <BetValue value={bet.bonus} withIcon />
 							</span>
 						</div>
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
-							<span>
-								{t('total')}{' '}
-								<span className={'font-semibold rounded-lg bg-green-900 text-green-500 p-1 px-2 text-base'}>{valueToNumber(bet.bonus + bet.result)} BET</span>
+							{t('total')}
+							<span className={'font-semibold rounded-lg bg-green-900  text-success-foreground p-1 px-2 text-base'}>
+								<BetValue value={bet.bonus + bet.result} withIcon />
 							</span>
 						</div>
 					</div>
@@ -275,7 +271,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 				<div className={'w-full flex flex-row gap-2 mt-4 items-center'}>
 					<span className={'font-normal'}>{t('stakingContribution')}</span>
 					<span className={'font-semibold'}>{valueToNumber((bet.amount / BigInt(10000)) * BigInt(360))} BET</span>
-					<Bank className={'w-6 h-6 text-yellow-400'} />
+					<Bank className={'w-6 h-6 text-secondary-foreground'} />
 				</div>
 			</div>
 		</div>

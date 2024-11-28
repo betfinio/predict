@@ -80,8 +80,8 @@ function PredictPage() {
 				<LastBets game={game} />
 			</div>
 			<BonusAndChart game={game} />
-			<a href={getStakingUrl()} className={'text-center text-gray-400 text-sm md:text-base cursor-pointer'}>
-				<Trans t={t} i18nKey={'feeStaking'} i18n={i18n} components={{ b: <b className={'text-yellow-400 font-medium'} /> }} />
+			<a href={getStakingUrl()} className={'text-center text-muted-foreground text-sm md:text-base cursor-pointer'}>
+				<Trans t={t} i18nKey={'feeStaking'} i18n={i18n} components={{ b: <b className={'text-secondary-foreground font-medium'} /> }} />
 			</a>
 			<RoundsTable game={game} />
 			<div className={'max-w-[200px]'}>
