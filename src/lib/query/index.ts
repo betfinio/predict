@@ -178,8 +178,12 @@ export const useCalculate = () => {
 	return useMutation<WriteContractReturnType, WriteContractErrorType, CalculateRoundParams>({
 		mutationKey: ['predict', 'bets', 'calculate'],
 		mutationFn: (params) => calculateRound(params, config),
-		onError: (e) => {
-			console.log(e);
+		onError: async (e) => {
+			toast({
+				title: 'Error happened',
+				description: 'Transaction failed',
+				variant: 'destructive',
+			});
 		},
 		onSuccess: async (data) => {
 			const { update, id } = toast({
