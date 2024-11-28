@@ -2,7 +2,7 @@ import RoundPool from '@/src/components/RoundPool.tsx';
 import SingleBet from '@/src/components/SingleBet.tsx';
 import { useLastBets } from '@/src/lib/query';
 import type { Game } from '@/src/lib/types';
-import cx from 'clsx';
+import { cn } from '@betfinio/components/lib';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,12 +14,12 @@ const LastBets: FC<{ game: Game }> = ({ game }) => {
 	return (
 		<div className={'md:col-start-3 col-span-4 lg:col-span-2 items-center flex flex-col gap-2 lg:gap-4'}>
 			{bets.length === 0 ? (
-				<div className={'text-center text-gray-600 p-5'}>{t('noBets')}</div>
+				<div className={'text-center text-muted-foreground p-5'}>{t('noBets')}</div>
 			) : (
 				<>
 					<h2 className={'font-medium uppercase '}>{t('latestBets')}</h2>
 					<AnimatePresence>
-						<div className={cx('w-full grid grid-cols-1 grid-rows-4 gap-1', { 'animate-pulse blur-sm': isLoading })}>
+						<div className={cn('w-full grid grid-cols-1 grid-rows-4 gap-1', { 'animate-pulse blur-sm': isLoading })}>
 							{bets.map((e, i) => (
 								<motion.div
 									key={e.address}

@@ -4,7 +4,7 @@ import i18n from '@/src/i18n.ts';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, defaultResult } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
-import cx from 'clsx';
+import { cn } from '@betfinio/components/lib';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
@@ -22,23 +22,23 @@ const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 			<h2 className={'font-medium uppercase'}>
 				{t('title')} #{round.toString().slice(2)}
 			</h2>
-			<div className={cx('w-full border border-gray-800 rounded-[10px] bg-primaryLight p-2 py-5 relative', isFetching && 'animate-pulse blur-sm')}>
+			<div className={cn('w-full border border-border rounded-lg bg-background-light p-2 py-5 relative', isFetching && 'animate-pulse blur-sm')}>
 				<EffectsLayer game={game} />
 
 				<div className={'flex flex-col items-center relative justify-center gap-4 w-[285px] aspect-square mx-auto'}>
 					<Clock game={game} />
 					<div className={'text-center flex flex-col gap-1'}>
-						<h4 className={'font-medium text-xs text-gray-500'}>
+						<h4 className={'font-medium text-xs text-muted-foreground'}>
 							<Trans
 								t={t}
 								values={{ time: DateTime.fromMillis(Number(start.timestamp) * 1000).toFormat('HH:mm') }}
 								i18nKey={'price'}
 								i18n={i18n}
-								components={{ b: <b className={'text-yellow-400 font-semibold'} /> }}
+								components={{ b: <b className={'text-secondary-foreground font-semibold'} /> }}
 							/>
 						</h4>
 						<div
-							className={cx('rounded-[10px] mt-1 text-center text-sm bg-primary px-4 py-2 font-semibold text-yellow-400', {
+							className={cn('rounded-lg mt-1 text-center text-sm bg-background px-4 py-2 font-semibold text-secondary-foreground', {
 								'animate-pulse blur-sm': !isLatestPriceFetched,
 							})}
 						>
@@ -48,11 +48,11 @@ const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 
 					<Timer game={game} />
 					<div className={'text-center flex flex-col gap-1'}>
-						<h4 className={'font-medium text-gray-500 text-xs'}>{t('currentPrice')}</h4>
+						<h4 className={'font-medium text-muted-foreground text-xs'}>{t('currentPrice')}</h4>
 						<div
-							className={cx(
-								'rounded-[10px] w-full text-center text-sm bg-primary px-4 py-2 font-semibold',
-								price.answer > start.answer ? ' text-green-500' : 'text-red-500',
+							className={cn(
+								'rounded-lg w-full text-center text-sm bg-background px-4 py-2 font-semibold',
+								price.answer > start.answer ? ' text-success' : 'text-destructive',
 							)}
 						>
 							{valueToNumber(price.answer, 8)}$
@@ -60,16 +60,16 @@ const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 					</div>
 				</div>
 
-				<div className={'flex justify-center  text-gray-500 text-xs mt-6'}>
+				<div className={'flex justify-center  text-muted-foreground text-xs mt-6'}>
 					<Trans
 						t={t}
 						values={{ time: DateTime.fromMillis((round + 4) * game.interval * 1000).toFormat('TT') }}
 						i18nKey={'description'}
 						i18n={i18n}
 						components={{
-							green: <span className={'text-green-500 px-1'} />,
-							red: <span className={'text-red-500 px-1'} />,
-							yellow: <span className={'text-yellow-400 pl-1'} />,
+							green: <span className={'text-success px-1'} />,
+							red: <span className={'text-destructive px-1'} />,
+							yellow: <span className={'text-secondary-foreground pl-1'} />,
 						}}
 					/>
 				</div>
@@ -86,7 +86,7 @@ export const Clock: FC<{ game: Game; className?: string }> = ({ game: { interval
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: '#FFC800',
+			stroke: 'hsl(var(--primary))',
 			strokeWidth: '2px',
 		},
 		trail: {
@@ -95,7 +95,7 @@ export const Clock: FC<{ game: Game; className?: string }> = ({ game: { interval
 			width: '100%',
 		},
 		text: {
-			fill: 'white',
+			fill: 'hsl(var(--foreground))',
 			fontSize: '30px',
 		},
 	};
@@ -129,7 +129,7 @@ export const Timer: FC<{ game: Game; className?: string; size?: string }> = ({ g
 
 	const [timer, setTimer] = useState({ mins: 0, secs: 0 });
 	return (
-		<div className={cx('text-3xl', className)}>
+		<div className={cn('text-3xl', className)}>
 			{timer.mins < 10 ? `0${timer.mins}` : timer.mins}:{timer.secs < 10 ? `0${timer.secs}` : timer.secs}
 		</div>
 	);

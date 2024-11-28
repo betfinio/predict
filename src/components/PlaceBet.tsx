@@ -2,13 +2,13 @@ import PlayersExpectedWinnings from '@/src/components/PlayersExpectedWinnings.ts
 import { useCurrentRound, usePlaceBet, usePlayerBets, useRoundBets } from '@/src/lib/query';
 import type { Game, RoundPool } from '@/src/lib/types';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
-import { Bet } from '@betfinio/ui/dist/icons';
+import { toast } from '@betfinio/components/hooks';
+import { cn } from '@betfinio/components/lib';
+import { BetValue } from '@betfinio/components/shared';
+import { Button } from '@betfinio/components/ui';
 import { useAllowanceModal } from 'betfinio_app/allowance';
 import { useIsMember } from 'betfinio_app/lib/query/pass';
 import { useAllowance, useBalance } from 'betfinio_app/lib/query/token';
-import { toast } from 'betfinio_app/use-toast';
-import cx from 'clsx';
-import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import millify from 'millify';
 import { type FC, useEffect, useMemo, useState } from 'react';
@@ -27,7 +27,7 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 	const { requestAllowance, requested, setResult } = useAllowanceModal();
 	useEffect(() => {
 		if (requested) {
-			handleBet(s);
+			handleBet(s).then(undefined);
 		}
 	}, [requested]);
 	const { mutate: placeBet, data, isSuccess } = usePlaceBet();
@@ -116,10 +116,12 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 	return (
 		<div className={'flex flex-col gap-4 col-span-4 md:col-span-3 items-center drop-shadow-[0_0_35px_rgba(87,101,242,0.75)]'}>
 			<h2 className={'font-medium uppercase hidden md:block'}>{t('title')}</h2>
-			<div className={cx('w-full border border-gray-800 rounded-[10px] bg-primaryLight py-5 px-10 flex flex-col items-center gap-6 relative')}>
+			<div className={cn('w-full border border-border rounded-[10px] bg-background-light py-5 px-10 flex flex-col items-center gap-6 relative')}>
 				<div className={'w-full'}>
 					<NumericFormat
-						className={'w-full rounded-[10px] text-center border border-yellow-400 text-sm bg-primary p-3 font-semibold text-white disabled:cursor-not-allowed'}
+						className={
+							'w-full rounded-[10px] text-center border border-yellow-400 text-sm bg-background p-3 font-semibold text-foreground disabled:cursor-not-allowed'
+						}
 						thousandSeparator={','}
 						min={1}
 						disabled={loading || balance === 0n}
@@ -134,41 +136,43 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 				</div>
 
 				<div className={'grid grid-cols-2 gap-3 w-full'}>
-					<motion.button
-						whileHover={{ scale: 1.03 }}
-						whileTap={{ scale: 0.97 }}
+					<Button
+						variant={'success'}
 						onClick={() => handleBet(true)}
 						disabled={loading || amount === null || Number(amount) < 1 || BigInt(amount) * 10n ** 18n > balance}
-						className={
-							' rounded-lg flex flex-col items-center pb-2 p-3 gap-2 leading-[0px] justify-between bg-green-500 font-semibold  disabled:cursor-not-allowed disabled:grayscale duration-500'
-						}
+						className={'flex flex-col items-center h-auto pb-2 p-3 gap-2 leading-[0px] justify-between'}
 					>
 						<span className={'text-lg leading-3'}>{t('long')}</span>
 						<div className={'flex flex-row items-center text-xs leading-3 gap-1 whitespace-nowrap'}>
-							{millify(Number(amount) + (valueToNumber(pool.short) / (valueToNumber(pool.long) + Number(amount))) * Number(amount) || 0, { precision: 2 })}
-							<Bet className={'w-3 h-3'} color={'white'} /> + {t('bonus')}
+							<BetValue
+								value={Number(amount) + (valueToNumber(pool.short) / (valueToNumber(pool.long) + Number(amount))) * Number(amount) || 0}
+								withIcon
+								iconClassName={'text-foreground w-3 h-3'}
+							/>
+							+ {t('bonus')}
 						</div>
-					</motion.button>
-					<motion.button
-						whileHover={{ scale: 1.03 }}
-						whileTap={{ scale: 0.97 }}
+					</Button>
+					<Button
+						variant={'destructive'}
 						onClick={() => handleBet(false)}
 						disabled={loading || amount === null || Number(amount) < 1 || BigInt(amount) * 10n ** 18n > balance}
-						className={
-							' rounded-lg flex flex-col items-center pb-2 p-3 gap-2 leading-[0px] justify-between bg-red-500 font-semibold disabled:cursor-not-allowed disabled:grayscale duration-500'
-						}
+						className={' h-auto flex flex-col items-center pb-2 p-3 gap-2 leading-[0px] justify-between '}
 					>
 						<span className={'text-lg leading-3'}>{t('short')}</span>
 						<div className={'flex flex-row items-center text-xs leading-3 gap-1 whitespace-nowrap'}>
-							{millify(Number(amount) + (valueToNumber(pool.long) / (valueToNumber(pool.short) + Number(amount))) * Number(amount) || 0, { precision: 2 })}
-							<Bet className={'w-3 h-3'} color={'white'} /> + {t('bonus')}
+							<BetValue
+								value={Number(amount) + (valueToNumber(pool.long) / (valueToNumber(pool.short) + Number(amount))) * Number(amount) || 0}
+								withIcon
+								iconClassName={'text-foreground w-3 h-3'}
+							/>
+							+ {t('bonus')}
 						</div>
-					</motion.button>
+					</Button>
 				</div>
 				<PlayersBets game={game} />
 				<CoefficientRatio pool={pool} amount={amount} />
 				<div className={'w-full text-xs'}>
-					<h4 className={'font-medium text-gray-500 text-center mb-2'}>{t('expectedWinnings')}</h4>
+					<h4 className={'font-medium text-muted-foreground text-center mb-2'}>{t('expectedWinnings')}</h4>
 					<PlayersExpectedWinnings game={game} />
 				</div>
 			</div>
@@ -207,12 +211,12 @@ const CoefficientRatio: FC<{ pool: RoundPool; amount: string | number }> = ({ po
 		return 50;
 	}, [pool]);
 	return (
-		<div className={'flex  text-xs flex-row w-full text-white items-center rounded-md overflow-hidden'}>
-			<div className={'px-3 py-1 h-full bg-opacity-30 bg-green-900 text-green-500 flex flex-row items-center gap-1'} style={{ width: `${longWidth}%` }}>
+		<div className={'flex  text-xs flex-row w-full text-foreground items-center rounded-md overflow-hidden'}>
+			<div className={'px-3 py-1 h-full bg-opacity-30 bg-green-900 text-success flex flex-row items-center gap-1'} style={{ width: `${longWidth}%` }}>
 				{millify(longCoef, { precision: 2 })}x
 			</div>
 			<div
-				className={'px-3 py-1 h-full bg-opacity-30 bg-red-900 text-red-500 flex flex-row items-center gap-1 justify-end'}
+				className={'px-3 py-1 h-full bg-opacity-30 bg-red-900 text-destructive flex flex-row items-center gap-1 justify-end'}
 				style={{ width: `${shortWidth}%` }}
 			>
 				{millify(shortCoef, { precision: 2 })}x
@@ -245,18 +249,16 @@ const PlayersBets: FC<{ game: Game }> = ({ game }) => {
 
 	return (
 		<div className={'hidden md:grid grid-cols-2 gap-4 w-full'}>
-			<div className={'bg-primary rounded-lg p-2 flex justify-center gap-2 items-center text-green-500 font-semibold'}>
-				<ArrowUpIcon className={'h-3 w-3'} />
-				<div className={cx('flex flex-row gap-1 items-center text-sm', { 'animate-pulse blur-sm': !isBetsFetched })}>
-					{millify(valueToNumber(userPool.long), { precision: 2 })}
-					<Bet className={'w-3 h-3'} color={'green'} />
+			<div className={'bg-background rounded-lg p-2 flex justify-center gap-2 items-center text-success font-semibold'}>
+				<ArrowUpIcon className={'h-4 w-4'} />
+				<div className={cn('flex flex-row gap-1 items-center text-sm', { 'animate-pulse blur-sm': !isBetsFetched })}>
+					<BetValue value={userPool.long} withIcon iconClassName={'text-success w-3 h-3'} />
 				</div>
 			</div>
-			<div className={'bg-primary rounded-lg p-2 flex justify-center gap-2 items-center text-red-500 font-semibold'}>
-				<ArrowDownIcon className={'h-3 w-3'} />
-				<div className={cx('flex flex-row gap-1 items-center text-sm', { 'animate-pulse blur-sm': !isBetsFetched })}>
-					{millify(valueToNumber(userPool.short), { precision: 2 })}
-					<Bet color={'red'} className={'w-3 h-3'} />
+			<div className={'bg-background rounded-lg p-2 flex justify-center gap-2 items-center text-destructive font-semibold'}>
+				<ArrowDownIcon className={'h-4 w-4'} />
+				<div className={cn('flex flex-row gap-1 items-center text-sm', { 'animate-pulse blur-sm': !isBetsFetched })}>
+					<BetValue value={userPool.short} withIcon iconClassName={'text-destructive w-3 h-3'} />
 				</div>
 			</div>
 		</div>
