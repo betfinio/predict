@@ -2,12 +2,10 @@ import RoundModal from '@/src/components/RoundModal.tsx';
 import { useCurrentRound, usePlayerBets, usePlayerRounds, useRounds } from '@/src/lib/query';
 import type { Game, Round, RoundStatus } from '@/src/lib/types';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
+import { cn } from '@betfinio/components/lib';
+import { BetValue, DataTable } from '@betfinio/components/shared';
+import { Dialog, Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { BetValue } from 'betfinio_app/BetValue';
-import { DataTable } from 'betfinio_app/DataTable';
-import { Dialog } from 'betfinio_app/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'betfinio_app/tabs';
-import cx from 'clsx';
 import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, LoaderIcon, Search } from 'lucide-react';
 import millify from 'millify';
@@ -39,7 +37,9 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 				cell: (props) => {
 					const { currentPlayerBets, round } = props.row.original;
 
-					return <div className={cx('text-gray-400 md:w-[90px]', currentPlayerBets > 0 && 'text-yellow-400')}>#{round.toString().slice(2)}</div>;
+					return (
+						<div className={cn('text-muted-foreground md:w-[90px]', currentPlayerBets > 0 && 'text-secondary-foreground')}>#{round.toString().slice(2)}</div>
+					);
 				},
 			}),
 			columnHelper.accessor('price', {
@@ -53,9 +53,9 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 						<div className={'flex md:w-[160px] flex-row gap-1 items-center rounded-lg'}>
 							<div className={'w-[60px] text-center hidden md:block'}>{formattedStart}</div>
 							<div
-								className={cx(
+								className={cn(
 									'w-[80px] flex flex-row items-center justify-center gap-1 rounded-md',
-									end > start ? 'bg-green-600 ' : 'bg-opacity-30 text-red-500 bg-red-900',
+									end > start ? 'bg-success' : 'text-destructive bg-destructive/10',
 								)}
 							>
 								{formattedEnd}
@@ -75,15 +75,15 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 					const shortPercentage = (shortValue / (longValue + shortValue)) * 100;
 
 					return (
-						<div className={'flex h-[36px] md:h-[40px] flex-row w-[100px] md:w-[200px] text-white items-center rounded-md overflow-hidden'}>
+						<div className={'flex h-[36px] md:h-[40px] flex-row w-[100px] md:w-[200px] text-foreground items-center rounded-md overflow-hidden'}>
 							<div
-								className={'px-1 py-[6px] h-full bg-opacity-30 bg-green-900 text-green-500 flex flex-row items-center gap-1'}
+								className={'px-1 py-[6px] h-full bg-opacity-30 bg-success/10 text-success flex flex-row items-center gap-1'}
 								style={{ width: `${longPercentage}%` }}
 							>
 								{millify(longValue, { precision: 2 })}
 							</div>
 							<div
-								className={' px-1 py-[6px] h-full bg-opacity-30 bg-red-900 text-red-500 flex flex-row items-center gap-1 justify-end'}
+								className={' px-1 py-[6px] h-full bg-opacity-30 bg-destructive/10 text-destructive flex flex-row items-center gap-1 justify-end'}
 								style={{ width: `${shortPercentage}%` }}
 							>
 								{millify(shortValue, { precision: 2 })}
@@ -244,7 +244,7 @@ export const TableTimer: FC<{ roundId: number; currentRoundId: number; className
 	}, [updateProgress]);
 
 	return (
-		<div className={cx('flex w-full', className)}>
+		<div className={cn('flex w-full', className)}>
 			<CircularProgressbar styles={progressStyle} value={progress} />
 		</div>
 	);

@@ -1,9 +1,9 @@
 import type { PredictBet } from '@/src/lib/types.ts';
 import { arrayFrom, truncateEthAddress } from '@betfinio/abi';
+import { cn } from '@betfinio/components/lib';
+import { BetValue } from '@betfinio/components/shared';
 import { type BarDatum, ResponsiveBar } from '@nivo/bar';
 import type { BarTooltipProps } from '@nivo/bar/dist/types/types';
-import { BetValue } from 'betfinio_app/BetValue';
-import cx from 'clsx';
 import type { FC } from 'react';
 import * as React from 'react';
 import type { Address } from 'viem';
@@ -62,7 +62,7 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 	}
 
 	return (
-		<div className={cx('h-full w-full', data.length === 0 && 'pointer-events-none grayscale')}>
+		<div className={cn('h-full w-full', data.length === 0 && 'pointer-events-none grayscale')}>
 			<ResponsiveBar
 				tooltip={CustomTooltip}
 				enableGridX={false}
@@ -85,7 +85,7 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 
 const CustomTooltip: FC<BarTooltipProps<BonusItem>> = ({ data }) => {
 	return (
-		<div className={'border border-gray-800 text-xs rounded-lg bg-primary p-2 flex flex-col'}>
+		<div className={'border border-border text-xs rounded-lg bg-background p-2 flex flex-col'}>
 			<div>{truncateEthAddress(data.bet)}</div>
 			<div className={'flex flex-row items-center gap-1'}>
 				Bonus: <BetValue value={Math.abs(data.bonus)} withIcon />

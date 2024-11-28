@@ -2,10 +2,10 @@ import BetsTable from '@/src/components/BetsTable.tsx';
 import { useCalculate, useRoundBets, useRoundInfo } from '@/src/lib/query';
 import type { Game, RoundStatus } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
+import { cn } from '@betfinio/components/lib';
+import { BetValue } from '@betfinio/components/shared';
+import { DialogClose, DialogContent, DialogTitle } from '@betfinio/components/ui';
 import { Bank, MoneyHand, People } from '@betfinio/ui/dist/icons';
-import { BetValue } from 'betfinio_app/BetValue';
-import { DialogClose, DialogContent, DialogTitle } from 'betfinio_app/dialog';
-import cx from 'clsx';
 import { X } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useMemo, useState } from 'react';
@@ -36,8 +36,6 @@ const RoundModal: FC<{
 		calculate({ game, round });
 	};
 
-	const handleDistribute = async () => {};
-
 	const status: RoundStatus = useMemo(() => {
 		if (!roundData) return t('status.ended') as RoundStatus;
 		const last = (round + 1) * game.interval;
@@ -50,8 +48,8 @@ const RoundModal: FC<{
 	}, [roundData, round]);
 
 	return (
-		<DialogContent className={'predict text-white'} aria-describedby={undefined}>
-			<div className={'p-2 md:p-3 lg:p-4 relative lg:min-w-[800px] max-h-[90vh] overflow-y-auto lg:min-h-[650px] flex flex-col justify-between'}>
+		<DialogContent className={'predict text-foreground'} aria-describedby={undefined}>
+			<div className={'p-2 md:p-3 lg:p-4 relative w-[98vw] lg:max-w-[800px] max-h-[90vh] overflow-y-auto lg:min-h-[650px] flex flex-col justify-between'}>
 				<DialogTitle className={'hidden'} />
 				<DialogClose asChild>
 					<X className={'absolute top-5 right-5 w-6 h-6  border-2 border-white rounded-full cursor-pointer  duration-300'} />
@@ -63,13 +61,13 @@ const RoundModal: FC<{
 							{isFinished &&
 								isRoundFetched &&
 								(isLong ? (
-									<div className={'text-xl font-semibold text-green-500 flex items-center gap-1'}>{t('long')}</div>
+									<div className={'text-xl font-semibold text-success flex items-center gap-1'}>{t('long')}</div>
 								) : (
-									<div className={'text-xl font-semibold text-red-500 flex items-center gap-1'}>{t('short')}</div>
+									<div className={'text-xl font-semibold text-destructive flex items-center gap-1'}>{t('short')}</div>
 								))}
 						</div>
 
-						<span className={'text-gray-400'}>
+						<span className={'text-muted-foreground'}>
 							{start.toFormat('dd.MM.yyyy / HH:mm:ss')} - {end.toFormat('HH:mm:ss')}
 						</span>
 					</div>
@@ -77,31 +75,31 @@ const RoundModal: FC<{
 				</div>
 
 				<div className={'grid grid-cols-3 gap-4 my-4'}>
-					<div className={' bg-primaryLight md:col-span-1 col-span-3 rounded-lg p-4 flex flex-row md:flex-col items-center  justify-between gap-2 py-4'}>
+					<div className={' bg-background-light md:col-span-1 col-span-3 rounded-lg p-4 flex flex-row md:flex-col items-center  justify-between gap-2 py-4'}>
 						<People className={'w-8 h-8 md:w-14 md:h-14'} />
 						<h2 className={'font-semibold text-xl md:text-2xl'}>
 							{t('users', { players })} / {t('bets', { bets: bets.length })}
 						</h2>
-						<span className={'text-gray-500 hidden md:block'}>{t('activity')}</span>
+						<span className={'text-muted-foreground hidden md:block'}>{t('activity')}</span>
 					</div>
-					<div className={' bg-primaryLight md:col-span-1 col-span-3 rounded-lg p-4 flex flex-row md:flex-col items-center justify-between gap-2 py-4'}>
-						<MoneyHand className={'w-8 h-8 md:w-14 md:h-14 text-yellow-400'} />
+					<div className={' bg-background-light md:col-span-1 col-span-3 rounded-lg p-4 flex flex-row md:flex-col items-center justify-between gap-2 py-4'}>
+						<MoneyHand className={'w-8 h-8 md:w-14 md:h-14 text-secondary-foreground'} />
 						<h2 className={'font-semibold text-xl md:text-2xl'}>
 							<BetValue precision={2} value={valueToNumber(volume)} withIcon={true} />
 						</h2>
-						<span className={'text-gray-500 hidden md:block '}>{t('volume')}</span>
+						<span className={'text-muted-foreground hidden md:block '}>{t('volume')}</span>
 					</div>
-					<div className={' bg-primaryLight md:col-span-1 col-span-3 rounded-lg p-4 flex flex-row md:flex-col items-center  justify-between gap-2 py-4'}>
-						<Bank className={'w-8 h-8 md:w-14 md:h-14 text-yellow-400'} />
+					<div className={' bg-background-light md:col-span-1 col-span-3 rounded-lg p-4 flex flex-row md:flex-col items-center  justify-between gap-2 py-4'}>
+						<Bank className={'w-8 h-8 md:w-14 md:h-14 text-secondary-foreground'} />
 						<h2 className={'font-semibold text-xl md:text-2xl'}>
 							<BetValue value={valueToNumber(staking)} withIcon={true} precision={2} />
 						</h2>
-						<span className={'text-gray-500 hidden md:block'}>{t('staking')}</span>
+						<span className={'text-muted-foreground hidden md:block'}>{t('staking')}</span>
 					</div>
 				</div>
 				<BetsTable game={game} round={round} />
-				<div className={cx('flex flex-row justify-end w-full p-2', status !== 'ended' && '!hidden')}>
-					<button type={'button'} className={'rounded-md px-4 py-2 bg-yellow-400 text-black '} onClick={handleCalculate}>
+				<div className={cn('flex flex-row justify-end w-full p-2', status !== 'ended' && '!hidden')}>
+					<button type={'button'} className={'rounded-md px-4 py-2 bg-primary text-primary-foreground '} onClick={handleCalculate}>
 						{t('calculateResult')}
 					</button>
 				</div>
@@ -118,7 +116,7 @@ export const RoundTimer: FC<{ game: Game; end: number; className?: string; size?
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: '#FFC800',
+			stroke: 'hsl(var(--primary))',
 			strokeWidth: '6px',
 		},
 		trail: {
@@ -126,7 +124,7 @@ export const RoundTimer: FC<{ game: Game; end: number; className?: string; size?
 			strokeWidth: '1px',
 		},
 		text: {
-			fill: 'white',
+			fill: 'hsl(var(--foreground))',
 			fontSize: '30px',
 		},
 	};
@@ -142,7 +140,7 @@ export const RoundTimer: FC<{ game: Game; end: number; className?: string; size?
 
 	const [timer, setTimer] = useState({ mins: 0, secs: 0 });
 	return (
-		<div className={cx('flex items-center gap-2 px-6 w-full justify-center', className)}>
+		<div className={cn('flex items-center gap-2 px-6 w-full justify-center', className)}>
 			<CircularProgressbar styles={progressStyle} counterClockwise={true} value={(timer.mins / (interval / 60)) * 100} text={timer.mins.toString()} />
 			<span className={'text-xs'}>:</span>
 			<CircularProgressbar styles={progressStyle} counterClockwise={true} value={(timer.secs / 60) * 100} text={timer.secs.toString()} />
