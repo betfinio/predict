@@ -131,7 +131,7 @@ export const useRounds = (game: Game) => {
 export const usePlayerRounds = (game: Game, address: Address) => {
 	const config = useConfig();
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game.address, address],
+		queryKey: ['predict', 'rounds', game.address, address, 'player'],
 		queryFn: () => fetchPlayerRounds(game, address, config),
 	});
 };
@@ -178,8 +178,12 @@ export const useCalculate = () => {
 	return useMutation<WriteContractReturnType, WriteContractErrorType, CalculateRoundParams>({
 		mutationKey: ['predict', 'bets', 'calculate'],
 		mutationFn: (params) => calculateRound(params, config),
-		onError: (e) => {
-			console.log(e);
+		onError: async (e) => {
+			toast({
+				title: 'Error happened',
+				description: 'Transaction failed',
+				variant: 'destructive',
+			});
 		},
 		onSuccess: async (data) => {
 			const { update, id } = toast({
