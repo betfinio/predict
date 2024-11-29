@@ -4,17 +4,17 @@ import PairInfo from '@/src/components/PairInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
 import RoundConditions from '@/src/components/RoundConditions.tsx';
 import RoundsTable from '@/src/components/RoundsTable.tsx';
+import logger from '@/src/config/logger';
 import { BETS_MEMORY_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import i18n from '@/src/i18n.ts';
 import { games } from '@/src/lib';
 import { animateNewBet, fetchPredictBet, fetchRound } from '@/src/lib/api';
 import type { Round } from '@/src/lib/types';
-import { BetsMemoryContract, GameContract, ZeroAddress } from '@betfinio/abi';
+import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { getStakingUrl } from 'betfinio_app/lib';
 import { Trans, useTranslation } from 'react-i18next';
-import type { Log } from 'viem';
 import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 
 export const Route = createFileRoute('/predict/$pair')({
@@ -36,16 +36,16 @@ function PredictPage() {
 	const game = games[pair];
 
 	useWatchContractEvent({
-		abi: GameContract.abi,
+		abi: PredictGameABI,
 		address: game.address,
 		config: config,
+		strict: true,
 		eventName: 'RoundCreated',
-		onLogs: async (logs: Log[]) => {
-			// @ts-ignore
-			const roundId = Number(logs[0]?.args?.round ?? 0n);
-			if (roundId) {
-				console.log('fetching a round', roundId);
-				const res = await fetchRound(config, { game, round: { round: roundId, price: { start: 0n } }, player: address });
+		onLogs: async (logs) => {
+			const round = logs[0].args.round;
+			if (round) {
+				logger.log('fetching a round', round);
+				const res = await fetchRound(config, { game, round: { round: Number(round), price: { start: 0n } }, player: address });
 				const rounds: Round[] = client.getQueryData(['predict', 'rounds', game, address]) || [];
 				client.setQueryData(['predict', 'rounds', game, address], [res, ...rounds]);
 			}
@@ -53,7 +53,7 @@ function PredictPage() {
 	});
 
 	useWatchContractEvent({
-		abi: BetsMemoryContract.abi,
+		abi: BetsMemoryABI,
 		address: BETS_MEMORY_ADDRESS,
 		args: {
 			game: PREDICT_ADDRESS,
@@ -61,8 +61,9 @@ function PredictPage() {
 		config: config,
 		eventName: 'NewBet',
 		onLogs: async (logs) => {
-			// @ts-ignore
+			if (logs.length === 0) return;
 			const betAddress = logs[0].args.bet;
+			if (!betAddress) return;
 			const bet = await fetchPredictBet(config, { address: betAddress });
 
 			await client.invalidateQueries({ queryKey: ['predict', 'bets'] });

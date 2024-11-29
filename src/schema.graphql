@@ -21,7 +21,7 @@ query GetPrice($timestamp: BigInt, $feed: Bytes) {
 }
 
 query PlayerBets($player: Bytes, $game: Bytes) {
-    predictBets(where: {player: $player, predictGame: $game,}, orderDirection: desc, orderBy: blockTimestamp, first: 500) {
+    predictBets(where: {player: $player, predictGame: $game}, orderDirection: desc, orderBy: blockTimestamp, first: 500) {
         round
         blockTimestamp
         bet

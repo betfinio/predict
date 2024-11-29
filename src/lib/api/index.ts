@@ -2,9 +2,9 @@ import logger from '@/src/config/logger';
 import { BETS_MEMORY_ADDRESS, PARTNER_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import { games } from '@/src/lib';
 import { fetchPrice, getPlayerRounds, getRounds } from '@/src/lib/gql';
-import { BetInterfaceContract, BetsMemoryContract, DataFeedContract, GameContract, PartnerContract, PredictBetContract, defaultMulticall } from '@betfinio/abi';
+import { BetInterfaceABI, BetsMemoryABI, DataFeedABI, PartnerABI, PredictBetABI, PredictGameABI, defaultMulticall } from '@betfinio/abi';
 import type { QueryClient } from '@tanstack/react-query';
-import { type Config, type WriteContractReturnType, multicall, readContract, writeContract } from '@wagmi/core';
+import { type Config, type WriteContractReturnType, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_app/lib/gql';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round, RoundPool, RoundWithStartPrice } from '../types';
@@ -35,35 +35,35 @@ export async function fetchRound(config: Config, params: { game: Game; round: Ro
 		multicallAddress: defaultMulticall,
 		contracts: [
 			{
-				abi: GameContract.abi,
+				abi: PredictGameABI,
 				address: game.address,
 				functionName: 'getPlayerBets',
 				args: [player, BigInt(round.round)],
 			},
 			{
-				abi: GameContract.abi,
+				abi: PredictGameABI,
 				address: game.address,
 				functionName: 'roundCalculated',
 				args: [BigInt(round.round)],
 			},
 			{
-				abi: GameContract.abi,
+				abi: PredictGameABI,
 				address: game.address,
 				functionName: 'start',
 				args: [BigInt(round.round)],
 			},
 			{
-				abi: GameContract.abi,
+				abi: PredictGameABI,
 				address: game.address,
 				functionName: 'end',
 				args: [BigInt(round.round)],
 			},
 		],
 	});
-	const bets = data[0].result as [number, string[]];
+	const bets = data[0].result as [bigint, string[]];
 	const calculated = data[1].result as boolean;
-	const start = (data[2].result as bigint[])[1] || startPrice.answer || round.price.start;
-	const end = (data[3].result as bigint[])[1] || endPrice.answer;
+	const start = data[2].result?.[1] || startPrice.answer || round.price.start;
+	const end = data[3].result?.[1] || endPrice.answer;
 	return {
 		round: round.round,
 		price: { start, end },
@@ -79,16 +79,16 @@ export async function fetchPool(config: Config, params: { game: Address; round: 
 		multicallAddress: defaultMulticall,
 		contracts: [
 			{
-				abi: GameContract.abi,
+				abi: PredictGameABI,
 				address: game,
 				functionName: 'longPool',
-				args: [round],
+				args: [BigInt(round)],
 			},
 			{
-				abi: GameContract.abi,
+				abi: PredictGameABI,
 				address: game,
 				functionName: 'shortPool',
-				args: [round],
+				args: [BigInt(round)],
 			},
 		],
 	});
@@ -105,7 +105,7 @@ export async function fetchLastBets(config: Config, params: { count: number }): 
 	const count = params.count;
 	try {
 		const bets = (await readContract(config, {
-			...BetsMemoryContract,
+			abi: BetsMemoryABI,
 			address: BETS_MEMORY_ADDRESS,
 			functionName: 'getBets',
 			args: [BigInt(count), 0n, PREDICT_ADDRESS],
@@ -120,18 +120,18 @@ export async function fetchLastBets(config: Config, params: { count: number }): 
 export const fetchPlayerBets = async (config: Config, params: { address: Address; game: Address; round: number }): Promise<PredictBet[]> => {
 	const { address, game, round } = params;
 	const data = (await readContract(config, {
-		abi: GameContract.abi,
+		abi: PredictGameABI,
 		address: game,
 		functionName: 'getPlayerBets',
-		args: [address, round],
-	})) as [number, Address[]];
+		args: [address, BigInt(round)],
+	})) as [bigint, Address[]];
 	return Promise.all(data[1].map((bet) => fetchPredictBet(config, { address: bet })));
 };
 
 export const fetchBetsVolume = async (config: Config): Promise<bigint> => {
 	logger.info('fetching bets volume', PREDICT_ADDRESS);
 	return (await readContract(config, {
-		...BetsMemoryContract,
+		abi: BetsMemoryABI,
 		address: BETS_MEMORY_ADDRESS,
 		functionName: 'gamesVolume',
 		args: [PREDICT_ADDRESS],
@@ -144,7 +144,7 @@ export const fetchBetsCount = async (config: Config): Promise<number> => {
 		logger.info('fetching bets count', address);
 		return Number(
 			await readContract(config, {
-				...BetsMemoryContract,
+				abi: BetsMemoryABI,
 				address: BETS_MEMORY_ADDRESS,
 				functionName: 'getGamesBetsCount',
 				args: [address],
@@ -174,11 +174,11 @@ export const fetchRoundBets = async (config: Config, params: { game: Address; ro
 	logger.info('fetching round bets');
 	const { game, round } = params;
 	const data = (await readContract(config, {
-		abi: GameContract.abi,
+		abi: PredictGameABI,
 		address: game,
 		functionName: 'getRoundBets',
-		args: [round],
-	})) as [number, Address[]];
+		args: [BigInt(round)],
+	})) as [bigint, Address[]];
 
 	return Promise.all(data[1].map((bet) => fetchPredictBet(config, { address: bet })));
 };
@@ -189,34 +189,34 @@ export async function fetchPredictBet(config: Config, params: { address: Address
 		multicallAddress: defaultMulticall,
 		contracts: [
 			{
-				...BetInterfaceContract,
+				abi: BetInterfaceABI,
 				address: address,
 				functionName: 'getBetInfo',
 				args: [],
 			},
 			{
-				...PredictBetContract,
+				abi: PredictBetABI,
 				address: address,
 				functionName: 'getSide',
 			},
 			{
-				...PredictBetContract,
+				abi: PredictBetABI,
 				address: address,
 				functionName: 'getRound',
 			},
 			{
-				...PredictBetContract,
+				abi: PredictBetABI,
 				address: address,
 				functionName: 'getPredictGame',
 			},
 			{
-				...PredictBetContract,
+				abi: PredictBetABI,
 				address: address,
 				functionName: 'getBonus',
 			},
 		],
 	});
-	const data = output[0].result as [string, string, bigint, bigint, bigint, bigint];
+	const data = output[0].result as [Address, string, bigint, bigint, bigint, bigint];
 	const side = output[1].result as boolean;
 	const round = output[2].result as bigint;
 	const predictGame = output[3].result as string;
@@ -239,7 +239,7 @@ export async function fetchPredictBet(config: Config, params: { address: Address
 export const placeBet = async ({ amount, side, game }: PlaceBetParams, config: Config): Promise<WriteContractReturnType> => {
 	const data = encodeAbiParameters(parseAbiParameters('uint256 _amount, bool _side, address _game'), [amount, side, game]);
 	return await writeContract(config, {
-		abi: PartnerContract.abi,
+		abi: PartnerABI,
 		address: PARTNER_ADDRESS,
 		functionName: 'placeBet',
 		args: [PREDICT_ADDRESS, amount, data],
@@ -250,23 +250,29 @@ export const calculateRound = async ({ round, game }: CalculateRoundParams, conf
 	const end = (round + game.duration) * game.interval;
 	const startBlock = await getBlockByTimestamp(start);
 	const endBlock = await getBlockByTimestamp(end);
-	const priceStart = (await readContract(config, {
-		abi: DataFeedContract.abi,
+	const priceStart = await readContract(config, {
+		abi: DataFeedABI,
 		address: game.dataFeed,
 		functionName: 'latestRoundData',
 		blockNumber: startBlock,
-	})) as bigint[];
-	const priceEnd = (await readContract(config, {
-		abi: DataFeedContract.abi,
+	});
+	const priceEnd = await readContract(config, {
+		abi: DataFeedABI,
 		address: game.dataFeed,
 		functionName: 'latestRoundData',
 		blockNumber: endBlock,
-	})) as bigint[];
-	return await writeContract(config, {
-		...GameContract,
+	});
+	await simulateContract(config, {
+		abi: PredictGameABI,
 		address: game.address,
 		functionName: 'calculateBets',
-		args: [round, priceStart[0], priceEnd[0]],
+		args: [BigInt(round), priceStart[0], priceEnd[0]],
+	});
+	return await writeContract(config, {
+		abi: PredictGameABI,
+		address: game.address,
+		functionName: 'calculateBets',
+		args: [BigInt(round), priceStart[0], priceEnd[0]],
 	});
 };
 

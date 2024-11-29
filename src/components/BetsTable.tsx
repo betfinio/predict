@@ -145,7 +145,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 			<TabsContent value={'my'}>
 				<DataTable columns={columns} data={myBets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
 			</TabsContent>
-			<TabsContent value={'bonus'} className={'h-[310px] w-full border rounded-md p-4'}>
+			<TabsContent value={'bonus'} className={'h-[310px] w-full border border-border rounded-md p-4'}>
 				<BonusChart bonuses={bonuses} />
 			</TabsContent>
 		</Tabs>
