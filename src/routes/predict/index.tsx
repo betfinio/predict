@@ -1,14 +1,7 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/predict/')({
-	component: Redirect,
+	beforeLoad: () => {
+		throw redirect({ to: '/predict/$pair', params: { pair: 'BTCUSDT' }, replace: true });
+	},
 });
-
-function Redirect() {
-	const navigate = useNavigate();
-	useEffect(() => {
-		navigate({ to: '/predict/$pair', params: { pair: 'BTCUSDT' }, replace: true });
-	}, []);
-	return null;
-}

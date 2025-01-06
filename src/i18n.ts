@@ -4,7 +4,7 @@ import * as i18 from 'i18next';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import ICU from 'i18next-icu';
 import { initReactI18next } from 'react-i18next';
-import czJSON from './translations/cz.json';
+import csJSON from './translations/cs.json';
 import enJSON from './translations/en.json';
 import ruJSON from './translations/ru.json';
 
@@ -16,7 +16,7 @@ export const resources = {
 		shared: sharedLang.en,
 	},
 	cs: {
-		predict: czJSON,
+		predict: csJSON,
 		shared: sharedLang.cs,
 	},
 	ru: {
@@ -31,8 +31,12 @@ instance
 	.use(I18nextBrowserLanguageDetector)
 	.use(ICU)
 	.init({
-		resources: resources,
-		lng: 'en', // default language
+		resources,
+		detection: {
+			order: ['localStorage', 'navigator'],
+			convertDetectedLanguage: (lng) => lng.split('-')[0],
+		},
+		supportedLngs: ['en', 'ru', 'cs'],
 		fallbackLng: 'en',
 		defaultNS,
 		interpolation: { escapeValue: false },
