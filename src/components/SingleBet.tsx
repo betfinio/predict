@@ -9,7 +9,7 @@ import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
 import { Medal, Pig } from '@betfinio/ui';
 import { Bank } from '@betfinio/ui/dist/icons';
-import { useCustomUsername, useUsername } from 'betfinio_app/lib/query/username';
+import { useCustomUsername, useUsername } from 'betfinio_context/lib/query';
 import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, SquareArrowOutUpRight, X } from 'lucide-react';
 import { DateTime } from 'luxon';

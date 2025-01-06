@@ -12,8 +12,7 @@ import { animateNewBet, fetchPredictBet, fetchRound } from '@/src/lib/api';
 import type { Round } from '@/src/lib/types';
 import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { getStakingUrl } from 'betfinio_app/lib';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 
@@ -81,9 +80,9 @@ function PredictPage() {
 				<LastBets game={game} />
 			</div>
 			<BonusAndChart game={game} />
-			<a href={getStakingUrl()} className={'text-center text-muted-foreground text-sm md:text-base cursor-pointer'}>
+			<Link to={'/staking/conservative'} className={'text-center text-muted-foreground text-sm md:text-base cursor-pointer'}>
 				<Trans t={t} i18nKey={'feeStaking'} i18n={i18n} components={{ b: <b className={'text-secondary-foreground font-medium'} /> }} />
-			</a>
+			</Link>
 			<RoundsTable game={game} />
 			<div className={'max-w-[200px]'}>
 				<a target={'_blank'} rel={'noreferrer'} href="https://data.chain.link/feeds/polygon/mainnet/btc-usd">

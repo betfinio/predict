@@ -5,7 +5,7 @@ import { valueToNumber } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { Separator } from '@betfinio/components/ui';
-import { useChatbot } from 'betfinio_app/chatbot';
+import { useChatbot } from 'betfinio_context/lib/context';
 import { AlertCircle, CircleHelp } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
