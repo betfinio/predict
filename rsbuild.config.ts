@@ -29,6 +29,7 @@ export default defineConfig({
 				'./pair': './src/routes/games/predict/$pair',
 				'./style': './src/style.ts',
 			},
+			dts: true,
 			shared: {
 				react: {
 					singleton: true,
