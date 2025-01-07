@@ -5,12 +5,12 @@ import PlaceBet from '@/src/components/PlaceBet.tsx';
 import RoundConditions from '@/src/components/RoundConditions.tsx';
 import RoundsTable from '@/src/components/RoundsTable.tsx';
 import { VersionValidation } from '@/src/components/VersionValidation.tsx';
-import logger from '@/src/config/logger';
+import logger from '@/src/config/logger.ts';
 import { BETS_MEMORY_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import i18n from '@/src/i18n.ts';
 import { games } from '@/src/lib';
 import { animateNewBet, fetchPredictBet, fetchRound } from '@/src/lib/api';
-import type { Round } from '@/src/lib/types';
+import type { Round } from '@/src/lib/types.ts';
 import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,7 +18,7 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 
-export const Route = createFileRoute('/predict/$pair')({
+export const Route = createFileRoute('/games/predict/$pair')({
 	validateSearch: (search: Record<string, unknown>) => {
 		if (!search.round) return {};
 		return { round: Number(search.round) };

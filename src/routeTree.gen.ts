@@ -12,8 +12,8 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as PredictIndexImport } from './routes/predict/index'
-import { Route as PredictPairImport } from './routes/predict/$pair'
+import { Route as GamesPredictIndexImport } from './routes/games/predict/index'
+import { Route as GamesPredictPairImport } from './routes/games/predict/$pair'
 
 // Create/Update Routes
 
@@ -23,15 +23,15 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const PredictIndexRoute = PredictIndexImport.update({
-  id: '/predict/',
-  path: '/predict/',
+const GamesPredictIndexRoute = GamesPredictIndexImport.update({
+  id: '/games/predict/',
+  path: '/games/predict/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const PredictPairRoute = PredictPairImport.update({
-  id: '/predict/$pair',
-  path: '/predict/$pair',
+const GamesPredictPairRoute = GamesPredictPairImport.update({
+  id: '/games/predict/$pair',
+  path: '/games/predict/$pair',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,18 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/predict/$pair': {
-      id: '/predict/$pair'
-      path: '/predict/$pair'
-      fullPath: '/predict/$pair'
-      preLoaderRoute: typeof PredictPairImport
+    '/games/predict/$pair': {
+      id: '/games/predict/$pair'
+      path: '/games/predict/$pair'
+      fullPath: '/games/predict/$pair'
+      preLoaderRoute: typeof GamesPredictPairImport
       parentRoute: typeof rootRoute
     }
-    '/predict/': {
-      id: '/predict/'
-      path: '/predict'
-      fullPath: '/predict'
-      preLoaderRoute: typeof PredictIndexImport
+    '/games/predict/': {
+      id: '/games/predict/'
+      path: '/games/predict'
+      fullPath: '/games/predict'
+      preLoaderRoute: typeof GamesPredictIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -67,42 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/predict/$pair': typeof PredictPairRoute
-  '/predict': typeof PredictIndexRoute
+  '/games/predict/$pair': typeof GamesPredictPairRoute
+  '/games/predict': typeof GamesPredictIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/predict/$pair': typeof PredictPairRoute
-  '/predict': typeof PredictIndexRoute
+  '/games/predict/$pair': typeof GamesPredictPairRoute
+  '/games/predict': typeof GamesPredictIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/predict/$pair': typeof PredictPairRoute
-  '/predict/': typeof PredictIndexRoute
+  '/games/predict/$pair': typeof GamesPredictPairRoute
+  '/games/predict/': typeof GamesPredictIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/predict/$pair' | '/predict'
+  fullPaths: '/' | '/games/predict/$pair' | '/games/predict'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/predict/$pair' | '/predict'
-  id: '__root__' | '/' | '/predict/$pair' | '/predict/'
+  to: '/' | '/games/predict/$pair' | '/games/predict'
+  id: '__root__' | '/' | '/games/predict/$pair' | '/games/predict/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PredictPairRoute: typeof PredictPairRoute
-  PredictIndexRoute: typeof PredictIndexRoute
+  GamesPredictPairRoute: typeof GamesPredictPairRoute
+  GamesPredictIndexRoute: typeof GamesPredictIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PredictPairRoute: PredictPairRoute,
-  PredictIndexRoute: PredictIndexRoute,
+  GamesPredictPairRoute: GamesPredictPairRoute,
+  GamesPredictIndexRoute: GamesPredictIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,18 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/predict/$pair",
-        "/predict/"
+        "/games/predict/$pair",
+        "/games/predict/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/predict/$pair": {
-      "filePath": "predict/$pair.tsx"
+    "/games/predict/$pair": {
+      "filePath": "games/predict/$pair.tsx"
     },
-    "/predict/": {
-      "filePath": "predict/index.tsx"
+    "/games/predict/": {
+      "filePath": "games/predict/index.tsx"
     }
   }
 }

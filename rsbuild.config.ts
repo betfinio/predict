@@ -26,7 +26,7 @@ export default defineConfig({
 				betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
 			},
 			exposes: {
-				'./pair': './src/routes/predict/$pair',
+				'./pair': './src/routes/games/predict/$pair',
 				'./style': './src/style.ts',
 			},
 			shared: {
