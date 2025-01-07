@@ -10,17 +10,23 @@ export default defineConfig({
 	},
 	dev: {
 		assetPrefix: 'http://localhost:4004',
+		lazyCompilation: true,
 	},
 	html: {
 		title: 'Betfin Predict',
 		favicon: './src/assets/favicon.svg',
 	},
+	performance: {
+		removeMomentLocale: true,
+	},
 	output: {
 		assetPrefix: process.env.PUBLIC_OUTPUT_URL,
+		polyfill: 'usage',
 	},
 	plugins: [
 		pluginReact(),
 		pluginModuleFederation({
+			shareStrategy: 'loaded-first',
 			name: 'betfinio_predict',
 			remotes: {
 				betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
@@ -29,7 +35,6 @@ export default defineConfig({
 				'./pair': './src/routes/games/predict/$pair',
 				'./style': './src/style.ts',
 			},
-			dts: true,
 			shared: {
 				react: {
 					singleton: true,
@@ -39,21 +44,9 @@ export default defineConfig({
 					singleton: true,
 					requiredVersion: dependencies['react-dom'],
 				},
-				'@tanstack/react-router': {
-					singleton: true,
-					requiredVersion: dependencies['@tanstack/react-router'],
-				},
 				'@tanstack/react-query': {
 					singleton: true,
 					requiredVersion: dependencies['@tanstack/react-query'],
-				},
-				i18next: {
-					singleton: true,
-					requiredVersion: dependencies.i18next,
-				},
-				'react-i18next': {
-					singleton: true,
-					requiredVersion: dependencies['react-i18next'],
 				},
 				wagmi: {
 					singleton: true,
