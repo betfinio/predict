@@ -4,20 +4,21 @@ import PairInfo from '@/src/components/PairInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
 import RoundConditions from '@/src/components/RoundConditions.tsx';
 import RoundsTable from '@/src/components/RoundsTable.tsx';
-import logger from '@/src/config/logger';
+import { VersionValidation } from '@/src/components/VersionValidation.tsx';
+import logger from '@/src/config/logger.ts';
 import { BETS_MEMORY_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import i18n from '@/src/i18n.ts';
 import { games } from '@/src/lib';
 import { animateNewBet, fetchPredictBet, fetchRound } from '@/src/lib/api';
-import type { Round } from '@/src/lib/types';
+import type { Round } from '@/src/lib/types.ts';
 import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
+import { Toaster } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { getStakingUrl } from 'betfinio_app/lib';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 
-export const Route = createFileRoute('/predict/$pair')({
+export const Route = createFileRoute('/games/predict/$pair')({
 	validateSearch: (search: Record<string, unknown>) => {
 		if (!search.round) return {};
 		return { round: Number(search.round) };
@@ -25,7 +26,7 @@ export const Route = createFileRoute('/predict/$pair')({
 	component: PredictPage,
 });
 
-function PredictPage() {
+export function PredictPage() {
 	const { t } = useTranslation('predict');
 	const { address = ZeroAddress } = useAccount();
 	const { pair } = Route.useParams();
@@ -73,23 +74,27 @@ function PredictPage() {
 	});
 
 	return (
-		<div className={'rounded-lg w-full h-full p-2 md:p-3 lg:p-4 gap-2 flex flex-col'}>
-			<PairInfo game={game} />
-			<div className={'grid lg:mt-2 grid-cols-1 md:grid-cols-8 gap-10 md:gap-4'}>
-				<RoundConditions game={game} />
-				<PlaceBet game={game} />
-				<LastBets game={game} />
+		<div className={'predict w-full h-full'}>
+			<div className={'rounded-lg w-full h-full p-2 md:p-3 lg:p-4 gap-2 flex flex-col 2xl:pr-0'}>
+				<PairInfo game={game} />
+				<div className={'grid lg:mt-2 grid-cols-1 md:grid-cols-8 gap-10 md:gap-4'}>
+					<RoundConditions game={game} />
+					<PlaceBet game={game} />
+					<LastBets game={game} />
+				</div>
+				<BonusAndChart game={game} />
+				<Link to={'/staking/conservative'} className={'text-center text-muted-foreground text-sm md:text-base cursor-pointer'}>
+					<Trans t={t} i18nKey={'feeStaking'} i18n={i18n} components={{ b: <b className={'text-secondary-foreground font-medium'} /> }} />
+				</Link>
+				<RoundsTable game={game} />
+				<div className={'max-w-[200px]'}>
+					<a target={'_blank'} rel={'noreferrer'} href="https://data.chain.link/feeds/polygon/mainnet/btc-usd">
+						<img src="https://chain.link/badge-market-data-black" alt="market data secured with chainlink" />
+					</a>
+				</div>
 			</div>
-			<BonusAndChart game={game} />
-			<a href={getStakingUrl()} className={'text-center text-muted-foreground text-sm md:text-base cursor-pointer'}>
-				<Trans t={t} i18nKey={'feeStaking'} i18n={i18n} components={{ b: <b className={'text-secondary-foreground font-medium'} /> }} />
-			</a>
-			<RoundsTable game={game} />
-			<div className={'max-w-[200px]'}>
-				<a target={'_blank'} rel={'noreferrer'} href="https://data.chain.link/feeds/polygon/mainnet/btc-usd">
-					<img src="https://chain.link/badge-market-data-black" alt="market data secured with chainlink" />
-				</a>
-			</div>
+			<Toaster />
+			<VersionValidation repository={'predict'} branch={import.meta.env.PUBLIC_BRANCH} current={import.meta.env.PUBLIC_DEPLOYED} />
 		</div>
 	);
 }
