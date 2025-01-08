@@ -10,23 +10,17 @@ export default defineConfig({
 	},
 	dev: {
 		assetPrefix: 'http://localhost:4004',
-		lazyCompilation: true,
 	},
 	html: {
 		title: 'Betfin Predict',
 		favicon: './src/assets/favicon.svg',
 	},
-	performance: {
-		removeMomentLocale: true,
-	},
 	output: {
 		assetPrefix: process.env.PUBLIC_OUTPUT_URL,
-		polyfill: 'usage',
 	},
 	plugins: [
 		pluginReact(),
 		pluginModuleFederation({
-			shareStrategy: 'loaded-first',
 			name: 'betfinio_predict',
 			remotes: {
 				betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
