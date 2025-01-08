@@ -14,22 +14,18 @@ import type { Round } from '@/src/lib/types.ts';
 import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { Link, createFileRoute, useParams } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 
 export const Route = createFileRoute('/games/predict/$pair')({
-	validateSearch: (search: Record<string, unknown>) => {
-		if (!search.round) return {};
-		return { round: Number(search.round) };
-	},
 	component: PredictPage,
 });
 
 export function PredictPage() {
 	const { t } = useTranslation('predict');
 	const { address = ZeroAddress } = useAccount();
-	const { pair } = useParams({ from: '/games/predict/$pair' });
+	const { pair } = Route.useParams();
 
 	const client = useQueryClient();
 	const config = useConfig();
