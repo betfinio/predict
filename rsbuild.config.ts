@@ -28,6 +28,7 @@ export default defineConfig({
 			exposes: {
 				'./pair': './src/routes/games/predict/$pair',
 				'./style': './src/style.ts',
+				'./i18n': './src/i18n.ts',
 			},
 			shared: {
 				react: {
