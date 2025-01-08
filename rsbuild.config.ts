@@ -29,7 +29,6 @@ export default defineConfig({
 				'./pair': './src/routes/games/predict/$pair',
 				'./style': './src/style.ts',
 			},
-			dts: true,
 			shared: {
 				react: {
 					singleton: true,
@@ -39,21 +38,9 @@ export default defineConfig({
 					singleton: true,
 					requiredVersion: dependencies['react-dom'],
 				},
-				'@tanstack/react-router': {
-					singleton: true,
-					requiredVersion: dependencies['@tanstack/react-router'],
-				},
 				'@tanstack/react-query': {
 					singleton: true,
 					requiredVersion: dependencies['@tanstack/react-query'],
-				},
-				i18next: {
-					singleton: true,
-					requiredVersion: dependencies.i18next,
-				},
-				'react-i18next': {
-					singleton: true,
-					requiredVersion: dependencies['react-i18next'],
 				},
 				wagmi: {
 					singleton: true,
