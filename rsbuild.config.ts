@@ -39,6 +39,10 @@ export default defineConfig({
 					singleton: true,
 					requiredVersion: dependencies['react-dom'],
 				},
+				'@tanstack/react-router': {
+					singleton: true,
+					requiredVersion: dependencies['@tanstack/react-router'],
+				},
 				'@tanstack/react-query': {
 					singleton: true,
 					requiredVersion: dependencies['@tanstack/react-query'],
