@@ -17,7 +17,7 @@ const BonusAndChart: FC<{ game: Game }> = ({ game }) => {
 				<TabsContent value={'bonus'}>
 					<BonusInfo game={game} />
 				</TabsContent>
-				<TabsContent value={'chart'} className={'h-[300px]'}>
+				<TabsContent value={'chart'} className={'h-[300px] overflow-y-hidden'}>
 					<PriceChart />
 				</TabsContent>
 			</Tabs>

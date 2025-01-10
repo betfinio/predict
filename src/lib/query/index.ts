@@ -20,7 +20,7 @@ import { ZeroAddress } from '@betfinio/abi';
 import { toast } from '@betfinio/components/hooks';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { WriteContractReturnType } from '@wagmi/core';
-import { getTransactionLink } from 'betfinio_app/helpers';
+import { getTransactionLink } from 'betfinio_context/lib/helpers';
 import type { Address, WriteContractErrorType } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
 import { useAccount, useConfig } from 'wagmi';
@@ -178,7 +178,7 @@ export const useCalculate = () => {
 	return useMutation<WriteContractReturnType, WriteContractErrorType, CalculateRoundParams>({
 		mutationKey: ['predict', 'bets', 'calculate'],
 		mutationFn: (params) => calculateRound(params, config),
-		onError: async (e) => {
+		onError: async () => {
 			toast({
 				title: 'Error happened',
 				description: 'Transaction failed',
