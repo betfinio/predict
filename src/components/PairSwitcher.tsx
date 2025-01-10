@@ -43,7 +43,7 @@ const SwitchModal: FC<{ selected: Game }> = ({ selected }) => {
 		<motion.div layoutId={'switcher'} className={'bg-background p-2 min-w-[300px] text-foreground'}>
 			{pairs.map((pair, index) => (
 				<DialogClose key={index} className={cn('w-full ', pair.name === selected.name && 'border border-border bg-background-lighter rounded-lg')}>
-					<Link to={`/predict/${pair.name}`} key={index} className={cn('w-full flex flex-row items-center gap-2 p-4 py-2')}>
+					<Link to={`/games/predict/${pair.name}`} key={index} className={cn('w-full flex flex-row items-center gap-2 p-4 py-2')}>
 						{getImage(pair.name)}
 						{pair.name}
 					</Link>

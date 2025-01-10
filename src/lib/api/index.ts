@@ -5,7 +5,7 @@ import { fetchPrice, getPlayerRounds, getRounds } from '@/src/lib/gql';
 import { BetInterfaceABI, BetsMemoryABI, DataFeedABI, PartnerABI, PredictBetABI, PredictGameABI, defaultMulticall } from '@betfinio/abi';
 import type { QueryClient } from '@tanstack/react-query';
 import { type Config, type WriteContractReturnType, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
-import { getBlockByTimestamp } from 'betfinio_app/lib/gql';
+import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round, RoundPool, RoundWithStartPrice } from '../types';
 

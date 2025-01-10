@@ -1,6 +1,7 @@
 /// <reference types="@rsbuild/core/types" />
 import '@tanstack/react-router';
 import '@tanstack/react-table';
+import type router from '@/src/bootstrap';
 import type { Address } from 'viem';
 
 declare module '@tanstack/react-router' {
