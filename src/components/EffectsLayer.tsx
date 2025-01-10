@@ -1,7 +1,7 @@
 import { useObserveBet } from '@/src/lib/query';
 import type { Game } from '@/src/lib/types.ts';
 import { ZeroAddress } from '@betfinio/abi';
-import { addressToColor } from 'betfinio_app/lib/utils';
+import { addressToColor } from 'betfinio_context/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import type { FC } from 'react';

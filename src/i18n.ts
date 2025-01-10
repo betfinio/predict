@@ -1,10 +1,10 @@
-import { sharedLang } from 'betfinio_app/locales/index';
+import { sharedLang } from 'betfinio_context/translations';
 import type { i18n } from 'i18next';
 import * as i18 from 'i18next';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import ICU from 'i18next-icu';
 import { initReactI18next } from 'react-i18next';
-import czJSON from './translations/cz.json';
+import csJSON from './translations/cs.json';
 import enJSON from './translations/en.json';
 import ruJSON from './translations/ru.json';
 
@@ -15,9 +15,9 @@ export const resources = {
 		predict: enJSON,
 		shared: sharedLang.en,
 	},
-	cz: {
-		predict: czJSON,
-		shared: sharedLang.cz,
+	cs: {
+		predict: csJSON,
+		shared: sharedLang.cs,
 	},
 	ru: {
 		predict: ruJSON,
@@ -31,8 +31,12 @@ instance
 	.use(I18nextBrowserLanguageDetector)
 	.use(ICU)
 	.init({
-		resources: resources,
-		lng: 'en', // default language
+		resources,
+		detection: {
+			order: ['localStorage', 'navigator'],
+			convertDetectedLanguage: (lng) => lng.split('-')[0],
+		},
+		supportedLngs: ['en', 'ru', 'cs'],
 		fallbackLng: 'en',
 		defaultNS,
 		interpolation: { escapeValue: false },
