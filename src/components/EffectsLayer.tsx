@@ -57,6 +57,10 @@ export const EffectsLayer: FC<{ game: Game }> = ({ game }) => {
 						key={particle.color + i}
 						initial={{ opacity: 0, y: 300 }}
 						animate={{ opacity: 1, y: -500 }}
+						exit={{
+							opacity: 0,
+							transition: { duration: 0.5 },
+						}}
 						transition={{ duration: Math.random() * 2.3 + 1, delay: i * 0.01 }}
 						className="w-5 h-5 absolute"
 						style={{ left: particle.x, top: particle.y }}
@@ -70,6 +74,10 @@ export const EffectsLayer: FC<{ game: Game }> = ({ game }) => {
 						key={i}
 						initial={{ opacity: 0, y: -500 }}
 						animate={{ opacity: 1, y: 300 }}
+						exit={{
+							opacity: 0,
+							transition: { duration: 0.5 },
+						}}
 						transition={{ duration: Math.random() * 2.3 + 1, delay: i * 0.01 }}
 						className="w-5 h-5 absolute"
 						style={{ left: particle.x, top: particle.y }}

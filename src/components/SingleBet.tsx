@@ -68,7 +68,8 @@ export default SingleBet;
 
 const BetModal: FC<PredictBet> = (bet) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'modal' });
-	const game = Object.values(games).find((g) => g.address === bet.predictGame) as Game;
+	const game = Object.values(games).find((g) => g.address?.toLowerCase() === bet.predictGame) as Game;
+
 	const { data: start = defaultResult, isLoading: isStartLoading } = usePrice(game.dataFeed, Number(bet.round) * game.interval);
 	const { data: end = defaultResult, isLoading: isEndLoading } = usePrice(game.dataFeed, (Number(bet.round) + game.duration) * game.interval);
 	const [timer, setTimer] = useState<{ mins: number; secs: number }>({ mins: -1, secs: -1 });

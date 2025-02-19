@@ -1,37 +1,162 @@
-query Rounds($address: Bytes) {
-    rounds(where: {address: $address}, orderBy: round, orderDirection: desc) {
-        round
-        startPrice
+#############################
+# Fragments
+#############################
+
+fragment RoundFields on Round {
+  round
+  startPrice
+  endPrice
+  calculated
+  long
+  short
+  bets {
+    player
+  }
+}
+
+fragment PoolFields on Round {
+ long
+ short
+}
+
+fragment PredictBetDetailFields on PredictBet {
+  address
+  player
+  game
+  predictGame
+  amount
+  result
+  bonus
+  status
+  blockTimestamp
+  side
+  round
+  hash
+}
+
+fragment BlockFields on Block {
+  number
+}
+
+fragment AnswerFields on Answer {
+  current
+  roundId
+  blockTimestamp
+}
+
+#############################
+# Queries
+#############################
+
+query Rounds ($address: Bytes, $limit: Int, $skip: Int) {
+  rounds(
+    where: { address: $address }
+    orderBy: round
+    orderDirection: desc
+    first: $limit
+    skip: $skip
+  ) {
+    ...RoundFields
+  }
+}
+
+query Round ($id: ID!) {
+  round(
+    id: $id
+  ) {
+    ...RoundFields
+  }
+}
+
+query RoundPool ($id: ID!) {
+    round (
+        id: $id
+    ) {
+        ...PoolFields
     }
 }
 
+query PlayerRounds($address: Bytes, $player: Bytes, $limit: Int, $skip: Int) {
+  rounds(
+    where: { address: $address, players_: { id: $player } }
+    orderBy: round
+    orderDirection: desc
+    first: $limit
+    skip: $skip
+  ) {
+    ...RoundFields
+  }
+}
+
+query PlayerRoundsCount($player: ID!) {
+  player(id: $player) {
+    roundsCount
+  }
+}
+
+query RoundsCount {
+  counter(id: "1") {
+    rounds
+  }
+}
 
 query BlockByTimestamp($timestamp: BigInt) {
-    blocks(where: {timestamp_lte: $timestamp}, orderBy: timestamp, orderDirection: desc, first: 1) {
-        number
-    }
+  blocks(
+    where: { timestamp_lte: $timestamp }
+    orderBy: timestamp
+    orderDirection: desc
+    first: 1
+  ) {
+    ...BlockFields
+  }
 }
 
 query GetPrice($timestamp: BigInt, $feed: Bytes) {
-    answers(where: {blockTimestamp_lte: $timestamp, feed: $feed}, orderBy: blockTimestamp, orderDirection: desc, first: 1) {
-        current
-        roundId
-        blockTimestamp
-    }
+  answers(
+    where: { blockTimestamp_lte: $timestamp, feed: $feed }
+    orderBy: blockTimestamp
+    orderDirection: desc
+    first: 1
+  ) {
+    ...AnswerFields
+  }
 }
 
-query PlayerBets($player: Bytes, $game: Bytes) {
-    predictBets(where: {player: $player, predictGame: $game}, orderDirection: desc, orderBy: blockTimestamp, first: 500) {
-        round
-        blockTimestamp
-        bet
-    }
+query BetsByRound($address: Bytes, $round: BigInt) {
+  predictBets(
+    where: { predictGame: $address, round: $round }
+    orderDirection: asc
+    orderBy: blockTimestamp
+  ) {
+    ...PredictBetDetailFields
+  }
 }
 
-query PlayerBetsByRound($player: Bytes, $game: Bytes, $round: BigInt) {
-    predictBets(where: {player: $player, predictGame: $game, round: $round}, orderDirection: desc, orderBy: blockTimestamp, first: 500) {
-        round
-        blockTimestamp
-        bet
-    }
+query PlayerBetsByRound($address: Bytes, $round: BigInt, $player: Bytes) {
+  predictBets(
+    where: { predictGame: $address, round: $round, player: $player }
+    orderDirection: asc
+    orderBy: blockTimestamp
+  ) {
+    ...PredictBetDetailFields
+  }
+}
+
+query LastBets($address: Bytes, $limit: Int) {
+  predictBets(
+    where: { predictGame: $address }
+    orderDirection: desc
+    orderBy: blockTimestamp
+    first: $limit
+  ) {
+    ...PredictBetDetailFields
+  }
+}
+
+query Bet($address: ID!) {
+  predictBet(
+    id: $address
+  ) {
+    ...PredictBetDetailFields
+  }
 }
