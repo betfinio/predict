@@ -155,7 +155,6 @@ const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns 
 			isLoading={isLoading || roundsLoading}
 			serverPagination
 			totalCount={roundsCount}
-			onPageChange={handlePageChange}
 			pagination={pagination}
 			onPaginationChange={setPagination}
 		/>
@@ -209,10 +208,9 @@ const RoundsTableContent: FC<{
 	isLoading: boolean;
 	serverPagination: boolean;
 	totalCount?: number;
-	onPageChange?: (pageIndex: number, pageSize: number) => void;
 	pagination?: { pageIndex: number; pageSize: number };
 	onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void;
-}> = ({ game, columns, rounds, isLoading, serverPagination, totalCount, onPageChange, pagination, onPaginationChange }) => {
+}> = ({ game, columns, rounds, isLoading, serverPagination, totalCount, pagination, onPaginationChange }) => {
 	const [selectedRound, setSelectedRound] = useState<number | null>(null);
 	const handleClick = async (row: Round) => {
 		setSelectedRound(row.round);
@@ -233,7 +231,6 @@ const RoundsTableContent: FC<{
 				noResultsClassName="h-[285px]"
 				serverPagination={serverPagination}
 				totalCount={totalCount}
-				onPageChange={onPageChange}
 				pagination={pagination}
 				onPaginationChange={onPaginationChange}
 			/>
