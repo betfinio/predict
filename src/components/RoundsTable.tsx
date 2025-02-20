@@ -143,9 +143,6 @@ export default RoundsTable;
 const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => {
 	const { data: roundsCount = 0, isLoading } = useRoundsCount(game);
 	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
-	const handlePageChange = useCallback((pageIndex: number, pageSize: number) => {
-		setPagination({ pageIndex, pageSize });
-	}, []);
 	const { data: rounds = [], isLoading: roundsLoading } = useRounds(game, pagination.pageSize, pagination.pageIndex);
 	return (
 		<RoundsTableContent
@@ -153,7 +150,6 @@ const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns 
 			columns={columns}
 			rounds={rounds}
 			isLoading={isLoading || roundsLoading}
-			serverPagination
 			totalCount={roundsCount}
 			pagination={pagination}
 			onPaginationChange={setPagination}
@@ -178,7 +174,6 @@ const MyRounds: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => 
 			columns={[...columns.slice(0, 3), resultColumn, columns[4]]}
 			rounds={rounds}
 			isLoading={isLoading || roundsLoading}
-			serverPagination
 			totalCount={roundsCount}
 			pagination={pagination}
 			onPaginationChange={setPagination}
@@ -206,11 +201,10 @@ const RoundsTableContent: FC<{
 	columns: unknown[];
 	rounds: Round[];
 	isLoading: boolean;
-	serverPagination: boolean;
-	totalCount?: number;
-	pagination?: { pageIndex: number; pageSize: number };
-	onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void;
-}> = ({ game, columns, rounds, isLoading, serverPagination, totalCount, pagination, onPaginationChange }) => {
+	totalCount: number;
+	pagination: { pageIndex: number; pageSize: number };
+	onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
+}> = ({ game, columns, rounds, isLoading, totalCount, pagination, onPaginationChange }) => {
 	const [selectedRound, setSelectedRound] = useState<number | null>(null);
 	const handleClick = async (row: Round) => {
 		setSelectedRound(row.round);
@@ -229,7 +223,7 @@ const RoundsTableContent: FC<{
 				onRowClick={handleClick}
 				loaderClassName="h-[285px]"
 				noResultsClassName="h-[285px]"
-				serverPagination={serverPagination}
+				serverPagination={true}
 				totalCount={totalCount}
 				pagination={pagination}
 				onPaginationChange={onPaginationChange}
