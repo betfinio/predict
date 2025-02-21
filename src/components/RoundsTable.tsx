@@ -1,5 +1,5 @@
-import RoundModal from '@/src/components/RoundModal.tsx';
-import { useCurrentRound, usePlayerBets, usePlayerRounds, useRounds } from '@/src/lib/query';
+import RoundModal from '@/src/components/RoundModal';
+import { useCurrentRound, usePlayerBets, usePlayerRounds, usePlayerRoundsCount, useRounds, useRoundsCount } from '@/src/lib/query';
 import type { Game, Round, RoundStatus } from '@/src/lib/types';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
 const columnHelper = createColumnHelper<Round>();
+
 const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 	const { data: currentRound } = useCurrentRound(game.interval);
 	const { t } = useTranslation('predict', { keyPrefix: 'table' });
@@ -36,7 +37,6 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 				header: t('columns.round'),
 				cell: (props) => {
 					const { currentPlayerBets, round } = props.row.original;
-
 					return (
 						<div className={cn('text-muted-foreground md:w-[90px]', currentPlayerBets > 0 && 'text-secondary-foreground')}>#{round.toString().slice(2)}</div>
 					);
@@ -48,10 +48,9 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 					const { start, end } = props.getValue();
 					const formattedStart = valueToNumber(start, 8, 0);
 					const formattedEnd = valueToNumber(end, 8, 0);
-
 					return (
-						<div className={'flex md:w-[160px] flex-row gap-1 items-center rounded-lg'}>
-							<div className={'w-[60px] text-center hidden md:block'}>{formattedStart}</div>
+						<div className="flex md:w-[160px] flex-row gap-1 items-center rounded-lg">
+							<div className="w-[60px] text-center hidden md:block">{formattedStart}</div>
 							<div
 								className={cn(
 									'w-[80px] flex flex-row items-center justify-center gap-1 rounded-md',
@@ -59,7 +58,7 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 								)}
 							>
 								{formattedEnd}
-								{end > start ? <ArrowUpIcon className={'w-3 h-3 stroke-[3]'} /> : <ArrowDownIcon className={'w-3 h-3 stroke-[3]'} />}
+								{end > start ? <ArrowUpIcon className="w-3 h-3 stroke-[3]" /> : <ArrowDownIcon className="w-3 h-3 stroke-[3]" />}
 							</div>
 						</div>
 					);
@@ -73,17 +72,16 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 					const shortValue = valueToNumber(pool.short);
 					const longPercentage = (longValue / (longValue + shortValue)) * 100;
 					const shortPercentage = (shortValue / (longValue + shortValue)) * 100;
-
 					return (
-						<div className={'flex h-[36px] md:h-[40px] flex-row w-[100px] md:w-[200px] text-foreground items-center rounded-md overflow-hidden'}>
+						<div className="flex h-[36px] md:h-[40px] flex-row w-[100px] md:w-[200px] text-foreground items-center rounded-md overflow-hidden">
 							<div
-								className={'px-1 py-[6px] h-full bg-opacity-30 bg-success/10 text-success flex flex-row items-center gap-1'}
+								className="px-1 py-[6px] h-full bg-opacity-30 bg-success/10 text-success flex flex-row items-center gap-1"
 								style={{ width: `${longPercentage}%` }}
 							>
 								{millify(longValue, { precision: 2 })}
 							</div>
 							<div
-								className={' px-1 py-[6px] h-full bg-opacity-30 bg-destructive/10 text-destructive flex flex-row items-center gap-1 justify-end'}
+								className="px-1 py-[6px] h-full bg-opacity-30 bg-destructive/10 text-destructive flex flex-row items-center gap-1 justify-end"
 								style={{ width: `${shortPercentage}%` }}
 							>
 								{millify(shortValue, { precision: 2 })}
@@ -92,57 +90,49 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 					);
 				},
 			}),
-
 			columnHelper.display({
 				header: t('columns.status'),
-				meta: {
-					className: 'hidden md:table-cell',
-				},
+				meta: { className: 'hidden md:table-cell' },
 				cell: (props) => {
 					const { round, calculated } = props.row.original;
-
 					const status: RoundStatus = useMemo(() => {
 						return getStatus(game, round, calculated);
 					}, [currentRound, round]);
-
-					return <div className={'text-gray-300 w-[80px]'}>{t(`roundStatuses.${status}`)}</div>;
+					return <div className="text-gray-300 w-[80px]">{t(`roundStatuses.${status}`)}</div>;
 				},
 			}),
-
 			columnHelper.display({
 				id: 'search',
 				cell: (props) => {
 					const { round, calculated } = props.row.original;
-
 					const status: RoundStatus = useMemo(() => {
 						return getStatus(game, round, calculated);
 					}, [currentRound, round]);
-
 					return (
-						<div className={'w-[30px]'}>
+						<div className="w-[30px]">
 							{['waiting', 'accepting'].includes(status) ? (
 								<TableTimer roundId={round} currentRoundId={currentRound} duration={game.duration} />
 							) : (
-								<Search className={'w-6 h-6'} />
+								<Search className="w-6 h-6" />
 							)}
 						</div>
 					);
 				},
 			}),
 		],
-		[currentRound, game],
+		[currentRound, game, t],
 	);
 
 	return (
-		<Tabs defaultValue={'all'}>
+		<Tabs defaultValue="all">
 			<TabsList>
-				<TabsTrigger value={'all'}>{t('tabs.all')}</TabsTrigger>
-				<TabsTrigger value={'my'}>{t('tabs.my')}</TabsTrigger>
+				<TabsTrigger value="all">{t('tabs.all')}</TabsTrigger>
+				<TabsTrigger value="my">{t('tabs.my')}</TabsTrigger>
 			</TabsList>
-			<TabsContent value={'all'}>
+			<TabsContent value="all">
 				<AllRoundsTable columns={columns} game={game} />
 			</TabsContent>
-			<TabsContent value={'my'}>
+			<TabsContent value="my">
 				<MyRounds columns={columns} game={game} />
 			</TabsContent>
 		</Tabs>
@@ -151,58 +141,77 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 export default RoundsTable;
 
 const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => {
-	const { data: rounds = [], isLoading } = useRounds(game);
-	return <RoundsTableContent game={game} columns={columns} rounds={rounds} isLoading={isLoading} />;
+	const { data: roundsCount = 0, isLoading } = useRoundsCount(game);
+	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+	const { data: rounds = [], isLoading: roundsLoading } = useRounds(game, pagination.pageSize, pagination.pageIndex);
+	return (
+		<RoundsTableContent
+			game={game}
+			columns={columns}
+			rounds={rounds}
+			isLoading={isLoading || roundsLoading}
+			totalCount={roundsCount}
+			pagination={pagination}
+			onPaginationChange={setPagination}
+		/>
+	);
 };
 
 const MyRounds: FC<{ game: Game; columns: unknown[] }> = ({ game, columns }) => {
 	const { address = ZeroAddress } = useAccount();
-	const { data: rounds = [], isLoading } = usePlayerRounds(game, address);
+	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+	const { data: roundsCount = 0, isLoading } = usePlayerRoundsCount(game, address);
+
+	const { data: rounds = [], isLoading: roundsLoading } = usePlayerRounds(game, address, pagination.pageSize, pagination.pageIndex);
 	const resultColumn = columnHelper.display({
 		header: 'My win',
 		id: 'player win',
 		cell: (cell) => <PlayerWin round={cell.row.original.round} game={game} />,
 	});
-	return <RoundsTableContent game={game} columns={[...columns.slice(0, 3), resultColumn, columns[4]]} rounds={rounds} isLoading={isLoading} />;
+	return (
+		<RoundsTableContent
+			game={game}
+			columns={[...columns.slice(0, 3), resultColumn, columns[4]]}
+			rounds={rounds}
+			isLoading={isLoading || roundsLoading}
+			totalCount={roundsCount}
+			pagination={pagination}
+			onPaginationChange={setPagination}
+		/>
+	);
 };
 
 const progressStyle: CircularProgressbarStyles = {
-	root: {
-		width: '30px',
-	},
-	path: {
-		strokeLinecap: 'round',
-		stroke: '#FFC800',
-		strokeWidth: '6px',
-	},
-	trail: {
-		stroke: 'rgba(256, 256, 256, 0.2)',
-		strokeWidth: '1px',
-	},
-	text: {
-		fill: 'white',
-		fontSize: '30px',
-	},
+	root: { width: '30px' },
+	path: { strokeLinecap: 'round', stroke: '#FFC800', strokeWidth: '6px' },
+	trail: { stroke: 'rgba(256, 256, 256, 0.2)', strokeWidth: '1px' },
+	text: { fill: 'white', fontSize: '30px' },
 };
 
 const PlayerWin: FC<{ round: number; game: Game }> = ({ round, game }) => {
 	const { address = ZeroAddress } = useAccount();
 	const { data: bets = [], isLoading } = usePlayerBets(address, game.address, round);
 	const win = bets.reduce((acc, bet) => acc + BigInt(bet.result), 0n);
-	if (isLoading) return <LoaderIcon className={'animate-spin w-4 h-4'} />;
+	if (isLoading) return <LoaderIcon className="animate-spin w-4 h-4" />;
 	return <BetValue value={win} withIcon />;
 };
 
-const RoundsTableContent: FC<{ game: Game; columns: unknown[]; rounds: Round[]; isLoading: boolean }> = ({ game, columns, rounds, isLoading }) => {
+const RoundsTableContent: FC<{
+	game: Game;
+	columns: unknown[];
+	rounds: Round[];
+	isLoading: boolean;
+	totalCount: number;
+	pagination: { pageIndex: number; pageSize: number };
+	onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
+}> = ({ game, columns, rounds, isLoading, totalCount, pagination, onPaginationChange }) => {
 	const [selectedRound, setSelectedRound] = useState<number | null>(null);
 	const handleClick = async (row: Round) => {
 		setSelectedRound(row.round);
 	};
 
 	const handleOpenChange = (open: boolean) => {
-		if (!open) {
-			setSelectedRound(null);
-		}
+		if (!open) setSelectedRound(null);
 	};
 
 	return (
@@ -212,8 +221,12 @@ const RoundsTableContent: FC<{ game: Game; columns: unknown[]; rounds: Round[]; 
 				columns={columns as ColumnDef<Round, unknown>[]}
 				isLoading={isLoading}
 				onRowClick={handleClick}
-				loaderClassName="h-[185px]"
-				noResultsClassName="h-[185px]"
+				loaderClassName="h-[285px]"
+				noResultsClassName="h-[285px]"
+				serverPagination={true}
+				totalCount={totalCount}
+				pagination={pagination}
+				onPaginationChange={onPaginationChange}
 			/>
 			<Dialog open={selectedRound !== null} onOpenChange={handleOpenChange}>
 				{selectedRound !== null && <RoundModal round={selectedRound} game={game} />}

@@ -238,7 +238,7 @@ const PlayersBets: FC<{ game: Game }> = ({ game }) => {
 	};
 	for (const bet of playerBets) {
 		if (bet.side) {
-			userPool.longCount += 1;
+			userPool.longCount++;
 			userPool.long += bet.amount;
 		} else {
 			userPool.shortCount++;

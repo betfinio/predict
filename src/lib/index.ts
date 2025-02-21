@@ -9,3 +9,17 @@ export const games: Record<string, Game> = {
 		interval: 270,
 	},
 };
+
+export function intToLittleEndianI32(num: number): string {
+	const buffer = new ArrayBuffer(4);
+	const view = new DataView(buffer);
+
+	view.setUint32(0, num, true);
+
+	let hex = '';
+	for (let i = 0; i < 4; i++) {
+		hex += view.getUint8(i).toString(16).padStart(2, '0');
+	}
+
+	return hex;
+}

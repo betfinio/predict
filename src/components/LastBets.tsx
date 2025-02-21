@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const LastBets: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'lastBets' });
-	const { data: bets = [], isLoading } = useLastBets(4);
+	const { data: bets = [], isLoading } = useLastBets(game.address, 4);
 
 	return (
 		<div className={'md:col-start-3 col-span-4 lg:col-span-2 items-center flex flex-col gap-2 lg:gap-4'}>

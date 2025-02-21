@@ -24,12 +24,14 @@ const RoundModal: FC<{
 
 	const start = DateTime.fromMillis(round * game.interval * 1000);
 	const end = DateTime.fromMillis((round + game.duration) * game.interval * 1000);
+	const isCalculated = roundData?.calculated;
 	const isFinished = DateTime.fromMillis(Date.now()).diff(end).milliseconds > 0;
 	const players = new Set(bets.map((e) => e.player)).size;
 	const volume = bets.reduce((a, b) => a + b.amount, 0n);
 	const staking = (volume * BigInt(360)) / BigInt(10000);
 	const priceStart = roundData?.price.start || 0n;
 	const priceEnd = roundData?.price.end || 0n;
+
 	const isLong = priceStart < priceEnd;
 
 	const handleCalculate = async () => {
@@ -59,6 +61,7 @@ const RoundModal: FC<{
 						<div className={'text-xl flex items-center gap-2 cursor-pointer'} onClick={handleCalculate}>
 							{t('title')} #{round.toString().slice(2)}
 							{isFinished &&
+								isCalculated &&
 								isRoundFetched &&
 								(isLong ? (
 									<div className={'text-xl font-semibold text-success flex items-center gap-1'}>{t('long')}</div>

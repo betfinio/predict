@@ -1,8 +1,4 @@
 sources:
-  - name: predict
-    handler:
-      graphql:
-        endpoint: ${PUBLIC_PREDICT_GRAPH_URL}
   - name: blocks
     handler:
       graphql:
@@ -11,10 +7,10 @@ sources:
     handler:
       graphql:
         endpoint: ${PUBLIC_CHAINLINK_GRAPH_URL}
-  - name: bets-memory
+  - name: predict
     handler:
       graphql:
-        endpoint: ${PUBLIC_BETS_MEMORY_GRAPH_URL}
+        endpoint: ${PUBLIC_PREDICT_GRAPH_URL}
 
 codegen:
   scalars:

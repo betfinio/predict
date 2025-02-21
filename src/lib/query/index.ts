@@ -3,18 +3,22 @@ import {
 	calculateRound,
 	fetchBetsCount,
 	fetchBetsVolume,
-	fetchLastBets,
 	fetchLatestPrice,
-	fetchPlayerBets,
 	fetchPlayerRounds,
-	fetchPool,
-	fetchRound,
-	fetchRoundBets,
 	fetchRounds,
 	fetchYesterdayPrice,
 	placeBet,
 } from '@/src/lib/api';
-import { fetchPrice } from '@/src/lib/gql';
+import {
+	fetchPrice,
+	getCurrentRoundPool,
+	getLastBets,
+	getPlayerBetsByRound,
+	getPlayerRoundsCount,
+	getRound,
+	getRoundBets,
+	getRoundsCount,
+} from '@/src/lib/gql';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '@/src/lib/types.ts';
 import { ZeroAddress } from '@betfinio/abi';
 import { toast } from '@betfinio/components/hooks';
@@ -73,20 +77,17 @@ export const useBetsVolume = () => {
 	});
 };
 
-export const usePlayerBets = (address: Address, game: Address, round: number) => {
-	const config = useConfig();
+export const usePlayerBets = (player: Address, game: Address, round: number) => {
 	return useQuery<PredictBet[]>({
-		queryKey: ['predict', 'bets', address, game, round],
-		queryFn: () => fetchPlayerBets(config, { address, game, round }),
+		queryKey: ['predict', 'bets', player, game, round],
+		queryFn: () => getPlayerBetsByRound(game, round, player),
 	});
 };
 
-export const useLastBets = (count: number) => {
-	const config = useConfig();
-
+export const useLastBets = (address: Address, count: number) => {
 	return useQuery<PredictBet[]>({
-		queryKey: ['predict', 'bets', 'last', count],
-		queryFn: () => fetchLastBets(config, { count }),
+		queryKey: ['predict', 'bets', 'last', address, count],
+		queryFn: () => getLastBets(address, count),
 	});
 };
 
@@ -108,41 +109,51 @@ export const useRoundBets = (game: Address, round: number) => {
 	const config = useConfig();
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', 'round', game, round],
-		queryFn: () => fetchRoundBets(config, { game, round }),
+		queryFn: () => getRoundBets(game, round),
 	});
 };
 
 export const usePool = (game: Address, round: number) => {
-	const config = useConfig();
-
-	return useQuery({
+	return useQuery<{ long: bigint; short: bigint }>({
 		queryKey: ['predict', 'pool', game, round],
-		queryFn: () => fetchPool(config, { game, round }),
+		queryFn: () => getCurrentRoundPool(game, round),
 	});
 };
-export const useRounds = (game: Game) => {
+export const useRoundsCount = (game: Game) => {
+	return useQuery<number>({
+		queryKey: ['predict', 'rounds', 'count', game.address],
+		queryFn: () => getRoundsCount(),
+	});
+};
+
+export const usePlayerRoundsCount = (game: Game, player: Address) => {
+	return useQuery<number>({
+		queryKey: ['predict', 'rounds', 'count', game.address, 'player', player],
+		queryFn: () => getPlayerRoundsCount(player),
+	});
+};
+
+export const useRounds = (game: Game, limit = 0, page = 0) => {
 	const config = useConfig();
 	const { address = ZeroAddress } = useAccount();
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game.address, address],
-		queryFn: () => fetchRounds(config, { game, player: address }),
+		queryKey: ['predict', 'rounds', game.address, address, limit, page],
+		queryFn: () => fetchRounds(config, { game, player: address, limit, page }),
 	});
 };
-export const usePlayerRounds = (game: Game, address: Address) => {
+export const usePlayerRounds = (game: Game, address: Address, limit = 0, page = 0) => {
 	const config = useConfig();
 	return useQuery<Round[]>({
-		queryKey: ['predict', 'rounds', game.address, address, 'player'],
-		queryFn: () => fetchPlayerRounds(game, address, config),
+		queryKey: ['predict', 'rounds', game.address, address, 'player', limit, page],
+		queryFn: () => fetchPlayerRounds(config, { game, player: address, limit, page }),
 	});
 };
 
 export const useRoundInfo = (game: Game, round: number) => {
-	const config = useConfig();
-
 	const { address = ZeroAddress } = useAccount();
 	return useQuery({
 		queryKey: ['predict', 'round', round],
-		queryFn: () => fetchRound(config, { game, round: { round, price: { start: 0n } }, player: address }),
+		queryFn: () => getRound(game.address, round, address),
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	});
