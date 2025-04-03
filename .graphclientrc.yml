@@ -1,8 +1,4 @@
 sources:
-  - name: blocks
-    handler:
-      graphql:
-        endpoint: ${PUBLIC_BLOCKS_GRAPH_URL}
   - name: chainlink
     handler:
       graphql:

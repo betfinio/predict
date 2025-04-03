@@ -34,10 +34,6 @@ fragment PredictBetDetailFields on PredictBet {
   hash
 }
 
-fragment BlockFields on Block {
-  number
-}
-
 fragment AnswerFields on Answer {
   current
   roundId
@@ -97,17 +93,6 @@ query PlayerRoundsCount($player: ID!) {
 query RoundsCount {
   counter(id: "1") {
     rounds
-  }
-}
-
-query BlockByTimestamp($timestamp: BigInt) {
-  blocks(
-    where: { timestamp_lte: $timestamp }
-    orderBy: timestamp
-    orderDirection: desc
-    first: 1
-  ) {
-    ...BlockFields
   }
 }
 
