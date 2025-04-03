@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@betfinio/abi": "^2.3.3",
-		"@betfinio/components": "^1.6.0",
+		"@betfinio/components": "^1.8.0-dev.8",
 		"@betfinio/ui": "^1.0.11",
 		"@module-federation/enhanced": "^0.8.8",
 		"@nivo/bar": "^0.88.0",

@@ -17,6 +17,7 @@ const columnHelper = createColumnHelper<PredictBet>();
 
 const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 	const { t } = useTranslation('predict');
+	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const { address } = useAccount();
 	const { data: bets = [], isFetching } = useRoundBets(game.address, round);
 	const { data: pool } = usePool(game.address, round);
@@ -140,10 +141,10 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 				<TabsTrigger value={'bonus'}>{t('roundModal.tabs.bonus')}</TabsTrigger>
 			</TabsList>
 			<TabsContent value={'all'}>
-				<DataTable columns={columns} data={bets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
+				<DataTable columns={columns} data={bets} isLoading={isFetching} noResultsClassName={'h-[200px]'} t={sharedT} />
 			</TabsContent>
 			<TabsContent value={'my'}>
-				<DataTable columns={columns} data={myBets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
+				<DataTable columns={columns} data={myBets} isLoading={isFetching} noResultsClassName={'h-[200px]'} t={sharedT} />
 			</TabsContent>
 			<TabsContent value={'bonus'} className={'h-[310px] w-full border border-border rounded-md p-4'}>
 				<BonusChart bonuses={bonuses} />

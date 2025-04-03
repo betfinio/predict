@@ -205,6 +205,7 @@ const RoundsTableContent: FC<{
 	pagination: { pageIndex: number; pageSize: number };
 	onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
 }> = ({ game, columns, rounds, isLoading, totalCount, pagination, onPaginationChange }) => {
+	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const [selectedRound, setSelectedRound] = useState<number | null>(null);
 	const handleClick = async (row: Round) => {
 		setSelectedRound(row.round);
@@ -227,6 +228,7 @@ const RoundsTableContent: FC<{
 				totalCount={totalCount}
 				pagination={pagination}
 				onPaginationChange={onPaginationChange}
+				t={sharedT}
 			/>
 			<Dialog open={selectedRound !== null} onOpenChange={handleOpenChange}>
 				{selectedRound !== null && <RoundModal round={selectedRound} game={game} />}
