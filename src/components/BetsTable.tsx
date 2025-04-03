@@ -131,12 +131,12 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 		};
 	});
 
-	const myBets = bets.filter((e) => e.player === address);
+	const myBets = bets.filter((e) => e.player === address?.toLowerCase());
 	return (
 		<Tabs defaultValue={'all'} className={'min-h-[353px]'}>
 			<TabsList>
 				<TabsTrigger value={'all'}>{t('roundModal.tabs.all')}</TabsTrigger>
-				<TabsTrigger value={'my'}>{t('roundModal.tabs.my')}</TabsTrigger>
+				{myBets.length > 0 && <TabsTrigger value={'my'}>{t('roundModal.tabs.my')}</TabsTrigger>}
 				<TabsTrigger value={'bonus'}>{t('roundModal.tabs.bonus')}</TabsTrigger>
 			</TabsList>
 			<TabsContent value={'all'}>
