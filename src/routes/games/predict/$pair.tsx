@@ -5,12 +5,11 @@ import PlaceBet from '@/src/components/PlaceBet.tsx';
 import RoundConditions from '@/src/components/RoundConditions.tsx';
 import RoundsTable from '@/src/components/RoundsTable.tsx';
 import { VersionValidation } from '@/src/components/VersionValidation.tsx';
-import logger from '@/src/config/logger.ts';
 import { BETS_MEMORY_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import i18n from '@/src/i18n.ts';
 import { games } from '@/src/lib';
-import { animateNewBet, fetchPredictBet, fetchRound } from '@/src/lib/api';
-import type { Round } from '@/src/lib/types.ts';
+import { animateNewBet, fetchPredictBet } from '@/src/lib/api';
+import { getBetByAddress } from '@/src/lib/gql';
 import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
@@ -41,10 +40,9 @@ export function PredictPage() {
 		onLogs: async (logs) => {
 			const round = logs[0].args.round;
 			if (round) {
-				logger.log('fetching a round', round);
-				const res = await fetchRound(config, { game, round: { round: Number(round), price: { start: 0n } }, player: address });
-				const rounds: Round[] = client.getQueryData(['predict', 'rounds', game, address]) || [];
-				client.setQueryData(['predict', 'rounds', game, address], [res, ...rounds]);
+				setTimeout(() => {
+					client.invalidateQueries({ queryKey: ['predict', 'rounds', game.address, address] });
+				}, 3000);
 			}
 		},
 	});
@@ -61,11 +59,14 @@ export function PredictPage() {
 			if (logs.length === 0) return;
 			const betAddress = logs[0].args.bet;
 			if (!betAddress) return;
-			const bet = await fetchPredictBet(config, { address: betAddress });
 
-			await client.invalidateQueries({ queryKey: ['predict', 'bets'] });
-			await client.invalidateQueries({ queryKey: ['predict', 'pool', game] });
-			animateNewBet(bet.side ? 'long' : 'short', 10, client, game);
+			setTimeout(async () => {
+				const bet = await getBetByAddress(betAddress);
+				if (bet.amount === 0n) return;
+				await client.invalidateQueries({ queryKey: ['predict', 'bets'] });
+				await client.invalidateQueries({ queryKey: ['predict', 'pool', game] });
+				animateNewBet(bet.side ? 'long' : 'short', 10, client, game);
+			}, 3000);
 		},
 	});
 
