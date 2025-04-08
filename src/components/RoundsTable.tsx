@@ -6,9 +6,9 @@ import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Dialog, Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, LoaderIcon, Search } from 'lucide-react';
 import millify from 'millify';
+import { motion } from 'motion/react';
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
@@ -58,7 +58,7 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 								)}
 							>
 								{formattedEnd}
-								{end > start ? <ArrowUpIcon className="w-3 h-3 stroke-[3]" /> : <ArrowDownIcon className="w-3 h-3 stroke-[3]" />}
+								{end > start ? <ArrowUpIcon className="w-3 h-3 stroke-3" /> : <ArrowDownIcon className="w-3 h-3 stroke-3" />}
 							</div>
 						</div>
 					);

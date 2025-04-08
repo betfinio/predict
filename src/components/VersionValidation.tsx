@@ -1,6 +1,5 @@
 import logger from '@/src/config/logger.ts';
-import { toast } from '@betfinio/components/hooks';
-import { Button } from '@betfinio/components/ui';
+import { Button, toast } from '@betfinio/components/ui';
 import { useLatestVersion } from 'betfinio_context/lib/query';
 import { type FC, useEffect } from 'react';
 
@@ -18,9 +17,7 @@ export const VersionValidation: FC<VersionValidationProps> = ({ branch, reposito
 		if (!version || !current || process.env.NODE_ENV === 'development') return;
 		if (version.toLowerCase() !== current.toLowerCase()) {
 			logger.warn('New version available!');
-			toast({
-				variant: 'soon',
-				title: 'New version available!',
+			toast.warning('New version available!', {
 				action: (
 					<Button size={'sm'} shape={'pill'} onClick={handleRefresh}>
 						Update

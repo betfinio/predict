@@ -83,7 +83,7 @@ const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 						<div className={'bg-background rounded-lg p-2 flex flex-col justify-center items-center '}>
 							<div className={'w-full flex flex-row justify-center gap-1 text-success font-semibold'}>
 								<ArrowUpIcon className={'h-3 w-3'} />
-								<div className={cn('flex flex-row gap-1 items-center', { 'animate-pulse blur-sm': isBetsFetched })}>
+								<div className={cn('flex flex-row gap-1 items-center', { 'animate-pulse blur-xs': isBetsFetched })}>
 									{millify(expected.long, { precision: 2 })}
 									<Bet className={'w-3 h-3'} color={'green'} />
 								</div>
@@ -100,7 +100,7 @@ const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 						<TooltipTrigger>
 							<div className={'w-full flex flex-row justify-center gap-1 text-destructive font-semibold'}>
 								<ArrowDownIcon className={'h-3 w-3'} />
-								<div className={cn('flex flex-row gap-1 items-center', { 'animate-pulse blur-sm': isBetsFetched })}>
+								<div className={cn('flex flex-row gap-1 items-center', { 'animate-pulse blur-xs': isBetsFetched })}>
 									{millify(expected.short, { precision: 2 })}
 									<Bet className={'w-3 h-3'} color={'red'} />
 								</div>

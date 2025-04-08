@@ -3,10 +3,10 @@ import { ETHSCAN } from '@/src/global.ts';
 import { usePool, useRoundBets } from '@/src/lib/query';
 import type { Game, PredictBet } from '@/src/lib/types.ts';
 import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { Predict } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
-import { Predict } from '@betfinio/ui/dist/icons';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { ExternalLink } from 'lucide-react';
 import type { FC } from 'react';
@@ -26,7 +26,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 			header: '',
 			cell: (props) => (
 				<a href={`${ETHSCAN}/address/${props.getValue()}#internaltx`} target={'_blank'} className={'text-bonus'} rel="noreferrer">
-					{<Predict className={'w-4 h-4 md:w-6 md:h-6'} />}
+					<Predict className={'w-4 h-4 md:w-6 md:h-6'} />
 				</a>
 			),
 		}),
@@ -38,7 +38,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 					target={'_blank'}
 					className={cn(
 						'text-bonus flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
-						props.getValue() === address && '!text-secondary-foreground',
+						props.getValue() === address && 'text-secondary-foreground!',
 					)}
 					rel="noreferrer"
 				>

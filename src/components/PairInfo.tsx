@@ -30,28 +30,28 @@ const PairInfo: FC<{ game: Game }> = ({ game }) => {
 				'h-[80px] border border-border w-full whitespace-nowrap bg-background-light rounded-md px-4 sm:px-6 py-4 flex flex-row items-center justify-start gap-2 sm:gap-4 md:gap-6 relative'
 			}
 		>
-			<div className={'flex items-center flex-grow'}>
+			<div className={'flex items-center grow'}>
 				<PairSwitcher {...game} />
-				<div className={cn('hidden md:block text-xl ml-8 text-secondary-foreground font-semibold', { 'blur-sm animate-pulse': !isLatestFetched })}>
+				<div className={cn('hidden md:block text-xl ml-8 text-secondary-foreground font-semibold', { 'blur-xs animate-pulse': !isLatestFetched })}>
 					{valueToNumber(isLatestFetched ? latest.answer : 123456n * 10n ** 7n, 8)}$
 				</div>
 			</div>
 			<div className={'grow flex justify-end items-center gap-4 lg:gap-8'}>
 				<div className={'hidden lg:flex flex-col'}>
 					<span className={'text-sm'}>{t('tile.bets')}</span>
-					<span className={cn('font-semibold', { 'animate-pulse blur-sm': !isBetsFetched })}>{bets}</span>
+					<span className={cn('font-semibold', { 'animate-pulse blur-xs': !isBetsFetched })}>{bets}</span>
 				</div>
 				<Separator orientation={'vertical'} className={'h-[36px] hidden md:block '} />
 				<div className={'hidden lg:flex flex-col'}>
 					<span className={'text-sm'}>{t('tile.volume')}</span>
-					<div className={cn('font-semibold flex flex-row items-center gap-1', { 'animate-pulse blur-sm': !isVolumeFetched })}>
+					<div className={cn('font-semibold flex flex-row items-center gap-1', { 'animate-pulse blur-xs': !isVolumeFetched })}>
 						<BetValue value={volume} precision={3} withIcon />
 					</div>
 				</div>
 				<Separator orientation={'vertical'} className={'h-[36px] hidden md:block'} />
 				<div className={'hidden lg:flex flex-col'}>
 					<span className={'text-sm'}>{t('tile.staking')}</span>
-					<div className={cn('font-semibold flex flex-row items-center gap-1', { 'animate-pulse blur-sm': !isVolumeFetched })}>
+					<div className={cn('font-semibold flex flex-row items-center gap-1', { 'animate-pulse blur-xs': !isVolumeFetched })}>
 						<BetValue value={staking} precision={3} withIcon />
 					</div>
 				</div>
