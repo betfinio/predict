@@ -40,10 +40,6 @@
 		"tw-animate-css": "^1.2.5",
 		"wagmi": "^2.14.16"
 	},
-	"overrides": {
-		"react": "19.x",
-		"react-dom": "19.x"
-	},
 	"devDependencies": {
 		"@aws-sdk/client-secrets-manager": "^3.782.0",
 		"@biomejs/biome": "^1.9.4",
