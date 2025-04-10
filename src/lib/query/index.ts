@@ -21,7 +21,7 @@ import {
 } from '@/src/lib/gql';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '@/src/lib/types.ts';
 import { ZeroAddress } from '@betfinio/abi';
-import { toast } from '@betfinio/components/hooks';
+import { toast } from '@betfinio/components/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { WriteContractReturnType } from '@wagmi/core';
 import { getTransactionLink } from 'betfinio_context/lib/helpers';
@@ -106,7 +106,6 @@ export const useObserveBet = (game: Game) => {
 };
 
 export const useRoundBets = (game: Address, round: number) => {
-	const config = useConfig();
 	return useQuery<PredictBet[]>({
 		queryKey: ['predict', 'bets', 'round', game, round],
 		queryFn: () => getRoundBets(game, round),
@@ -170,14 +169,15 @@ export const usePlaceBet = () => {
 		onMutate: () => logger.info('placeBet'),
 		onSuccess: async (data) => {
 			logger.info(data);
-			const { update, id } = toast({
-				title: 'Placing a bet',
-				description: 'Transaction is pending',
-				variant: 'loading',
-				duration: 10000,
+			const promise = async () => {
+				await waitForTransactionReceipt(config.getClient(), { hash: data });
+			};
+			toast.promise(promise, {
+				loading: 'Placing a bet',
+				success: 'Bet placed',
+				error: 'Transaction failed',
+				action: getTransactionLink(data),
 			});
-			await waitForTransactionReceipt(config.getClient(), { hash: data });
-			update({ variant: 'default', id, description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 5000 });
 		},
 		onSettled: () => logger.info('placeBet settled'),
 	});
@@ -190,22 +190,21 @@ export const useCalculate = () => {
 		mutationKey: ['predict', 'bets', 'calculate'],
 		mutationFn: (params) => calculateRound(params, config),
 		onError: async () => {
-			toast({
-				title: 'Error happened',
+			toast.error('Error happened', {
 				description: 'Transaction failed',
-				variant: 'destructive',
 			});
 		},
 		onSuccess: async (data) => {
-			const { update, id } = toast({
-				title: 'Calculating a round',
-				description: 'Transaction is pending',
-				variant: 'loading',
-				duration: 10000,
+			const promise = async () => {
+				await waitForTransactionReceipt(config.getClient(), { hash: data });
+				await client.invalidateQueries({ queryKey: ['predict'] });
+			};
+			toast.promise(promise, {
+				loading: 'Calculating a round',
+				success: 'Round calculated',
+				error: 'Transaction failed',
+				action: getTransactionLink(data),
 			});
-			await waitForTransactionReceipt(config.getClient(), { hash: data });
-			update({ variant: 'default', id, description: 'Transaction is confirmed', title: 'Bet placed', action: getTransactionLink(data), duration: 3000 });
-			await client.invalidateQueries({ queryKey: ['predict'] });
 		},
 	});
 };

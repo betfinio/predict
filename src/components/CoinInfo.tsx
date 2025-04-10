@@ -1,8 +1,8 @@
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@betfinio/components/ui';
-import { motion } from 'framer-motion';
 import { ChartBarIcon } from 'lucide-react';
+import { motion } from 'motion/react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -3,7 +3,7 @@ import SingleBet from '@/src/components/SingleBet.tsx';
 import { useLastBets } from '@/src/lib/query';
 import type { Game } from '@/src/lib/types';
 import { cn } from '@betfinio/components/lib';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +19,7 @@ const LastBets: FC<{ game: Game }> = ({ game }) => {
 				<>
 					<h2 className={'font-medium uppercase '}>{t('latestBets')}</h2>
 					<AnimatePresence>
-						<div className={cn('w-full grid grid-cols-1 grid-rows-4 gap-1', { 'animate-pulse blur-sm': isLoading })}>
+						<div className={cn('w-full grid grid-cols-1 grid-rows-4 gap-1', { 'animate-pulse blur-xs': isLoading })}>
 							{bets.map((e, i) => (
 								<motion.div
 									key={e.address}
