@@ -11,7 +11,7 @@ import { games } from '@/src/lib';
 import { animateNewBet, fetchPredictBet } from '@/src/lib/api';
 import { getBetByAddress } from '@/src/lib/gql';
 import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
-import { Toaster } from '@betfinio/components/ui';
+import { SonnerToaster } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, createFileRoute, useParams } from '@tanstack/react-router';
 import { Trans, useTranslation } from 'react-i18next';
@@ -72,7 +72,7 @@ export function PredictPage() {
 
 	return (
 		<div className={'predict w-full h-full'}>
-			<div className={'rounded-lg w-full h-full p-2 md:p-3 lg:p-4 gap-2 flex flex-col 2xl:pr-0'}>
+			<div className={'rounded-lg w-full h-full p-2 md:py-3 lg:py-4 gap-2 flex flex-col 2xl:px-0'}>
 				<PairInfo game={game} />
 				<div className={'grid lg:mt-2 grid-cols-1 md:grid-cols-8 gap-10 md:gap-4'}>
 					<RoundConditions game={game} />
@@ -90,7 +90,7 @@ export function PredictPage() {
 					</a>
 				</div>
 			</div>
-			<Toaster />
+			<SonnerToaster />
 			<VersionValidation repository={'predict'} branch={import.meta.env.PUBLIC_BRANCH} current={import.meta.env.PUBLIC_DEPLOYED} />
 		</div>
 	);

@@ -6,9 +6,9 @@ import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Dialog, Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, LoaderIcon, Search } from 'lucide-react';
 import millify from 'millify';
+import { motion } from 'motion/react';
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
@@ -58,7 +58,7 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 								)}
 							>
 								{formattedEnd}
-								{end > start ? <ArrowUpIcon className="w-3 h-3 stroke-[3]" /> : <ArrowDownIcon className="w-3 h-3 stroke-[3]" />}
+								{end > start ? <ArrowUpIcon className="w-3 h-3 stroke-3" /> : <ArrowDownIcon className="w-3 h-3 stroke-3" />}
 							</div>
 						</div>
 					);
@@ -205,6 +205,7 @@ const RoundsTableContent: FC<{
 	pagination: { pageIndex: number; pageSize: number };
 	onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
 }> = ({ game, columns, rounds, isLoading, totalCount, pagination, onPaginationChange }) => {
+	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const [selectedRound, setSelectedRound] = useState<number | null>(null);
 	const handleClick = async (row: Round) => {
 		setSelectedRound(row.round);
@@ -227,6 +228,7 @@ const RoundsTableContent: FC<{
 				totalCount={totalCount}
 				pagination={pagination}
 				onPaginationChange={onPaginationChange}
+				t={sharedT}
 			/>
 			<Dialog open={selectedRound !== null} onOpenChange={handleOpenChange}>
 				{selectedRound !== null && <RoundModal round={selectedRound} game={game} />}

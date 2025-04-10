@@ -2,10 +2,9 @@ import PlayersExpectedWinnings from '@/src/components/PlayersExpectedWinnings.ts
 import { useCurrentRound, usePlaceBet, usePlayerBets, useRoundBets } from '@/src/lib/query';
 import type { Game, RoundPool } from '@/src/lib/types';
 import { ZeroAddress, valueToNumber } from '@betfinio/abi';
-import { toast } from '@betfinio/components/hooks';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
-import { Button } from '@betfinio/components/ui';
+import { Button, toast } from '@betfinio/components/ui';
 import { useAllowanceModal } from 'betfinio_context/lib/context';
 import { useAllowance, useBalance, useIsMember } from 'betfinio_context/lib/query';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
@@ -55,55 +54,37 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 			shortCount: roundBets.filter((e) => !e.side).length,
 		};
 		setPool(p);
-	}, [roundBets]);
+	}, [roundBets.length]);
 
 	const [s, setSide] = useState<boolean>(false);
 
 	const handleBet = async (side: boolean) => {
 		if (address === ZeroAddress) {
-			toast({
-				description: t('toast.connect'),
-				variant: 'destructive',
-			});
+			toast.error(t('toast.connect'));
 			return;
 		}
 		if (!isMember) {
-			toast({
-				description: t('toast.notMember'),
-				variant: 'destructive',
-			});
+			toast.error(t('toast.notMember'));
 			return;
 		}
 		if (amount === '') {
-			toast({
-				title: t('toast.amount'),
-				variant: 'destructive',
-			});
+			toast.error(t('toast.amount'));
 			return;
 		}
 		if (Number(amount) < 1) {
-			toast({
-				title: t('toast.minimalBet'),
-				variant: 'destructive',
-			});
+			toast.error(t('toast.minimalBet'));
 			return;
 		}
 		try {
 			BigInt(Number(amount));
 		} catch (e) {
-			toast({
-				title: t('toast.invalidAmount'),
-				variant: 'destructive',
-			});
+			toast.error(t('toast.invalidAmount'));
 			return;
 		}
 		if (valueToNumber(allowance) < Number(amount)) {
 			setSide(s);
 			requestAllowance?.('bet', BigInt(amount) * 10n ** 18n);
-			toast({
-				title: t('toast.allowance'),
-				variant: 'destructive',
-			});
+			toast.error(t('toast.allowance'));
 			return;
 		}
 		placeBet({ amount: BigInt(amount) * 10n ** 18n, side, game: game.address });
@@ -112,6 +93,7 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 	const handleBetChange = (value: string) => {
 		setAmount(value);
 	};
+	console.log(pool);
 	return (
 		<div className={'flex flex-col gap-4 col-span-4 md:col-span-3 items-center drop-shadow-[0_0_35px_rgba(87,101,242,0.75)]'}>
 			<h2 className={'font-medium uppercase hidden md:block'}>{t('title')}</h2>
@@ -250,13 +232,21 @@ const PlayersBets: FC<{ game: Game }> = ({ game }) => {
 		<div className={'hidden md:grid grid-cols-2 gap-4 w-full'}>
 			<div className={'bg-background rounded-lg p-2 flex justify-center gap-2 items-center text-success font-semibold'}>
 				<ArrowUpIcon className={'h-4 w-4'} />
-				<div className={cn('flex flex-row gap-1 items-center text-sm', { 'animate-pulse blur-sm': !isBetsFetched })}>
+				<div
+					className={cn('flex flex-row gap-1 items-center text-sm', {
+						'animate-pulse blur-xs': !isBetsFetched,
+					})}
+				>
 					<BetValue value={userPool.long} withIcon iconClassName={'text-success w-3 h-3'} />
 				</div>
 			</div>
 			<div className={'bg-background rounded-lg p-2 flex justify-center gap-2 items-center text-destructive font-semibold'}>
 				<ArrowDownIcon className={'h-4 w-4'} />
-				<div className={cn('flex flex-row gap-1 items-center text-sm', { 'animate-pulse blur-sm': !isBetsFetched })}>
+				<div
+					className={cn('flex flex-row gap-1 items-center text-sm', {
+						'animate-pulse blur-xs': !isBetsFetched,
+					})}
+				>
 					<BetValue value={userPool.short} withIcon iconClassName={'text-destructive w-3 h-3'} />
 				</div>
 			</div>

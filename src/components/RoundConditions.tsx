@@ -22,7 +22,7 @@ const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 			<h2 className={'font-medium uppercase'}>
 				{t('title')} #{round.toString().slice(2)}
 			</h2>
-			<div className={cn('w-full border border-border rounded-lg bg-background-light p-2 py-5 relative', isFetching && 'animate-pulse blur-sm')}>
+			<div className={cn('w-full border border-border rounded-lg bg-background-light p-2 py-5 relative', isFetching && 'animate-pulse blur-xs')}>
 				<EffectsLayer game={game} />
 
 				<div className={'flex flex-col items-center relative justify-center gap-4 w-[285px] aspect-square mx-auto'}>
@@ -39,7 +39,7 @@ const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 						</h4>
 						<div
 							className={cn('rounded-lg mt-1 text-center text-sm bg-background px-4 py-2 font-semibold text-secondary-foreground', {
-								'animate-pulse blur-sm': !isLatestPriceFetched,
+								'animate-pulse blur-xs': !isLatestPriceFetched,
 							})}
 						>
 							{valueToNumber(start.answer, 8)}$
