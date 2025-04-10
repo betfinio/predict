@@ -3,10 +3,10 @@ import { ETHSCAN } from '@/src/global.ts';
 import { usePool, useRoundBets } from '@/src/lib/query';
 import type { Game, PredictBet } from '@/src/lib/types.ts';
 import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { Predict } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
-import { Predict } from '@betfinio/ui/dist/icons';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { ExternalLink } from 'lucide-react';
 import type { FC } from 'react';
@@ -17,6 +17,7 @@ const columnHelper = createColumnHelper<PredictBet>();
 
 const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 	const { t } = useTranslation('predict');
+	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const { address } = useAccount();
 	const { data: bets = [], isFetching } = useRoundBets(game.address, round);
 	const { data: pool } = usePool(game.address, round);
@@ -25,7 +26,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 			header: '',
 			cell: (props) => (
 				<a href={`${ETHSCAN}/address/${props.getValue()}#internaltx`} target={'_blank'} className={'text-bonus'} rel="noreferrer">
-					{<Predict className={'w-4 h-4 md:w-6 md:h-6'} />}
+					<Predict className={'w-4 h-4 md:w-6 md:h-6'} />
 				</a>
 			),
 		}),
@@ -37,7 +38,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 					target={'_blank'}
 					className={cn(
 						'text-bonus flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
-						props.getValue() === address && '!text-secondary-foreground',
+						props.getValue() === address && 'text-secondary-foreground!',
 					)}
 					rel="noreferrer"
 				>
@@ -140,10 +141,10 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 				<TabsTrigger value={'bonus'}>{t('roundModal.tabs.bonus')}</TabsTrigger>
 			</TabsList>
 			<TabsContent value={'all'}>
-				<DataTable columns={columns} data={bets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
+				<DataTable columns={columns} data={bets} isLoading={isFetching} noResultsClassName={'h-[200px]'} t={sharedT} />
 			</TabsContent>
 			<TabsContent value={'my'}>
-				<DataTable columns={columns} data={myBets} isLoading={isFetching} noResultsClassName={'h-[200px]'} />
+				<DataTable columns={columns} data={myBets} isLoading={isFetching} noResultsClassName={'h-[200px]'} t={sharedT} />
 			</TabsContent>
 			<TabsContent value={'bonus'} className={'h-[310px] w-full border border-border rounded-md p-4'}>
 				<BonusChart bonuses={bonuses} />

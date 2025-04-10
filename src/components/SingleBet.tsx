@@ -4,15 +4,14 @@ import { games } from '@/src/lib';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, type PredictBet, defaultResult } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { Bank, Medal, Pig } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
-import { Medal, Pig } from '@betfinio/ui';
-import { Bank } from '@betfinio/ui/dist/icons';
 import { useCustomUsername, useUsername } from 'betfinio_context/lib/query';
-import { motion } from 'framer-motion';
 import { ArrowDownIcon, ArrowUpIcon, SquareArrowOutUpRight, X } from 'lucide-react';
 import { DateTime } from 'luxon';
+import { motion } from 'motion/react';
 import { type FC, useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
@@ -42,17 +41,17 @@ const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 					className={cn(
 						'border border-border rounded-lg bg-background-light cursor-pointer px-[10px] p-4 flex flex-row items-center py-4 gap-4 relative justify-start',
 						bet.side ? 'text-success' : 'text-destructive',
-						bet.loading && 'animate-pulse text-muted-foreground blur-sm',
+						bet.loading && 'animate-pulse text-muted-foreground blur-xs',
 					)}
 				>
 					<div className={'border border-border bg-background aspect-square w-[32px] rounded-full flex justify-center items-center'}>
 						{bet.side ? <ArrowUpIcon className={'w-4'} /> : <ArrowDownIcon className={'w-4'} />}
 					</div>
-					<div className={cn('flex flex-col w-2/5 text-foreground', bet.loading && '!text-background bg-background rounded-lg')}>
+					<div className={cn('flex flex-col w-2/5 text-foreground', bet.loading && 'text-background! bg-background rounded-lg')}>
 						<span className={'text-sm'}>{formatPlayer(customUsername || username || truncateEthAddress(bet.player))}</span>
 						<span className={cn('text-xs text-muted-foreground', bet.loading && 'rounded-lg')}>#{Number(bet.round).toString().slice(2)}</span>
 					</div>
-					<div className={cn('whitespace-nowrap flex flex-grow  flex-row gap-[6px] items-center justify-end text-sm', bet.loading && 'rounded-lg')}>
+					<div className={cn('whitespace-nowrap flex grow  flex-row gap-[6px] items-center justify-end text-sm', bet.loading && 'rounded-lg')}>
 						<BetValue value={amount} withIcon iconClassName={cn('w-4 h-4', bet.side ? 'text-success' : 'text-destructive')} />
 					</div>
 				</motion.div>
@@ -181,7 +180,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 			<div className={'flex flex-col justify-center items-center gap-2 mt-7'}>
 				<div className={'text-center'}>
 					<h2 className={'text-muted-foreground text-sm'}>{isCurrent ? t('startCurrentPrice') : t('startFinalPrice')}</h2>
-					<div className={cn('text-xl font-semibold flex flex-row gap-1 items-center', (isStartLoading || isEndLoading) && 'animate-pulse blur-sm')}>
+					<div className={cn('text-xl font-semibold flex flex-row gap-1 items-center', (isStartLoading || isEndLoading) && 'animate-pulse blur-xs')}>
 						<span>{startPrice}$</span>
 						<div className={'text-base font-medium flex flex-row gap-1'}>
 							{t('at')}
@@ -227,7 +226,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 						),
 					})}
 				</div>
-				<div className={cn(bet.status === 1n ? 'h-[132px]' : 'h-[0]')}>
+				<div className={cn(bet.status === 1n ? 'h-[132px]' : 'h-0')}>
 					<div className={cn(timer.mins < 0 && 'hidden')}>
 						<div className={'flex items-center gap-2 px-6 w-full justify-center py-4'}>
 							<CircularProgressbar
@@ -247,7 +246,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 					{renderStatus()}
 				</div>
 				<div className={'mt-12'}>
-					<div className={cn('flex flex-row w-full justify-between gap-8', !(!isCurrent && (bet.status === 2n || bet.status === 3n)) && '!hidden')}>
+					<div className={cn('flex flex-row w-full justify-between gap-8', !(!isCurrent && (bet.status === 2n || bet.status === 3n)) && 'hidden!')}>
 						<div className={'flex flex-row items-center gap-3 text-sm'}>
 							<Medal />
 							<span>

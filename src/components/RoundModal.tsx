@@ -2,10 +2,10 @@ import BetsTable from '@/src/components/BetsTable.tsx';
 import { useCalculate, useRoundBets, useRoundInfo } from '@/src/lib/query';
 import type { Game, RoundStatus } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
+import { Bank, MoneyHand, People } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { DialogClose, DialogContent, DialogTitle } from '@betfinio/components/ui';
-import { Bank, MoneyHand, People } from '@betfinio/ui/dist/icons';
 import { X } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useMemo, useState } from 'react';
@@ -74,7 +74,7 @@ const RoundModal: FC<{
 							{start.toFormat('dd.MM.yyyy / HH:mm:ss')} - {end.toFormat('HH:mm:ss')}
 						</span>
 					</div>
-					{!isFinished && <RoundTimer game={game} end={(round + game.duration) * game.interval} className={'!justify-start'} size={'60px'} />}
+					{!isFinished && <RoundTimer game={game} end={(round + game.duration) * game.interval} className={'justify-start!'} size={'60px'} />}
 				</div>
 
 				<div className={'grid grid-cols-3 gap-4 my-4'}>
@@ -101,7 +101,7 @@ const RoundModal: FC<{
 					</div>
 				</div>
 				<BetsTable game={game} round={round} />
-				<div className={cn('flex flex-row justify-end w-full p-2', status !== 'ended' && '!hidden')}>
+				<div className={cn('flex flex-row justify-end w-full p-2', status !== 'ended' && 'hidden!')}>
 					<button type={'button'} className={'rounded-md px-4 py-2 bg-primary text-primary-foreground '} onClick={handleCalculate}>
 						{t('calculateResult')}
 					</button>
