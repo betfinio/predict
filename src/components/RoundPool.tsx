@@ -12,8 +12,6 @@ const RoundPoolInfo: FC<{ game: Game }> = ({ game }) => {
 	const { data: roundBets = [] } = useRoundBets(game.address, round);
 	const [pool, setPool] = useState<RoundPool>({ long: 0n, short: 0n, longPlayersCount: 0, shortPlayersCount: 0, longCount: 0, shortCount: 0 });
 	useEffect(() => {
-		console.log(roundBets);
-
 		const p: RoundPool = {
 			long: roundBets.filter((e) => e.side).reduce((a, b) => a + b.amount, 0n),
 			short: roundBets.filter((e) => !e.side).reduce((a, b) => a + b.amount, 0n),
