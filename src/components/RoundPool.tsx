@@ -21,7 +21,8 @@ const RoundPoolInfo: FC<{ game: Game }> = ({ game }) => {
 			shortCount: roundBets.filter((e) => !e.side).length,
 		};
 		setPool(p);
-	}, [roundBets]);
+	}, [roundBets.length]);
+
 	return (
 		<div className={'w-full h-full border border-border rounded-md bg-background-light p-2 flex flex-col justify-between gap-2'}>
 			<div className={'grid grid-cols-2 gap-2 w-full items-center'}>
