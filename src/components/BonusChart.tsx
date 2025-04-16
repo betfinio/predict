@@ -18,7 +18,7 @@ interface BonusItem extends BarDatum {
 const mockData: BonusItem[] = arrayFrom(30).map((num, i) => ({
 	bet: `0x123${num}`,
 	bonus: (Math.floor(Math.random() * 10000) + 1000) * (i % 2 ? 1 : -1),
-	bonusColor: i % 2 ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
+	bonusColor: i % 2 ? 'var(--color-success)' : 'var(--color-destructive)',
 	index: i,
 }));
 
@@ -27,7 +27,7 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 		.map((bonus) => ({
 			bet: bonus.bet.address,
 			bonus: bonus.bet.side ? bonus.bonus : -bonus.bonus,
-			bonusColor: bonus.bet.side ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
+			bonusColor: bonus.bet.side ? 'var(--color-success)' : 'var(--color-destructive)',
 			index: bonus.index,
 		}))
 		.sort((a, b) => a.index - b.index);
@@ -47,7 +47,7 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 			...arrayFrom(Math.floor(toAdd / 2)).map((num, i) => ({
 				bet: `0x123${num}` as Address,
 				bonus: 0,
-				bonusColor: 'hsl(var(--success))',
+				bonusColor: 'var(--color-success)',
 				index: i + result.length,
 			})),
 		);
@@ -55,7 +55,7 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 			...arrayFrom(Math.floor(toAdd / 2)).map((num, i) => ({
 				bet: `0x123${num + 100}` as Address,
 				bonus: 0,
-				bonusColor: 'hsl(var(--success))',
+				bonusColor: 'var(--color-success)',
 				index: i + result.length,
 			})),
 		);
