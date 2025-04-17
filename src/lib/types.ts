@@ -39,7 +39,7 @@ export interface RoundPool {
 	shortPlayersCount?: number;
 }
 
-export type RoundStatus = 'ended' | 'waiting' | 'accepting' | 'calculated';
+export type RoundStatus = 'ended' | 'waiting' | 'accepting' | 'calculated' | 'refunded';
 
 export interface RoundWithStartPrice {
 	round: number;
@@ -62,6 +62,7 @@ export interface Round extends RoundWithStartPrice {
 	pool: RoundPool;
 	currentPlayerBets: number;
 	calculated: boolean;
+	refunded: boolean;
 }
 
 export interface PlaceBetParams {
@@ -94,6 +95,7 @@ export const defaultRound: Round = {
 	},
 	currentPlayerBets: 0,
 	calculated: false,
+	refunded: false,
 };
 
 export const defaultBet: PredictBet = {

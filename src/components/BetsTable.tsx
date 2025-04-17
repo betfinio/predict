@@ -2,7 +2,7 @@ import BonusChart from '@/src/components/BonusChart.tsx';
 import { ETHSCAN } from '@/src/global.ts';
 import { usePool, useRoundBets } from '@/src/lib/query';
 import type { Game, PredictBet } from '@/src/lib/types.ts';
-import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { valueToNumber } from '@betfinio/abi';
 import { Predict } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
