@@ -51,6 +51,14 @@ export default defineConfig({
 					singleton: true,
 					requiredVersion: dependencies.wagmi,
 				},
+				i18next: {
+					singleton: true,
+					requiredVersion: dependencies.i18next,
+				},
+				'react-i18next': {
+					singleton: true,
+					requiredVersion: dependencies['react-i18next'],
+				},
 				'@privy-io/wagmi': {
 					singleton: true,
 					requiredVersion: dependencies['@privy-io/wagmi'],
