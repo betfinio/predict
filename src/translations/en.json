@@ -84,7 +84,7 @@
 		}
 	},
 	"roundConditions": {
-		"title": "Round Conditions",
+		"title": "Round",
 		"price": "Price at <b>{time}</b>",
 		"currentPrice": "Current price",
 		"description": "You bet if the rate goes <green> UP </green> or <red>DOWN</red> till <yellow> {time}</yellow>",
