@@ -51,6 +51,26 @@ export default defineConfig({
 					singleton: true,
 					requiredVersion: dependencies.wagmi,
 				},
+				i18next: {
+					singleton: true,
+					requiredVersion: dependencies.i18next,
+				},
+				'react-i18next': {
+					singleton: true,
+					requiredVersion: dependencies['react-i18next'],
+				},
+				'@privy-io/wagmi': {
+					singleton: true,
+					requiredVersion: dependencies['@privy-io/wagmi'],
+				},
+				'@privy-io/react-auth': {
+					singleton: true,
+					requiredVersion: dependencies['@privy-io/react-auth'],
+				},
+				'@betfinio/components': {
+					singleton: true,
+					requiredVersion: dependencies['@betfinio/components'],
+				},
 			},
 		}),
 	],

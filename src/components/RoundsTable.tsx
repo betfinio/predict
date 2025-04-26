@@ -21,12 +21,13 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 	const { data: currentRound } = useCurrentRound(game.interval);
 	const { t } = useTranslation('predict', { keyPrefix: 'table' });
 
-	const getStatus = (game: Game, round: number, calculated: boolean): RoundStatus => {
+	const getStatus = (game: Game, round: number, calculated: boolean, refunded: boolean): RoundStatus => {
 		const last = (round + 1) * game.interval;
 		const ended = (round + game.duration) * game.interval;
 		const now = Math.floor(Date.now() / 1000);
 		if (now < last) return 'accepting';
 		if (now < ended) return 'waiting';
+		if (refunded) return 'refunded';
 		if (calculated) return 'calculated';
 		return 'ended';
 	};
@@ -94,9 +95,9 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 				header: t('columns.status'),
 				meta: { className: 'hidden md:table-cell' },
 				cell: (props) => {
-					const { round, calculated } = props.row.original;
+					const { round, calculated, refunded } = props.row.original;
 					const status: RoundStatus = useMemo(() => {
-						return getStatus(game, round, calculated);
+						return getStatus(game, round, calculated, refunded);
 					}, [currentRound, round]);
 					return <div className="text-gray-300 w-[80px]">{t(`roundStatuses.${status}`)}</div>;
 				},
@@ -104,9 +105,9 @@ const RoundsTable: FC<{ game: Game }> = ({ game }) => {
 			columnHelper.display({
 				id: 'search',
 				cell: (props) => {
-					const { round, calculated } = props.row.original;
+					const { round, calculated, refunded } = props.row.original;
 					const status: RoundStatus = useMemo(() => {
-						return getStatus(game, round, calculated);
+						return getStatus(game, round, calculated, refunded);
 					}, [currentRound, round]);
 					return (
 						<div className="w-[30px]">
@@ -144,6 +145,8 @@ const AllRoundsTable: FC<{ game: Game; columns: unknown[] }> = ({ game, columns 
 	const { data: roundsCount = 0, isLoading } = useRoundsCount(game);
 	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 	const { data: rounds = [], isLoading: roundsLoading } = useRounds(game, pagination.pageSize, pagination.pageIndex);
+	console.log(rounds);
+
 	return (
 		<RoundsTableContent
 			game={game}

@@ -3,12 +3,12 @@ import { ETHSCAN } from '@/src/global.ts';
 import { games } from '@/src/lib';
 import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
 import { type Game, type PredictBet, defaultResult } from '@/src/lib/types.ts';
-import { ZeroAddress, truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
 import { Bank, Medal, Pig } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
-import { useCustomUsername, useUsername } from 'betfinio_context/lib/query';
+import { useUsername } from 'betfinio_context/lib/query';
 import { ArrowDownIcon, ArrowUpIcon, SquareArrowOutUpRight, X } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { motion } from 'motion/react';
@@ -21,11 +21,11 @@ import { useAccount } from 'wagmi';
 const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 	const amount = valueToNumber(bet.amount);
 
-	const { data: username } = useUsername(bet.player);
-	const { address = ZeroAddress } = useAccount();
-	const { data: customUsername } = useCustomUsername(address, bet.player);
+	const { address } = useAccount();
+	const { data: username } = useUsername(bet.player, address);
 
-	const formatPlayer = (player: string) => {
+	const formatPlayer = (player?: string) => {
+		if (!player) return '';
 		if (player.length > 12) {
 			return `${player.slice(0, 12)}...`;
 		}
@@ -48,7 +48,7 @@ const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 						{bet.side ? <ArrowUpIcon className={'w-4'} /> : <ArrowDownIcon className={'w-4'} />}
 					</div>
 					<div className={cn('flex flex-col w-2/5 text-foreground', bet.loading && 'text-background! bg-background rounded-lg')}>
-						<span className={'text-sm'}>{formatPlayer(customUsername || username || truncateEthAddress(bet.player))}</span>
+						<span className={'text-sm'}>{formatPlayer(username)}</span>
 						<span className={cn('text-xs text-muted-foreground', bet.loading && 'rounded-lg')}>#{Number(bet.round).toString().slice(2)}</span>
 					</div>
 					<div className={cn('whitespace-nowrap flex grow  flex-row gap-[6px] items-center justify-end text-sm', bet.loading && 'rounded-lg')}>

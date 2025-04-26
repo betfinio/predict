@@ -2,12 +2,13 @@ import BonusChart from '@/src/components/BonusChart.tsx';
 import { ETHSCAN } from '@/src/global.ts';
 import { usePool, useRoundBets } from '@/src/lib/query';
 import type { Game, PredictBet } from '@/src/lib/types.ts';
-import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
+import { valueToNumber } from '@betfinio/abi';
 import { Predict } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { useUsername } from 'betfinio_context/lib/query';
 import { ExternalLink } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,20 +33,23 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 		}),
 		columnHelper.accessor('player', {
 			header: t('table.player'),
-			cell: (props) => (
-				<a
-					href={`${ETHSCAN}/address/${props.getValue()}`}
-					target={'_blank'}
-					className={cn(
-						'text-bonus flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
-						props.getValue() === address && 'text-secondary-foreground!',
-					)}
-					rel="noreferrer"
-				>
-					{truncateEthAddress(props.getValue())}
-					<ExternalLink className={'w-[14px] h-[16px]'} />
-				</a>
-			),
+			cell: (props) => {
+				const { data: username } = useUsername(props.getValue(), address);
+				return (
+					<a
+						href={`${ETHSCAN}/address/${props.getValue()}`}
+						target={'_blank'}
+						className={cn(
+							'text-bonus flex text-xs md:text-sm flex-row items-start gap-1 cursor-pointer whitespace-nowrap',
+							props.getValue() === address && 'text-secondary-foreground!',
+						)}
+						rel="noreferrer"
+					>
+						{username}
+						<ExternalLink className={'w-[14px] h-[16px]'} />
+					</a>
+				);
+			},
 		}),
 		columnHelper.accessor('side', {
 			header: t('table.side'),
