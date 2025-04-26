@@ -35,11 +35,6 @@ fragment PredictBetDetailFields on PredictBet {
   hash
 }
 
-fragment AnswerFields on Answer {
-  current
-  roundId
-  blockTimestamp
-}
 
 #############################
 # Queries
@@ -97,16 +92,6 @@ query RoundsCount {
   }
 }
 
-query GetPrice($timestamp: BigInt, $feed: Bytes) {
-  answers(
-    where: { blockTimestamp_lte: $timestamp, feed: $feed }
-    orderBy: blockTimestamp
-    orderDirection: desc
-    first: 1
-  ) {
-    ...AnswerFields
-  }
-}
 
 query BetsByRound($address: Bytes, $round: BigInt) {
   predictBets(
