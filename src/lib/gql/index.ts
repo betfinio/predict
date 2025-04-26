@@ -203,6 +203,7 @@ const roundQueryDataToPredictRound = (round: RoundQuery['round'], player: Addres
 			shortCount: 0,
 		},
 		calculated: round.calculated,
+		refunded: round.refunded,
 		currentPlayerBets,
 	};
 };
