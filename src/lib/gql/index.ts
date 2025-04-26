@@ -3,8 +3,6 @@ import {
 	type BetQuery,
 	BetsByRoundDocument,
 	type BetsByRoundQuery,
-	GetPriceDocument,
-	type GetPriceQuery,
 	LastBetsDocument,
 	type LastBetsQuery,
 	PlayerBetsByRoundDocument,
@@ -25,6 +23,9 @@ import {
 } from '@/.graphclient';
 import logger from '@/src/config/logger.ts';
 import { type PredictBet, type Result, type Round, defaultBet, defaultResult, defaultRound } from '@/src/lib/types.ts';
+import { DataFeedABI } from '@betfinio/abi';
+import { type Config, readContract } from '@wagmi/core';
+import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
 import type { ExecutionResult } from 'graphql/execution';
 import type { Address } from 'viem';
 import { intToLittleEndianI32 } from '..';
@@ -171,14 +172,21 @@ export const getCurrentRoundPool = async (address: Address, round: number): Prom
 	};
 };
 
-export const fetchPrice = async (address: Address, timestamp: number): Promise<Result> => {
+export const fetchPrice = async (address: Address, timestamp: number, config: Config): Promise<Result> => {
 	logger.verbose('fetching price by timestamp', timestamp);
-	const result: ExecutionResult<GetPriceQuery> = await execute(GetPriceDocument, { timestamp: timestamp, feed: address });
-	if (result.data) {
+	const block = await getBlockByTimestamp(timestamp);
+	if (block === 0n) return defaultResult;
+	const data = await readContract(config, {
+		address: address,
+		abi: DataFeedABI,
+		functionName: 'latestRoundData',
+		blockNumber: BigInt(block),
+	});
+	if (data) {
 		return {
-			roundId: BigInt(result.data.answers[0].roundId),
-			answer: BigInt(result.data.answers[0].current),
-			timestamp: BigInt(result.data.answers[0].blockTimestamp),
+			roundId: BigInt(data[0]),
+			answer: BigInt(data[1]),
+			timestamp: BigInt(data[2]),
 			exist: true,
 		};
 	}

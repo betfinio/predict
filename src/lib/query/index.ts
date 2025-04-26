@@ -40,23 +40,26 @@ export const useCurrentRound = (interval: number) => {
 };
 
 export const useLatestPrice = (pair: string) => {
+	const config = useConfig();
 	return useQuery<Result>({
 		queryKey: ['predict', 'price', 'latest', pair],
-		queryFn: () => fetchLatestPrice({ pair }),
+		queryFn: () => fetchLatestPrice({ pair }, config),
 	});
 };
 
 export const usePrice = (feed: Address, time: number) => {
+	const config = useConfig();
 	return useQuery<Result>({
 		queryKey: ['predict', 'price', feed, time],
-		queryFn: async () => fetchPrice(feed, time),
+		queryFn: async () => fetchPrice(feed, time, config),
 	});
 };
 
 export const useYesterdayPrice = (pair: string) => {
+	const config = useConfig();
 	return useQuery<Result>({
 		queryKey: ['predict', 'price', 'yesterday', pair],
-		queryFn: () => fetchYesterdayPrice({ pair }),
+		queryFn: () => fetchYesterdayPrice({ pair }, config),
 	});
 };
 

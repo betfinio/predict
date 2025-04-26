@@ -39,12 +39,12 @@ export const fetchBetsCount = async (config: Config): Promise<number> => {
 	}
 };
 
-export const fetchYesterdayPrice = async (params: { pair: string }): Promise<Result> => {
+export const fetchYesterdayPrice = async (params: { pair: string }, config: Config): Promise<Result> => {
 	if (!games) throw Error('Games are required!');
 	const pair = params.pair;
 	const address = games[pair].dataFeed;
 	logger.info('fetching latest price', pair, address);
-	return await fetchPrice(address, Math.floor(Date.now() / 1000) - 60 * 60 * 24);
+	return await fetchPrice(address, Math.floor(Date.now() / 1000) - 60 * 60 * 24, config);
 };
 
 // tables
@@ -56,7 +56,7 @@ export const fetchRounds = async (config: Config, params: { game: Game; player: 
 	if (!config) return [];
 	const rounds = await getRounds(gameAddress, player, limit, page);
 
-	return await Promise.all(rounds.map((round) => populateRoundWithEndPrice(game, round, player)));
+	return await Promise.all(rounds.map((round) => populateRoundWithEndPrice(game, round, player, config)));
 };
 
 export const fetchPlayerRounds = async (config: Config, params: { game: Game; player: Address; limit: number; page: number }): Promise<Round[]> => {
@@ -67,17 +67,17 @@ export const fetchPlayerRounds = async (config: Config, params: { game: Game; pl
 
 	const rounds = await getPlayerRounds(gameAddress, player, limit, page);
 
-	return await Promise.all(rounds.map((round) => populateRoundWithEndPrice(game, round, player)));
+	return await Promise.all(rounds.map((round) => populateRoundWithEndPrice(game, round, player, config)));
 };
 
-export const populateRoundWithEndPrice = async (game: Game, round: Round, player: Address): Promise<Round> => {
+export const populateRoundWithEndPrice = async (game: Game, round: Round, player: Address, config: Config): Promise<Round> => {
 	if (round.price.end) {
 		return round;
 	}
 
 	const feed = game.dataFeed;
 	const ended = (round.round + game.duration) * game.interval;
-	const endPrice = await fetchPrice(feed, ended);
+	const endPrice = await fetchPrice(feed, ended, config);
 	const end = endPrice.answer;
 	return {
 		...round,
@@ -85,11 +85,11 @@ export const populateRoundWithEndPrice = async (game: Game, round: Round, player
 	};
 };
 
-export const fetchLatestPrice = async (params: { pair: string }): Promise<Result> => {
+export const fetchLatestPrice = async (params: { pair: string }, config: Config): Promise<Result> => {
 	const pair = params.pair;
 	const address = games[pair].dataFeed;
 	logger.info('fetching latest price', pair, address);
-	return await fetchPrice(address, Math.floor(Date.now() / 1000));
+	return await fetchPrice(address, Math.floor(Date.now() / 1000), config);
 };
 
 export async function fetchPredictBet(config: Config, params: { address: Address }): Promise<PredictBet> {

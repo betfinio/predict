@@ -1,8 +1,4 @@
 sources:
-  - name: chainlink
-    handler:
-      graphql:
-        endpoint: ${PUBLIC_CHAINLINK_GRAPH_URL}
   - name: predict
     handler:
       graphql:
