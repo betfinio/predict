@@ -119,7 +119,7 @@ export const RoundTimer: FC<{ game: Game; end: number; className?: string; size?
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: 'hsl(var(--primary))',
+			stroke: 'var(--primary)',
 			strokeWidth: '6px',
 		},
 		trail: {
@@ -127,7 +127,7 @@ export const RoundTimer: FC<{ game: Game; end: number; className?: string; size?
 			strokeWidth: '1px',
 		},
 		text: {
-			fill: 'hsl(var(--foreground))',
+			fill: 'var(--foreground)',
 			fontSize: '30px',
 		},
 	};

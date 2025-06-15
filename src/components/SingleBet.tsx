@@ -103,7 +103,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: 'hsl(var(--primary))',
+			stroke: 'var(--primary)',
 			strokeWidth: '6px',
 		},
 		trail: {
@@ -111,7 +111,7 @@ const BetModal: FC<PredictBet> = (bet) => {
 			strokeWidth: '1px',
 		},
 		text: {
-			fill: 'hsl(var(--foreground))',
+			fill: 'var(--foreground)',
 			fontSize: '30px',
 		},
 	};
