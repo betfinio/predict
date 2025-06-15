@@ -1,8 +1,5 @@
 import btcSvg from '@/src/assets/btc.svg';
-import { games } from '@/src/lib';
 import type { Game } from '@/src/lib/types';
-import { cn } from '@betfinio/components/lib';
-import { Link } from '@tanstack/react-router';
 import { motion } from 'motion/react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,22 +21,6 @@ const PairSwitcher: FC<Game> = (game) => {
 };
 
 export default PairSwitcher;
-
-const SwitchModal: FC<{ selected: Game }> = ({ selected }) => {
-	const pairs = Object.keys(games).map((key) => games[key]);
-	return (
-		<motion.div layoutId={'switcher'} className={'bg-background p-2 min-w-[300px] text-foreground'}>
-			{pairs.map((pair, index) => (
-				<DialogClose key={index} className={cn('w-full ', pair.name === selected.name && 'border border-border bg-background-lighter rounded-lg')}>
-					<Link to={`/games/predict/${pair.name}`} key={index} className={cn('w-full flex flex-row items-center gap-2 p-4 py-2')}>
-						{getImage(pair.name)}
-						{pair.name}
-					</Link>
-				</DialogClose>
-			))}
-		</motion.div>
-	);
-};
 
 const getImage = (name: string) => {
 	switch (name) {
