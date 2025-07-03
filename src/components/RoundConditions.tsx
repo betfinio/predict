@@ -86,7 +86,7 @@ export const Clock: FC<{ game: Game; className?: string }> = ({ game: { interval
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: 'hsl(var(--primary))',
+			stroke: 'var(--primary)',
 			strokeWidth: '2px',
 		},
 		trail: {
@@ -95,7 +95,7 @@ export const Clock: FC<{ game: Game; className?: string }> = ({ game: { interval
 			width: '100%',
 		},
 		text: {
-			fill: 'hsl(var(--foreground))',
+			fill: 'var(--foreground)',
 			fontSize: '30px',
 		},
 	};
