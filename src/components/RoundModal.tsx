@@ -1,6 +1,3 @@
-import BetsTable from '@/src/components/BetsTable.tsx';
-import { useCalculate, useRoundBets, useRoundInfo } from '@/src/lib/query';
-import type { Game, RoundStatus } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
 import { Bank, MoneyHand, People } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
@@ -12,6 +9,9 @@ import { type FC, useEffect, useMemo, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
 import { useTranslation } from 'react-i18next';
+import BetsTable from '@/src/components/BetsTable.tsx';
+import { useCalculate, useRoundBets, useRoundInfo } from '@/src/lib/query';
+import type { Game, RoundStatus } from '@/src/lib/types';
 
 const RoundModal: FC<{
 	round: number;

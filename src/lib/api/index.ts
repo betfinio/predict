@@ -1,12 +1,12 @@
+import { BetInterfaceABI, BetsMemoryABI, DataFeedABI, defaultMulticall, PartnerABI, PredictBetABI, PredictGameABI } from '@betfinio/abi';
+import type { QueryClient } from '@tanstack/react-query';
+import { type Config, multicall, readContract, simulateContract, type WriteContractReturnType, writeContract } from '@wagmi/core';
+import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
+import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import logger from '@/src/config/logger';
 import { BETS_MEMORY_ADDRESS, PARTNER_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import { games } from '@/src/lib';
 import { fetchPrice, getPlayerRounds, getRounds } from '@/src/lib/gql';
-import { BetInterfaceABI, BetsMemoryABI, DataFeedABI, PartnerABI, PredictBetABI, PredictGameABI, defaultMulticall } from '@betfinio/abi';
-import type { QueryClient } from '@tanstack/react-query';
-import { type Config, type WriteContractReturnType, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
-import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
-import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '../types';
 
 // header stats
@@ -70,7 +70,7 @@ export const fetchPlayerRounds = async (config: Config, params: { game: Game; pl
 	return await Promise.all(rounds.map((round) => populateRoundWithEndPrice(game, round, player, config)));
 };
 
-export const populateRoundWithEndPrice = async (game: Game, round: Round, player: Address, config: Config): Promise<Round> => {
+export const populateRoundWithEndPrice = async (game: Game, round: Round, _player: Address, config: Config): Promise<Round> => {
 	if (round.price.end) {
 		return round;
 	}

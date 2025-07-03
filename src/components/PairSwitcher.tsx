@@ -1,6 +1,3 @@
-import btcSvg from '@/src/assets/btc.svg';
-import { games } from '@/src/lib';
-import type { Game } from '@/src/lib/types';
 import { cn } from '@betfinio/components/lib';
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
@@ -8,6 +5,9 @@ import { Menu } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import btcSvg from '@/src/assets/btc.svg';
+import { games } from '@/src/lib';
+import type { Game } from '@/src/lib/types';
 
 const PairSwitcher: FC<Game> = (game) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'pairSwitcher' });

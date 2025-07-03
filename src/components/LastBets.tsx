@@ -1,11 +1,11 @@
-import RoundPool from '@/src/components/RoundPool.tsx';
-import SingleBet from '@/src/components/SingleBet.tsx';
-import { useLastBets } from '@/src/lib/query';
-import type { Game } from '@/src/lib/types';
 import { cn } from '@betfinio/components/lib';
 import { AnimatePresence, motion } from 'motion/react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import RoundPool from '@/src/components/RoundPool.tsx';
+import SingleBet from '@/src/components/SingleBet.tsx';
+import { useLastBets } from '@/src/lib/query';
+import type { Game } from '@/src/lib/types';
 
 const LastBets: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'lastBets' });
@@ -20,7 +20,7 @@ const LastBets: FC<{ game: Game }> = ({ game }) => {
 					<h2 className={'font-medium uppercase '}>{t('latestBets')}</h2>
 					<AnimatePresence>
 						<div className={cn('w-full grid grid-cols-1 grid-rows-4 gap-1', { 'animate-pulse blur-xs': isLoading })}>
-							{bets.map((e, i) => (
+							{bets.map((e) => (
 								<motion.div
 									key={e.address}
 									layout

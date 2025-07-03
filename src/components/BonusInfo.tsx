@@ -1,12 +1,12 @@
-import BonusChart from '@/src/components/BonusChart.tsx';
-import i18n from '@/src/i18n.ts';
-import { useCurrentRound, usePool, useRoundBets } from '@/src/lib/query';
-import type { Game } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { CircleHelp } from 'lucide-react';
 import type { FC } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import BonusChart from '@/src/components/BonusChart.tsx';
+import i18n from '@/src/i18n.ts';
+import { useCurrentRound, usePool, useRoundBets } from '@/src/lib/query';
+import type { Game } from '@/src/lib/types';
 
 const BonusInfo: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict');

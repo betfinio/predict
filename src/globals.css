@@ -1,8 +1,6 @@
 @import "tailwindcss";
-@import "@betfinio/components/globals.css";
+@import "@betfinio/components/globals.css" important;
 @import "tw-animate-css";
-
-@config '../tailwind.config.ts';
 
 @theme {
 	--breakpoint-2xl: 1440px;

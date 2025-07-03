@@ -1,8 +1,3 @@
-import btcSvg from '@/src/assets/btc.svg';
-import { ETHSCAN } from '@/src/global.ts';
-import { games } from '@/src/lib';
-import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
-import { type Game, type PredictBet, defaultResult } from '@/src/lib/types.ts';
 import { truncateEthAddress, valueToNumber } from '@betfinio/abi';
 import { Bank, Medal, Pig } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
@@ -17,6 +12,11 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import btcSvg from '@/src/assets/btc.svg';
+import { ETHSCAN } from '@/src/global.ts';
+import { games } from '@/src/lib';
+import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
+import { defaultResult, type Game, type PredictBet } from '@/src/lib/types.ts';
 
 const SingleBet: FC<PredictBet & { loading: boolean }> = (bet) => {
 	const amount = valueToNumber(bet.amount);

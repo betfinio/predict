@@ -1,7 +1,4 @@
-import PlayersExpectedWinnings from '@/src/components/PlayersExpectedWinnings.tsx';
-import { useCurrentRound, usePlaceBet, usePlayerBets, useRoundBets } from '@/src/lib/query';
-import type { Game, RoundPool } from '@/src/lib/types';
-import { ZeroAddress, valueToNumber } from '@betfinio/abi';
+import { valueToNumber, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { Button, toast } from '@betfinio/components/ui';
@@ -13,6 +10,9 @@ import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NumericFormat } from 'react-number-format';
 import { useAccount } from 'wagmi';
+import PlayersExpectedWinnings from '@/src/components/PlayersExpectedWinnings.tsx';
+import { useCurrentRound, usePlaceBet, usePlayerBets, useRoundBets } from '@/src/lib/query';
+import type { Game, RoundPool } from '@/src/lib/types';
 
 const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'placeBet' });
@@ -77,7 +77,7 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 		}
 		try {
 			BigInt(Number(amount));
-		} catch (e) {
+		} catch {
 			toast.error(t('toast.invalidAmount'));
 			return;
 		}

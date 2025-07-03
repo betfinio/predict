@@ -1,9 +1,9 @@
-import BonusInfo from '@/src/components/BonusInfo.tsx';
-import PriceChart from '@/src/components/PriceGraph.tsx';
-import type { Game } from '@/src/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import BonusInfo from '@/src/components/BonusInfo.tsx';
+import PriceChart from '@/src/components/PriceGraph.tsx';
+import type { Game } from '@/src/lib/types';
 
 const BonusAndChart: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict');
