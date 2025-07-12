@@ -8,82 +8,43 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as GamesPredictIndexRouteImport } from './routes/games/predict/index'
+import { Route as GamesPredictPairRouteImport } from './routes/games/predict/$pair'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as GamesPredictIndexImport } from './routes/games/predict/index'
-import { Route as GamesPredictPairImport } from './routes/games/predict/$pair'
-
-// Create/Update Routes
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GamesPredictIndexRoute = GamesPredictIndexImport.update({
+const GamesPredictIndexRoute = GamesPredictIndexRouteImport.update({
   id: '/games/predict/',
   path: '/games/predict/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GamesPredictPairRoute = GamesPredictPairImport.update({
+const GamesPredictPairRoute = GamesPredictPairRouteImport.update({
   id: '/games/predict/$pair',
   path: '/games/predict/$pair',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/games/predict/$pair': {
-      id: '/games/predict/$pair'
-      path: '/games/predict/$pair'
-      fullPath: '/games/predict/$pair'
-      preLoaderRoute: typeof GamesPredictPairImport
-      parentRoute: typeof rootRoute
-    }
-    '/games/predict/': {
-      id: '/games/predict/'
-      path: '/games/predict'
-      fullPath: '/games/predict'
-      preLoaderRoute: typeof GamesPredictIndexImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games/predict/$pair': typeof GamesPredictPairRoute
   '/games/predict': typeof GamesPredictIndexRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games/predict/$pair': typeof GamesPredictPairRoute
   '/games/predict': typeof GamesPredictIndexRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/games/predict/$pair': typeof GamesPredictPairRoute
   '/games/predict/': typeof GamesPredictIndexRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/games/predict/$pair' | '/games/predict'
@@ -92,11 +53,36 @@ export interface FileRouteTypes {
   id: '__root__' | '/' | '/games/predict/$pair' | '/games/predict/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamesPredictPairRoute: typeof GamesPredictPairRoute
   GamesPredictIndexRoute: typeof GamesPredictIndexRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/predict/': {
+      id: '/games/predict/'
+      path: '/games/predict'
+      fullPath: '/games/predict'
+      preLoaderRoute: typeof GamesPredictIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/predict/$pair': {
+      id: '/games/predict/$pair'
+      path: '/games/predict/$pair'
+      fullPath: '/games/predict/$pair'
+      preLoaderRoute: typeof GamesPredictPairRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -104,31 +90,6 @@ const rootRouteChildren: RootRouteChildren = {
   GamesPredictPairRoute: GamesPredictPairRoute,
   GamesPredictIndexRoute: GamesPredictIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/games/predict/$pair",
-        "/games/predict/"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/games/predict/$pair": {
-      "filePath": "games/predict/$pair.tsx"
-    },
-    "/games/predict/": {
-      "filePath": "games/predict/index.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

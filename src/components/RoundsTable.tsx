@@ -1,7 +1,4 @@
-import RoundModal from '@/src/components/RoundModal';
-import { useCurrentRound, usePlayerBets, usePlayerRounds, usePlayerRoundsCount, useRounds, useRoundsCount } from '@/src/lib/query';
-import type { Game, Round, RoundStatus } from '@/src/lib/types';
-import { ZeroAddress, valueToNumber } from '@betfinio/abi';
+import { valueToNumber, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Dialog, Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
@@ -14,6 +11,9 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import RoundModal from '@/src/components/RoundModal';
+import { useCurrentRound, usePlayerBets, usePlayerRounds, usePlayerRoundsCount, useRounds, useRoundsCount } from '@/src/lib/query';
+import type { Game, Round, RoundStatus } from '@/src/lib/types';
 
 const columnHelper = createColumnHelper<Round>();
 

@@ -1,7 +1,3 @@
-import BonusChart from '@/src/components/BonusChart.tsx';
-import { ETHSCAN } from '@/src/global.ts';
-import { usePool, useRoundBets } from '@/src/lib/query';
-import type { Game, PredictBet } from '@/src/lib/types.ts';
 import { valueToNumber } from '@betfinio/abi';
 import { Predict } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
@@ -13,6 +9,10 @@ import { ExternalLink } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import BonusChart from '@/src/components/BonusChart.tsx';
+import { ETHSCAN } from '@/src/global.ts';
+import { usePool, useRoundBets } from '@/src/lib/query';
+import type { Game, PredictBet } from '@/src/lib/types.ts';
 
 const columnHelper = createColumnHelper<PredictBet>();
 
@@ -22,7 +22,7 @@ const BetsTable: FC<{ round: number; game: Game }> = ({ round, game }) => {
 	const { address } = useAccount();
 	const { data: bets = [], isFetching } = useRoundBets(game.address, round);
 	const { data: pool } = usePool(game.address, round);
-	const columns: ColumnDef<PredictBet, never>[] = [
+	const columns: ColumnDef<PredictBet, any>[] = [
 		columnHelper.accessor('address', {
 			header: '',
 			cell: (props) => (

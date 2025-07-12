@@ -1,6 +1,3 @@
-import CoinInfo from '@/src/components/CoinInfo.tsx';
-import { useBetsCount, useBetsVolume, useLatestPrice, useYesterdayPrice } from '@/src/lib/query';
-import { type Game, defaultResult } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
@@ -9,6 +6,9 @@ import { useChatbot } from 'betfinio_context/lib/context';
 import { AlertCircle, CircleHelp } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import CoinInfo from '@/src/components/CoinInfo.tsx';
+import { useBetsCount, useBetsVolume, useLatestPrice, useYesterdayPrice } from '@/src/lib/query';
+import { defaultResult, type Game } from '@/src/lib/types';
 import PairSwitcher from './PairSwitcher.tsx';
 
 const PairInfo: FC<{ game: Game }> = ({ game }) => {

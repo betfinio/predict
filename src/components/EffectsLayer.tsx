@@ -1,5 +1,3 @@
-import { useObserveBet } from '@/src/lib/query';
-import type { Game } from '@/src/lib/types.ts';
 import { ZeroAddress } from '@betfinio/abi';
 import { addressToColor } from 'betfinio_context/lib/utils';
 import { TrendingDown, TrendingUp } from 'lucide-react';
@@ -8,6 +6,8 @@ import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import { useObserveBet } from '@/src/lib/query';
+import type { Game } from '@/src/lib/types.ts';
 
 export const EffectsLayer: FC<{ game: Game }> = ({ game }) => {
 	const {

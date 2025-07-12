@@ -1,3 +1,11 @@
+import { ZeroAddress } from '@betfinio/abi';
+import { toast } from '@betfinio/components/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { WriteContractReturnType } from '@wagmi/core';
+import { getTransactionLink } from 'betfinio_context/lib/helpers';
+import type { Address, WriteContractErrorType } from 'viem';
+import { waitForTransactionReceipt } from 'viem/actions';
+import { useAccount, useConfig } from 'wagmi';
 import logger from '@/src/config/logger';
 import {
 	calculateRound,
@@ -20,14 +28,6 @@ import {
 	getRoundsCount,
 } from '@/src/lib/gql';
 import type { CalculateRoundParams, Game, PlaceBetParams, PredictBet, Result, Round } from '@/src/lib/types.ts';
-import { ZeroAddress } from '@betfinio/abi';
-import { toast } from '@betfinio/components/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { WriteContractReturnType } from '@wagmi/core';
-import { getTransactionLink } from 'betfinio_context/lib/helpers';
-import type { Address, WriteContractErrorType } from 'viem';
-import { waitForTransactionReceipt } from 'viem/actions';
-import { useAccount, useConfig } from 'wagmi';
 
 export const useCurrentRound = (interval: number) => {
 	return useQuery<number>({

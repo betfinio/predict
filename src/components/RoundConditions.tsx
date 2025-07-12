@@ -1,8 +1,4 @@
 import 'react-circular-progressbar/dist/styles.css';
-import { EffectsLayer } from '@/src/components/EffectsLayer.tsx';
-import i18n from '@/src/i18n.ts';
-import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
-import { type Game, defaultResult } from '@/src/lib/types';
 import { valueToNumber } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { DateTime } from 'luxon';
@@ -10,6 +6,10 @@ import { type FC, useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import type { CircularProgressbarStyles } from 'react-circular-progressbar/dist/types';
 import { Trans, useTranslation } from 'react-i18next';
+import { EffectsLayer } from '@/src/components/EffectsLayer.tsx';
+import i18n from '@/src/i18n.ts';
+import { useCurrentRound, useLatestPrice, usePrice } from '@/src/lib/query';
+import { defaultResult, type Game } from '@/src/lib/types';
 
 const RoundConditions: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'roundConditions' });
@@ -86,7 +86,7 @@ export const Clock: FC<{ game: Game; className?: string }> = ({ game: { interval
 		},
 		path: {
 			strokeLinecap: 'round',
-			stroke: 'hsl(var(--primary))',
+			stroke: 'var(--primary)',
 			strokeWidth: '2px',
 		},
 		trail: {
@@ -95,7 +95,7 @@ export const Clock: FC<{ game: Game; className?: string }> = ({ game: { interval
 			width: '100%',
 		},
 		text: {
-			fill: 'hsl(var(--foreground))',
+			fill: 'var(--foreground)',
 			fontSize: '30px',
 		},
 	};
