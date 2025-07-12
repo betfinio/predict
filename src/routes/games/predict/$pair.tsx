@@ -1,21 +1,20 @@
+import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
+import { SonnerToaster } from '@betfinio/components/ui';
+import { useQueryClient } from '@tanstack/react-query';
+import { createFileRoute, Link, useParams } from '@tanstack/react-router';
+import { Trans, useTranslation } from 'react-i18next';
+import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 import BonusAndChart from '@/src/components/BonusAndChart.tsx';
 import LastBets from '@/src/components/LastBets.tsx';
 import PairInfo from '@/src/components/PairInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
 import RoundConditions from '@/src/components/RoundConditions.tsx';
 import RoundsTable from '@/src/components/RoundsTable.tsx';
-import { VersionValidation } from '@/src/components/VersionValidation.tsx';
 import { BETS_MEMORY_ADDRESS, PREDICT_ADDRESS } from '@/src/global.ts';
 import i18n from '@/src/i18n.ts';
 import { games } from '@/src/lib';
-import { animateNewBet, fetchPredictBet } from '@/src/lib/api';
+import { animateNewBet } from '@/src/lib/api';
 import { getBetByAddress } from '@/src/lib/gql';
-import { BetsMemoryABI, PredictGameABI, ZeroAddress } from '@betfinio/abi';
-import { SonnerToaster } from '@betfinio/components/ui';
-import { useQueryClient } from '@tanstack/react-query';
-import { Link, createFileRoute, useParams } from '@tanstack/react-router';
-import { Trans, useTranslation } from 'react-i18next';
-import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 
 export const Route = createFileRoute('/games/predict/$pair')({
 	component: PredictPage,
@@ -91,7 +90,6 @@ export function PredictPage() {
 				</div>
 			</div>
 			<SonnerToaster />
-			<VersionValidation repository={'predict'} branch={import.meta.env.PUBLIC_BRANCH} current={import.meta.env.PUBLIC_DEPLOYED} />
 		</div>
 	);
 }

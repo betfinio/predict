@@ -1,12 +1,11 @@
-import type { PredictBet } from '@/src/lib/types.ts';
 import { arrayFrom, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { type BarDatum, ResponsiveBar } from '@nivo/bar';
 import type { BarTooltipProps } from '@nivo/bar/dist/types/types';
 import type { FC } from 'react';
-import * as React from 'react';
 import type { Address } from 'viem';
+import type { PredictBet } from '@/src/lib/types.ts';
 
 interface BonusItem extends BarDatum {
 	bet: Address;

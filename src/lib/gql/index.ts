@@ -1,8 +1,14 @@
+import { DataFeedABI } from '@betfinio/abi';
+import { type Config, readContract } from '@wagmi/core';
+import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
+import type { ExecutionResult } from 'graphql/execution';
+import type { Address } from 'viem';
 import {
 	BetDocument,
 	type BetQuery,
 	BetsByRoundDocument,
 	type BetsByRoundQuery,
+	execute,
 	LastBetsDocument,
 	type LastBetsQuery,
 	PlayerBetsByRoundDocument,
@@ -19,15 +25,9 @@ import {
 	type RoundsCountQuery,
 	RoundsDocument,
 	type RoundsQuery,
-	execute,
 } from '@/.graphclient';
 import logger from '@/src/config/logger.ts';
-import { type PredictBet, type Result, type Round, defaultBet, defaultResult, defaultRound } from '@/src/lib/types.ts';
-import { DataFeedABI } from '@betfinio/abi';
-import { type Config, readContract } from '@wagmi/core';
-import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
-import type { ExecutionResult } from 'graphql/execution';
-import type { Address } from 'viem';
+import { defaultBet, defaultResult, defaultRound, type PredictBet, type Result, type Round } from '@/src/lib/types.ts';
 import { intToLittleEndianI32 } from '..';
 
 export const getRoundsCount = async (): Promise<number> => {

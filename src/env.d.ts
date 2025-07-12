@@ -10,7 +10,7 @@ declare module '@tanstack/react-router' {
 	}
 }
 
-interface ImportMetaEnv {
+declare interface ImportMetaEnv {
 	readonly PUBLIC_TOKEN_ADDRESS: Address;
 	readonly PUBLIC_PARTNER_ADDRESS: Address;
 	readonly PUBLIC_BETS_MEMORY_ADDRESS: Address;

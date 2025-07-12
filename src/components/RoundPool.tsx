@@ -1,10 +1,10 @@
-import { useCurrentRound, useRoundBets } from '@/src/lib/query';
-import type { Game, RoundPool } from '@/src/lib/types';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
 import { ArrowDownIcon, ArrowUpIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrentRound, useRoundBets } from '@/src/lib/query';
+import type { Game, RoundPool } from '@/src/lib/types';
 
 const RoundPoolInfo: FC<{ game: Game }> = ({ game }) => {
 	const { t } = useTranslation('predict', { keyPrefix: 'roundPool' });

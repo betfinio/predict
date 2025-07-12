@@ -1,6 +1,4 @@
-import { useCurrentRound, useRoundBets } from '@/src/lib/query';
-import type { Game } from '@/src/lib/types.ts';
-import { ZeroAddress, valueToNumber } from '@betfinio/abi';
+import { valueToNumber, ZeroAddress } from '@betfinio/abi';
 import { Bet } from '@betfinio/components/icons';
 import { cn } from '@betfinio/components/lib';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
@@ -8,6 +6,8 @@ import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import millify from 'millify';
 import { type FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
+import { useCurrentRound, useRoundBets } from '@/src/lib/query';
+import type { Game } from '@/src/lib/types.ts';
 
 const PlayersExpectedWinnings: FC<{ game: Game }> = ({ game }) => {
 	const { data: round } = useCurrentRound(game.interval);
