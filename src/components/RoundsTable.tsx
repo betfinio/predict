@@ -2,7 +2,7 @@ import { valueToNumber, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { Dialog, Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
-import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { type ColumnDef, createColumnHelper, type OnChangeFn, type PaginationState } from '@tanstack/react-table';
 import { ArrowDownIcon, ArrowUpIcon, LoaderIcon, Search } from 'lucide-react';
 import millify from 'millify';
 import { motion } from 'motion/react';
@@ -206,7 +206,7 @@ const RoundsTableContent: FC<{
 	isLoading: boolean;
 	totalCount: number;
 	pagination: { pageIndex: number; pageSize: number };
-	onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
+	onPaginationChange: OnChangeFn<PaginationState>;
 }> = ({ game, columns, rounds, isLoading, totalCount, pagination, onPaginationChange }) => {
 	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const [selectedRound, setSelectedRound] = useState<number | null>(null);

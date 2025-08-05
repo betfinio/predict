@@ -1,8 +1,7 @@
 import { arrayFrom, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
-import { type BarDatum, ResponsiveBar } from '@nivo/bar';
-import type { BarTooltipProps } from '@nivo/bar/dist/types/types';
+import { type BarDatum, type BarTooltipProps, ResponsiveBar } from '@nivo/bar';
 import type { FC } from 'react';
 import type { Address } from 'viem';
 import type { PredictBet } from '@/src/lib/types.ts';
@@ -33,13 +32,6 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 
 	const result: BonusItem[] = data.length > 0 ? data : mockData;
 
-	const [min, max] = result.reduce(
-		([min, max], bar) => {
-			return [Math.min(min, bar.bonus), Math.max(max, bar.bonus)];
-		},
-		[0, -0],
-	);
-
 	if (result.length < 40) {
 		const toAdd = 40 - result.length;
 		result.unshift(
@@ -67,8 +59,6 @@ const BonusChart: FC<{ bonuses: { bet: PredictBet; bonus: number; index: number 
 				enableGridX={false}
 				enableGridY={false}
 				data={result as readonly BonusItem[]}
-				minValue={-Math.max(Math.abs(min), max)}
-				maxValue={Math.max(Math.abs(min), max)}
 				keys={['bonus']}
 				axisLeft={null}
 				axisBottom={null}
