@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 import headerLogo from '@/src/assets/header-logo.svg';
+import duckMascot from '@/src/assets/mascot.png';
 import patternOverlay from '@/src/assets/patternzinho.png';
-//import duckMascot from '@/src/assets/mascot.svg';
 
 export const Maintenance = () => {
 	return (
@@ -52,9 +52,9 @@ export const Maintenance = () => {
 						</div>
 
 						{/* Mascot container */}
-						{/* <div className="mt-12 flex justify-center">
+						<div className="mt-12 flex justify-center">
 							<img src={duckMascot} alt="Betfin Duck Mascot" className="max-w-sm w-full" />
-						</div> */}
+						</div>
 					</main>
 				</div>
 			</div>
