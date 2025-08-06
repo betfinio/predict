@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@betfinio/components/globals.css" ;
+@import "@betfinio/components/globals.css";
 @import "tw-animate-css";
 @config "../tailwind.config.ts";
 
