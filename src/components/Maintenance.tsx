@@ -40,7 +40,7 @@ export const Maintenance = () => {
 						<div className="bg-slate-900/50 border border-amber-400 rounded-xl p-4 md:p-8 max-w-2xl mx-auto flex items-center gap-4">
 							<AlertTriangle size={24} className="w-10 h-10 flex-shrink-0 mt-0.5 text-amber-400" />
 							<div className="flex flex-col text-left">
-								<span className="text-amber-400 text-lg md:text-xl mb-2 font-bold">Planned Web Maintenance</span>
+								<span className="text-amber-400 text-lg md:text-xl mb-2 font-bold">Web Maintenance</span>
 								<span className="mb-2 text-sm md:text-base leading-relaxed">Crypto Predict is unavailable due to maintenance. Please come back later.</span>
 								<span className="text-sm md:text-base text-gray-300">
 									You can check the current status at{' '}
