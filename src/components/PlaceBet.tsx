@@ -1,14 +1,14 @@
 import { valueToNumber, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components/lib';
 import { BetValue } from '@betfinio/components/shared';
-import { Button, toast } from '@betfinio/components/ui';
+import { Button, type NumberFormatValues, NumericInput, toast } from '@betfinio/components/ui';
 import { useAllowanceModal } from 'betfinio_context/lib/context';
 import { useAllowance, useBalance, useIsMember } from 'betfinio_context/lib/query';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import millify from 'millify';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NumericFormat } from 'react-number-format';
+import { parseEther } from 'viem';
 import { useAccount } from 'wagmi';
 import PlayersExpectedWinnings from '@/src/components/PlayersExpectedWinnings.tsx';
 import { useCurrentRound, usePlaceBet, usePlayerBets, useRoundBets } from '@/src/lib/query';
@@ -76,21 +76,22 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 			return;
 		}
 		try {
-			BigInt(Number(amount));
+			parseEther(amount);
 		} catch {
 			toast.error(t('toast.invalidAmount'));
 			return;
 		}
 		if (valueToNumber(allowance) < Number(amount)) {
 			setSide(s);
-			requestAllowance?.('bet', BigInt(amount) * 10n ** 18n);
+			requestAllowance?.('bet', parseEther(amount));
 			toast.error(t('toast.allowance'));
 			return;
 		}
-		placeBet({ amount: BigInt(amount) * 10n ** 18n, side, game: game.address });
+		placeBet({ amount: parseEther(amount), side, game: game.address });
 	};
 
-	const handleBetChange = (value: string) => {
+	const handleBetChange = (values: NumberFormatValues) => {
+		const { value } = values;
 		setAmount(value);
 	};
 	console.log(pool);
@@ -99,20 +100,15 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 			<h2 className={'font-medium uppercase hidden md:block'}>{t('title')}</h2>
 			<div className={cn('w-full border border-border rounded-[10px] bg-background-light py-5 px-10 flex flex-col items-center gap-6 relative')}>
 				<div className={'w-full'}>
-					<NumericFormat
-						className={
-							'w-full rounded-[10px] text-center border border-yellow-400 text-sm bg-background p-3 font-semibold text-foreground disabled:cursor-not-allowed'
-						}
-						thousandSeparator={','}
-						min={1}
-						disabled={loading || balance === 0n}
-						placeholder={allowance === 0n ? t('allowance') : balance === 0n ? t('topUpTitle') : t('amount')}
-						value={amount === null ? '' : amount}
+					<NumericInput
+						className={'border border-yellow-400'}
+						scale="lg"
 						suffix={' BET'}
-						onValueChange={(values) => {
-							const { value } = values;
-							handleBetChange(value);
-						}}
+						placeholder={allowance === 0n ? t('allowance') : balance === 0n ? t('topUpTitle') : t('amount')}
+						hasError={valueToNumber(balance) < Number(amount) && address !== ZeroAddress}
+						decimalScale={2}
+						value={amount}
+						onValueChange={handleBetChange}
 					/>
 				</div>
 
@@ -120,7 +116,7 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 					<Button
 						variant={'success'}
 						onClick={() => handleBet(true)}
-						disabled={loading || amount === null || Number(amount) < 1 || BigInt(amount) * 10n ** 18n > balance}
+						disabled={loading || amount === null || Number(amount) < 1 || parseEther(amount || '0') > balance}
 						className={'flex flex-col items-center h-auto pb-2 p-3 gap-2 leading-[0px] justify-between'}
 					>
 						<span className={'text-lg leading-3'}>{t('long')}</span>
@@ -136,7 +132,7 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 					<Button
 						variant={'destructive'}
 						onClick={() => handleBet(false)}
-						disabled={loading || amount === null || Number(amount) < 1 || BigInt(amount) * 10n ** 18n > balance}
+						disabled={loading || amount === null || Number(amount) < 1 || parseEther(amount || '0') > balance}
 						className={' h-auto flex flex-col items-center pb-2 p-3 gap-2 leading-[0px] justify-between '}
 					>
 						<span className={'text-lg leading-3'}>{t('short')}</span>
