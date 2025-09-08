@@ -94,7 +94,6 @@ const PlaceBet: FC<{ game: Game }> = ({ game }) => {
 		const { value } = values;
 		setAmount(value);
 	};
-	console.log(pool);
 	return (
 		<div className={'flex flex-col gap-4 col-span-4 md:col-span-3 items-center drop-shadow-[0_0_35px_rgba(87,101,242,0.75)]'}>
 			<h2 className={'font-medium uppercase hidden md:block'}>{t('title')}</h2>
