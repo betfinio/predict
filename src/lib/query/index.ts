@@ -168,10 +168,7 @@ export const usePlaceBet = () => {
 	return useMutation<WriteContractReturnType, WriteContractErrorType, PlaceBetParams>({
 		mutationKey: ['predict', 'bets', 'place'],
 		mutationFn: (params) => placeBet(params, config),
-		onError: (e) => {
-			toast.error(handleError(e, t));
-			console.log('aaaaaaa');
-		},
+		onError: (e) => toast.error(handleError(e, t)),
 		onMutate: () => logger.info('placeBet'),
 		onSuccess: async (data) => {
 			logger.info(data);
