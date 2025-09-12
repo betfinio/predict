@@ -3,7 +3,6 @@ import MockRoot from 'betfinio_context/components/MockRoot';
 import { GlobalContextProvider } from 'betfinio_context/lib/context';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/src/i18n.ts';
-import 'betfinio_context/style';
 
 export const Route = createRootRoute({
 	component: () => (

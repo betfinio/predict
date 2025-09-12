@@ -2,7 +2,8 @@ import { ZeroAddress } from '@betfinio/abi';
 import { toast } from '@betfinio/components/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { WriteContractReturnType } from '@wagmi/core';
-import { getTransactionLink } from 'betfinio_context/lib/helpers';
+import { getTransactionLink, handleError } from 'betfinio_context/lib/helpers';
+import { useTranslation } from 'react-i18next';
 import type { Address, WriteContractErrorType } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
 import { useAccount, useConfig } from 'wagmi';
@@ -162,13 +163,12 @@ export const useRoundInfo = (game: Game, round: number) => {
 };
 
 export const usePlaceBet = () => {
+	const { t } = useTranslation('shared', { keyPrefix: 'errors' });
 	const config = useConfig();
 	return useMutation<WriteContractReturnType, WriteContractErrorType, PlaceBetParams>({
 		mutationKey: ['predict', 'bets', 'place'],
 		mutationFn: (params) => placeBet(params, config),
-		onError: (e) => {
-			console.log(e);
-		},
+		onError: (e) => toast.error(handleError(e, t)),
 		onMutate: () => logger.info('placeBet'),
 		onSuccess: async (data) => {
 			logger.info(data);
