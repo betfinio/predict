@@ -6,6 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useAccount, useConfig, useWatchContractEvent } from 'wagmi';
 import BonusAndChart from '@/src/components/BonusAndChart.tsx';
 import LastBets from '@/src/components/LastBets.tsx';
+import { Maintenance } from '@/src/components/Maintenance';
 import PairInfo from '@/src/components/PairInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
 import RoundConditions from '@/src/components/RoundConditions.tsx';
@@ -69,6 +70,15 @@ export function PredictPage() {
 		},
 	});
 
+	const isMaintenance = true;
+
+	if (isMaintenance) {
+		return (
+			<div className={'predict w-full h-full'}>
+				<Maintenance />
+			</div>
+		);
+	}
 	return (
 		<div className={'predict w-full h-full'}>
 			<div className={'rounded-lg w-full h-full p-2 md:py-3 lg:py-4 gap-2 flex flex-col 2xl:px-0'}>
