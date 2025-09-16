@@ -33,6 +33,12 @@ export default defineConfig({
 					'./style': './src/style.ts',
 					'./i18n': './src/i18n.ts',
 				},
+				dts: {
+					consumeTypes: {
+						typesOnBuild: true,
+					},
+				},
+				manifest: true,
 				shared: [
 					'react',
 					'react-dom',
