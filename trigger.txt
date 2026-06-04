@@ -1,1 +1,1 @@
-trigger-test
+"trigger-workflow-$(date +%s)"  
